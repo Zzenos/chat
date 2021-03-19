@@ -1,7 +1,8 @@
 <template>
   <div class="hello">
     <p>
-      这里是具体聊天内容
+     这里是聊天外框架
+     主要加载saas账号信息和对应绑定的企微号
     </p>
   </div>
 </template>
@@ -10,8 +11,8 @@
 export default {
   name: 'chat',
   props: {
-    // 企微号
-    uuid: {
+    // 企微saas账号
+    saasId: {
       type: String,
       required: true
     }

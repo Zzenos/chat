@@ -1,6 +1,6 @@
 <template>
-  <div>
-    测试测试
+  <div @click="show">
+    {{myarr}}
   </div>
 </template>
 
@@ -9,12 +9,14 @@ export default {
   name: 'login',
   data() {
     return {
-      name: '112'
+      name: '112',
+      myarr: [1,2,3]
     }
   },
   methods: {
     show(){
-      console.log(112);
+      this.myarr[2] = 4
+      console.log(this.myarr);
     }
   }
 }

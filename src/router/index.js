@@ -1,28 +1,45 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import VueRouter from 'vue-router'
+import hooks from './hooks'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-const routes = [{
-  path: '/login',
-  name: 'login',
-  component: () => import( /* webpackChunkName: "login" */ '../views/login/login')
-}, {
-  path: '/chat',
-  name: 'chat',
-  component: () => import( /* webpackChunkName: "chatroom" */ '../views/chat/chat')
-}]
+let routes = [{
+    path: '/login',
+    name: 'login',
+    component: () => import( /* webpackChunkName: "login" */ '../views/login/Login')
+  },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat')
+  },
+  {
+    path: '/transit/:token',
+    name: 'Transit',
+    component: () => import( /* webpackChunkName: "about" */ '../views/transit/Transit'),
+    props: true
+  },
+  {
+    path: '/',
+    redirect: '/login'
+  }
+]
 
-
-const notFound = [{
+const notFound = {
   path: '*',
+  name: '404',
   component: () => import( /* webpackChunkName: "404" */ '../views/404/404')
-}]
+}
+
+routes.splice(routes.length - 1, 0, notFound)
 
 
-routes.concat(notFound)
 
-export default new Router({
+const router = new VueRouter({
   mode: 'history',
   routes
 })
+
+router.beforeEach(hooks)
+export default router
