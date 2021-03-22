@@ -10,9 +10,21 @@ let routes = [{
     component: () => import( /* webpackChunkName: "login" */ '../views/login/Login')
   },
   {
-    path: '/chat',
-    name: 'Chat',
-    component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat')
+    path: '/chatframe/:userId',
+    name: 'ChatFrame',
+    component: () => import( /* webpackChunkName: "chatframe" */ '../views/chat/ChatFrame'),
+    props: true,
+    children: [{ // 联系人会话
+      path: 'recent/:contactId',
+      name: 'Chat',
+      component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat'),
+      props: true,
+    }, { // 联系人信息
+      path: 'accountInfo',
+      name: 'AccountInfo',
+      component: () => import( /* webpackChunkName: "chat" */ '../views/chat/AccountInfo'),
+      props: true,
+    }]
   },
   {
     path: '/transit/:token',
@@ -32,7 +44,7 @@ const notFound = {
   component: () => import( /* webpackChunkName: "404" */ '../views/404/404')
 }
 
-routes.splice(routes.length - 1, 0, notFound)
+routes = routes.concat([notFound])
 
 
 

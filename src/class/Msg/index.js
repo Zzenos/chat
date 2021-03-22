@@ -24,7 +24,7 @@ const MsgGen = {
 }
 
 // 数据返回消息
-const getMsg = function (data) {
+const data2Msg = function (data) {
   if (!data || !data.msg_type || !Object.keys(MsgGen).includes(data.msg_type)) {
     throw new Error('Not Support Msg Type')
   }
@@ -34,4 +34,4 @@ const getMsg = function (data) {
   return new MsgGen(msg_type)
 }
 
-export default getMsg
+export default data2Msg

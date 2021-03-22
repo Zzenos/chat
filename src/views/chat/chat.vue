@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div>
     <p>
       这里是具体聊天内容
     </p>
