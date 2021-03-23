@@ -1,7 +1,8 @@
 <template>
   <div>
     <p>
-      这里是具体聊天内容
+      这里是具体聊天框
+      {{userId}}
     </p>
   </div>
 </template>
@@ -11,7 +12,7 @@ export default {
   name: 'chat',
   props: {
     // 企微号
-    uuid: {
+    userId: {
       type: String,
       required: true
     }

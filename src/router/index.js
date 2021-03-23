@@ -10,20 +10,26 @@ let routes = [{
     component: () => import( /* webpackChunkName: "login" */ '../views/login/Login')
   },
   {
-    path: '/chatframe/:userId',
+    // 聊天框
+    path: '/chatframe',
     name: 'ChatFrame',
     component: () => import( /* webpackChunkName: "chatframe" */ '../views/chat/ChatFrame'),
-    props: true,
-    children: [{ // 联系人会话
-      path: 'recent/:contactId',
-      name: 'Chat',
-      component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat'),
+    children: [{
+      path: ':userId',
+      name: 'ContactList',
+      component: () => import( /* webpackChunkName: "contactlist" */ '../views/chat/ContactList'),
       props: true,
-    }, { // 联系人信息
-      path: 'accountInfo',
-      name: 'AccountInfo',
-      component: () => import( /* webpackChunkName: "chat" */ '../views/chat/AccountInfo'),
-      props: true,
+      children: [{ // 联系人会话
+        path: 'recent/:contactId',
+        name: 'Chat',
+        component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat'),
+        props: true
+      }, { // 联系人信息
+        path: 'contactInfo/:contactId',
+        name: 'contactInfo',
+        component: () => import( /* webpackChunkName: "chat" */ '../views/chat/ContactInfo'),
+        props: true
+      }]
     }]
   },
   {
@@ -34,14 +40,18 @@ let routes = [{
   },
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/chatframe'
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: () => import( /* webpackChunkName: "404" */ '../views/404/404')
   }
 ]
 
 const notFound = {
   path: '*',
-  name: '404',
-  component: () => import( /* webpackChunkName: "404" */ '../views/404/404')
+  redirect: '/404'
 }
 
 routes = routes.concat([notFound])

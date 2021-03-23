@@ -1,17 +1,18 @@
 <template>
   <div>
     <p>
-      这里是账号信息
+      这里是联系人信息
+      {{contactId}}
     </p>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'accountInfo',
+  name: 'contactInfo',
   props: {
     // 企微号
-    uuid: {
+    contactId: {
       type: String,
       required: true
     }

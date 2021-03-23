@@ -1,39 +1,40 @@
 <template>
-  <div class="hello">
-    <p>
-     这里是聊天外框架
-     主要加载saas账号信息和对应绑定的企微号
-    </p>
+  <div>
+    <a-row type="flex">
+      <a-col flex="88px" class="side-bar">
+        <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
+        账号列表
+      </a-col>
+      <a-col flex="auto">
+        <router-view/>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'chat',
+  name: 'chatFrame',
   props: {
     // 企微saas账号
     saasId: {
-      type: String,
-      required: true
+      type: String
     }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style lang="scss" scoped>
+.side-bar {
+  width: 88px;
+  height: 100vh;
+  background: #272C33;
+  .logo {
+    margin-top:20px;
+    margin-left:20px;
+    width: 48px;
+    height: 48px;
+  }
 }
 </style>
