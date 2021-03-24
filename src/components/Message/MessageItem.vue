@@ -17,9 +17,12 @@ export default {
 <style lang="scss" scoped>
 .message-wrapper {
   margin-top: 2.5rem;
-
+  display: flex;
+  justify-content: flex-end;
   .msg-content {
 
   }
+  
 }
+
 </style>
