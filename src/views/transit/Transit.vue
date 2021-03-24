@@ -1,5 +1,3 @@
-
-
 <script>
 import { mapMutations } from 'vuex'
 console.log(1223, mapMutations)
@@ -15,11 +13,11 @@ export default {
     }
   },
   methods: {
-    ...mapMutations['storeToken']
+    ...mapMutations(['storeToken'])
   },
-  created() {
-    console.log(11111, this.token);
-    this.storeToken()
+  mounted() {
+    console.log(11111, this, this.token);
+    this.storeToken(this.token)
   },
   render() {
     return (
