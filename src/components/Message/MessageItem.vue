@@ -19,10 +19,6 @@ export default {
   margin-top: 2.5rem;
   display: flex;
   justify-content: flex-end;
-  .msg-content {
-
-  }
-  
 }
 
 </style>
