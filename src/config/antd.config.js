@@ -66,11 +66,11 @@ notification.config({
 })
 Vue.prototype.$notification = notification
 
-moment.locale('zh-cn');
-Vue.use(Popover);
-Vue.use(Upload);
-Vue.use(Card);
-Vue.use(Tree);
+moment.locale('zh-cn')
+Vue.use(Popover)
+Vue.use(Upload)
+Vue.use(Card)
+Vue.use(Tree)
 Vue.use(FormModel)
 Vue.component(Breadcrumb.name, Breadcrumb)
 Vue.component(Divider.name, Divider)

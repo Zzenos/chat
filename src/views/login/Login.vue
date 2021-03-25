@@ -1,6 +1,6 @@
 <template>
   <div @click="show">
-    {{myarr}}
+    {{ myarr }}
   </div>
 </template>
 
@@ -10,17 +10,16 @@ export default {
   data() {
     return {
       name: '112',
-      myarr: [1,2,3]
+      myarr: [1, 2, 3]
     }
   },
   methods: {
-    show(){
+    show() {
       this.myarr[2] = 4
-      console.log(this.myarr);
+      console.log(this.myarr)
     }
   }
 }
 </script>
 
-<style lang='scss' scoped>
-</style>
+<style lang="scss" scoped></style>

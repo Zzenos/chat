@@ -1,7 +1,5 @@
 <template>
-  <div class="hello">
-  
-  </div>
+  <div class="hello"></div>
 </template>
 
 <script>
@@ -20,5 +18,4 @@ export default {
   display: flex;
   justify-content: flex-end;
 }
-
 </style>

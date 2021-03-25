@@ -3,12 +3,13 @@
     <a-row type="flex">
       <a-col flex="300px" class="contact-list">
         这里是联系人列表
-        {{userId}}
+        {{ userId }}
         <a-button block type="primary">按钮</a-button>
-        <icon-font type="icon-exploit" class="icon" />
+        <icon-font type="icontab_chat" class="icon-chat" />
+        <icon-font type="icontab_addresslist_pre" class="icon" />
       </a-col>
       <a-col flex="auto">
-        <router-view/>
+        <router-view />
       </a-col>
     </a-row>
   </div>
@@ -29,13 +30,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.contact-list{
+.contact-list {
   width: 300px;
   height: 100vh;
-  background: #FFFFFF;
+  background: #ffffff;
   .icon {
-    color: #1D61EF;
-    font-size: 30px;
+    color: #1d61ef;
+    font-size: 24px;
+  }
+  .icon-chat {
+    color: #888;
+    font-size: 24px;
   }
 }
 </style>

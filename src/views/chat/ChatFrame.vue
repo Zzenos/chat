@@ -6,7 +6,7 @@
         账号列表
       </a-col>
       <a-col flex="auto">
-        <router-view/>
+        <router-view />
       </a-col>
     </a-row>
   </div>
@@ -29,10 +29,10 @@ export default {
 .side-bar {
   width: 88px;
   height: 100vh;
-  background: #272C33;
+  background: #272c33;
   .logo {
-    margin-top:20px;
-    margin-left:20px;
+    margin-top: 20px;
+    margin-left: 20px;
     width: 48px;
     height: 48px;
   }

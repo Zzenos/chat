@@ -1,25 +1,11 @@
-import {
-  Base64
-} from '../../util'
+import { Base64 } from '../../util'
 /**
  * 消息类
- * 
+ *
  */
 class Msg {
   constructor(options) {
-    let {
-      sender_serial_no,
-      receiver_serial_no,
-      group_serial_no,
-      msg_id,
-      msg_type,
-      msg_time,
-      at_location,
-      at,
-      at_list,
-      file_serial_no,
-      at_contact_serial_nos
-    } = options
+    let { sender_serial_no, receiver_serial_no, group_serial_no, msg_id, msg_type, msg_time, at_location, at, at_list, file_serial_no, at_contact_serial_nos } = options
     this.id = msg_id || 0 // 发出的消息id为0
     this.type = msg_type
     this.fromId = sender_serial_no
@@ -41,23 +27,19 @@ class Msg {
 export class systemMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      msg_content,
-    } = options
+    let { msg_content } = options
     this.content = Base64.parse(msg_content)
   }
 }
 
 /**
  * 2001 文字消息
- * 
+ *
  */
 export class textMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      msg_content,
-    } = options
+    let { msg_content } = options
     this.content = Base64.parse(msg_content)
   }
 }
@@ -68,9 +50,7 @@ export class textMsg extends Msg {
 export class imgMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      msg_content,
-    } = options
+    let { msg_content } = options
     this.url = msg_content // 图片需要给图片地址
   }
 }
@@ -91,11 +71,8 @@ export class voiceMsg extends Msg {
 export class videoMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      voice_time
-    } = options
+    let { voice_time } = options
     this.voiceTime = voice_time // 时长
-
   }
 }
 
@@ -105,9 +82,7 @@ export class videoMsg extends Msg {
 export class hyperLinkMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      cover_url
-    } = options
+    let { cover_url } = options
     this.coverUrl = cover_url
   }
 }
@@ -117,9 +92,7 @@ export class hyperLinkMsg extends Msg {
 export class contactMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      msg_content
-    } = options
+    let { msg_content } = options
     this.content = Base64.parse(msg_content)
   }
 }
@@ -141,9 +114,7 @@ export class fileMsg extends Msg {
 export class mpMsg extends Msg {
   constructor(options) {
     super(options)
-    let {
-      msg_content
-    } = options
+    let { msg_content } = options
     this.content = JSON.parse(Base64.parse(msg_content)) // 解码后为小程序的配置json,需要parse一次
   }
 }
