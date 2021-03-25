@@ -19,17 +19,17 @@ export default {
   },
   computed: {
     iconName() {
-      return `#icon-${this.iconClass}`;
+      return `#icon-${this.iconClass}`
     },
     svgClass() {
       console.log(111111, this.className)
       if (this.className) {
-        return `svg-icon ${this.className}`;
+        return `svg-icon ${this.className}`
       }
-      return 'svg-icon';
+      return 'svg-icon'
     }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -2,7 +2,7 @@
   <div>
     <p>
       这里是具体聊天框
-      {{userId}}
+      {{ userId }}
     </p>
   </div>
 </template>

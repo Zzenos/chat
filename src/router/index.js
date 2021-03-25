@@ -4,38 +4,46 @@ import hooks from './hooks'
 
 Vue.use(VueRouter)
 
-let routes = [{
+let routes = [
+  {
     path: '/login',
     name: 'login',
-    component: () => import( /* webpackChunkName: "login" */ '../views/login/Login')
+    component: () => import(/* webpackChunkName: "login" */ '../views/login/Login')
   },
   {
     // 聊天框
     path: '/chatframe',
     name: 'ChatFrame',
-    component: () => import( /* webpackChunkName: "chatframe" */ '../views/chat/ChatFrame'),
-    children: [{
-      path: ':userId',
-      name: 'ContactList',
-      component: () => import( /* webpackChunkName: "contactlist" */ '../views/chat/ContactList'),
-      props: true,
-      children: [{ // 联系人会话
-        path: 'recent/:contactId',
-        name: 'Chat',
-        component: () => import( /* webpackChunkName: "chat" */ '../views/chat/Chat'),
-        props: true
-      }, { // 联系人信息
-        path: 'contactInfo/:contactId',
-        name: 'contactInfo',
-        component: () => import( /* webpackChunkName: "chat" */ '../views/chat/ContactInfo'),
-        props: true
-      }]
-    }]
+    component: () => import(/* webpackChunkName: "chatframe" */ '../views/chat/ChatFrame'),
+    children: [
+      {
+        path: ':userId',
+        name: 'ContactList',
+        component: () => import(/* webpackChunkName: "contactlist" */ '../views/chat/ContactList'),
+        props: true,
+        children: [
+          {
+            // 联系人会话
+            path: 'recent/:contactId',
+            name: 'Chat',
+            component: () => import(/* webpackChunkName: "chat" */ '../views/chat/Chat'),
+            props: true
+          },
+          {
+            // 联系人信息
+            path: 'contactInfo/:contactId',
+            name: 'contactInfo',
+            component: () => import(/* webpackChunkName: "chat" */ '../views/chat/ContactInfo'),
+            props: true
+          }
+        ]
+      }
+    ]
   },
   {
     path: '/transit/:token',
     name: 'Transit',
-    component: () => import( /* webpackChunkName: "about" */ '../views/transit/Transit'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/transit/Transit'),
     props: true
   },
   {
@@ -45,7 +53,7 @@ let routes = [{
   {
     path: '/404',
     name: '404',
-    component: () => import( /* webpackChunkName: "404" */ '../views/404/404')
+    component: () => import(/* webpackChunkName: "404" */ '../views/404/404')
   }
 ]
 
@@ -55,8 +63,6 @@ const notFound = {
 }
 
 routes = routes.concat([notFound])
-
-
 
 const router = new VueRouter({
   mode: 'history',

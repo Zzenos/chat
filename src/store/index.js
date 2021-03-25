@@ -11,7 +11,7 @@ const store = new vuex.Store({
     token: null
   },
   mutations: {
-    'storeToken'(state, token) {
+    storeToken(state, token) {
       console.log(222333, token)
       state.token = token
     }

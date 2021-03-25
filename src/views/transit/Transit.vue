@@ -4,8 +4,7 @@ console.log(1223, mapMutations)
 export default {
   name: 'transit',
   data() {
-    return {
-    }
+    return {}
   },
   props: {
     token: {
@@ -16,17 +15,13 @@ export default {
     ...mapMutations(['storeToken'])
   },
   mounted() {
-    console.log(11111, this, this.token);
+    console.log(11111, this, this.token)
     this.storeToken(this.token)
   },
   render() {
-    return (
-      <div>正在进行跳转...</div>
-    )
+    return <div>正在进行跳转...</div>
   }
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang="scss" scoped></style>

@@ -2,7 +2,7 @@
   <div>
     <p>
       这里是联系人信息
-      {{contactId}}
+      {{ contactId }}
     </p>
   </div>
 </template>

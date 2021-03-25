@@ -1,14 +1,4 @@
-import {
-  systemMsg,
-  textMsg,
-  imgMsg,
-  voiceMsg,
-  videoMsg,
-  hyperLinkMsg,
-  contactMsg,
-  fileMsg,
-  mpMsg
-} from './Msg'
+import { systemMsg, textMsg, imgMsg, voiceMsg, videoMsg, hyperLinkMsg, contactMsg, fileMsg, mpMsg } from './Msg'
 
 // 支持的消息类型
 const MsgGen = {
@@ -24,13 +14,11 @@ const MsgGen = {
 }
 
 // 数据返回消息
-const data2Msg = function (data) {
+const data2Msg = function(data) {
   if (!data || !data.msg_type || !Object.keys(MsgGen).includes(data.msg_type)) {
     throw new Error('Not Support Msg Type')
   }
-  const {
-    msg_type
-  } = data
+  const { msg_type } = data
   return new MsgGen(msg_type)
 }
 
