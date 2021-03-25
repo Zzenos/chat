@@ -3,7 +3,9 @@
     <a-row type="flex">
       <a-col flex="300px" class="contact-list">
         这里是联系人列表
+        <icon-font type="icon-exploit" />
         {{userId}}
+        <a-button block type="primary">按钮</a-button>
       </a-col>
       <a-col flex="auto">
         <router-view/>

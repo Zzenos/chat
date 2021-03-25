@@ -20,7 +20,12 @@ module.exports = {
   css: {
     loaderOptions: {
       less: {
-        javascriptEnabled: true
+        lessOptions: {
+          modifyVars: {
+            'primary-color': '#1D61EF'
+          },
+          javascriptEnabled: true
+        }
       }
     }
   },
