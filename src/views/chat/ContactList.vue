@@ -3,9 +3,9 @@
     <a-row type="flex">
       <a-col flex="300px" class="contact-list">
         这里是联系人列表
-        <icon-font type="icon-exploit" />
         {{userId}}
         <a-button block type="primary">按钮</a-button>
+        <icon-font type="icon-exploit" class="icon" />
       </a-col>
       <a-col flex="auto">
         <router-view/>
@@ -28,10 +28,14 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 .contact-list{
   width: 300px;
   height: 100vh;
   background: #FFFFFF;
+  .icon {
+    color: #1D61EF;
+    font-size: 30px;
+  }
 }
 </style>
