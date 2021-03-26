@@ -1,9 +1,7 @@
 <template>
-  <div class="act-list_container">
-    <div v-for="item in wechat_account" :key="item.wechat_id" class="act-item" :class="{ active: curAct.wechat_id === item.wechat_id }" @click="handleAct(item)">
-      <a-badge :count="item.msg_count" :overflow-count="99">
-        <img :src="item.wechat_avatar" alt="" />
-      </a-badge>
+  <div class="address-book_container">
+    <div v-for="item in wechat_account" :key="item.wechat_id" class="item" :class="{ active: curAddress.wechat_id === item.wechat_id }" @click="handleItem(item)">
+      <img :src="item.wechat_avatar" alt="" />
       <div v-html="item.wechat_name"></div>
     </div>
   </div>
@@ -11,10 +9,10 @@
 
 <script>
 export default {
-  name: 'accountList',
+  name: 'addressBook',
   data() {
     return {
-      curAct: {},
+      curAddress: {},
       wechat_account: [
         {
           wechat_id: 1,
@@ -48,7 +46,6 @@ export default {
         {
           wechat_id: 6,
           wechat_name: '张建6',
-          msg_count: 0,
           wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
@@ -65,50 +62,44 @@ export default {
     }
   },
   methods: {
-    handleAct(val) {
+    handleItem(val) {
       console.log(val)
       const { wechat_id } = val
-      if (this.curAct.wechat_id === wechat_id) {
+      if (this.curAddress.wechat_id === wechat_id) {
         return
       }
-      this.curAct = val
-      this.$router.push({ path: `/chatframe/${this.curAct.wechat_id}/recent/0` })
+      this.curAddress = val
+      this.$router.push({ path: `/chatframe/${wechat_id}/contactInfo/0` })
     }
   },
   mounted() {
-    this.curAct = this.wechat_account[0]
+    this.curAddress = this.wechat_account[0]
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.act-list_container {
-  height: calc(100vh - 176px);
-  overflow-y: scroll;
-  width: 100px;
-  .act-item {
-    position: relative;
-    width: 88px;
-    height: 88px;
-    padding-top: 16px;
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 12px;
-    font-family: PingFangSC-regular, PingFang SC;
-    font-weight: 400;
+.address-book_container {
+  width: 100%;
+  .item {
+    box-sizing: border-box;
+    width: 100%;
+    height: 64px;
+    padding-left: 16px;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
     cursor: pointer;
     &.active {
-      font-family: PingFangSC-Semibold, PingFang SC;
-      font-weight: 600;
-      color: #fff;
-      background-color: #414954;
+      background-color: #e9eaeb;
     }
     img {
       width: 36px;
       height: 36px;
-      border-radius: 18px;
-      margin-bottom: 8px;
-    }
-    .dot {
+      border-radius: 4px;
+      margin-right: 12px;
     }
   }
 }

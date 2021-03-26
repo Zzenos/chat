@@ -5,14 +5,20 @@
         <div class="tab-container">
           <div class="tab" :class="{ active: curTab === 1 }" @click="handleTab(1)">
             <icon-font type="icontab_chat" class="icon" />
-            会话
+            <span>会话</span>
           </div>
           <div class="tab" :class="{ active: curTab === 2 }" @click="handleTab(2)">
             <icon-font type="icontab_addresslist_pre" class="icon" />
-            通讯录
+            <span>通讯录</span>
           </div>
         </div>
-        <a-button block type="primary">按钮</a-button>
+        <div class="input-container">
+          <a-input-search placeholder="搜索" />
+        </div>
+        <div class="list-wraper">
+          <chat-list v-show="curTab === 1" />
+          <address-book v-show="curTab === 2" />
+        </div>
       </a-col>
       <a-col flex="auto">
         <router-view />
@@ -22,8 +28,12 @@
 </template>
 
 <script>
+import ChatList from './components/ChatList'
+import AddressBook from './components/AddressBook'
+
 export default {
   name: 'contactList',
+  components: { ChatList, AddressBook },
   props: {
     // 企微号
     userId: {
@@ -50,25 +60,39 @@ export default {
 .contact-list {
   width: 300px;
   height: 100vh;
+  border-right: 1px solid #e4e5e7;
   background: #ffffff;
   .tab-container {
     display: flex;
     align-items: center;
-    box-sizing: border-box;
-    height: 68px;
     border-bottom: 1px solid #e4e5e7;
     .tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 150px;
+      height: 67px;
       font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
       color: rgba(0, 0, 0, 0.45);
       cursor: pointer;
       .icon {
-        font-size: 24px;
-        vertical-align: middle;
+        font-size: 22px;
+        margin-right: 8px;
+      }
+      span {
+        line-height: 22px;
       }
       &.active {
         color: rgba(0, 0, 0, 0.85);
       }
+    }
+  }
+  .input-container {
+    padding: 16px;
+    // border-bottom: 1px solid #e4e5e7;
+    /deep/.ant-input {
+      border-radius: 0;
     }
   }
 }

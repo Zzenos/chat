@@ -1,25 +1,34 @@
 <template>
-  <div class="act-list_container">
-    <div v-for="item in wechat_account" :key="item.wechat_id" class="act-item" :class="{ active: curAct.wechat_id === item.wechat_id }" @click="handleAct(item)">
-      <a-badge :count="item.msg_count" :overflow-count="99">
+  <div class="chat-list_container">
+    <div v-for="item in wechat_account" :key="item.wechat_id" class="item" :class="{ active: curChat.wechat_id === item.wechat_id }" @click="handleItem(item)">
+      <a-badge :offset="[-20, 0]" :count="item.msg_count" :overflow-count="99">
         <img :src="item.wechat_avatar" alt="" />
       </a-badge>
-      <div v-html="item.wechat_name"></div>
+      <div class="info">
+        <div class="nickname">
+          <span v-html="item.wechat_name"></span>
+          <span class="label">@微信</span>
+        </div>
+        <div class="time">22:00</div>
+        <!-- 需要根据消息类型，处理显示的内容 -->
+        <div class="msg">{{ item.content }}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'accountList',
+  name: 'chatList',
   data() {
     return {
-      curAct: {},
+      curChat: {},
       wechat_account: [
         {
           wechat_id: 1,
           wechat_name: '刘东霞',
           msg_count: 5,
+          content: '你好，我想咨询一下装修办公室相关事宜',
           wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
@@ -48,7 +57,6 @@ export default {
         {
           wechat_id: 6,
           wechat_name: '张建6',
-          msg_count: 0,
           wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
@@ -65,50 +73,75 @@ export default {
     }
   },
   methods: {
-    handleAct(val) {
+    handleItem(val) {
       console.log(val)
       const { wechat_id } = val
-      if (this.curAct.wechat_id === wechat_id) {
+      if (this.curChat.wechat_id === wechat_id) {
         return
       }
-      this.curAct = val
-      this.$router.push({ path: `/chatframe/${this.curAct.wechat_id}/recent/0` })
+      this.curChat = val
+      this.$router.push({ path: `/chatframe/${wechat_id}/recent/0` })
     }
   },
   mounted() {
-    this.curAct = this.wechat_account[0]
+    this.curChat = this.wechat_account[0]
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.act-list_container {
-  height: calc(100vh - 176px);
-  overflow-y: scroll;
-  width: 100px;
-  .act-item {
+.chat-list_container {
+  width: 100%;
+  .item {
     position: relative;
-    width: 88px;
-    height: 88px;
-    padding-top: 16px;
-    color: rgba(255, 255, 255, 0.45);
-    font-size: 12px;
-    font-family: PingFangSC-regular, PingFang SC;
-    font-weight: 400;
+    box-sizing: border-box;
+    width: 100%;
+    height: 72px;
+    padding-left: 16px;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
     cursor: pointer;
     &.active {
-      font-family: PingFangSC-Semibold, PingFang SC;
-      font-weight: 600;
-      color: #fff;
-      background-color: #414954;
+      background-color: #e9eaeb;
     }
     img {
       width: 36px;
       height: 36px;
-      border-radius: 18px;
-      margin-bottom: 8px;
+      border-radius: 4px;
+      margin-right: 18px;
     }
-    .dot {
+    .info {
+      text-align: left;
+      height: 44px;
+      .nickname {
+        line-height: 22px;
+        margin-bottom: 4px;
+        .label {
+          color: #0ead63;
+          margin-left: 8px;
+        }
+      }
+      .time {
+        position: absolute;
+        right: 12px;
+        top: 16px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.45);
+        line-height: 18px;
+      }
+      .msg {
+        width: 212px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: rgba(0, 0, 0, 0.45);
+        line-height: 18px;
+        font-size: 12px;
+      }
     }
   }
 }
