@@ -50,7 +50,8 @@ import {
   Statistic,
   Progress,
   Divider,
-  Badge
+  Badge,
+  Avatar
 } from 'ant-design-vue'
 
 moment.locale('zh-cn')
@@ -143,3 +144,4 @@ Vue.component(PageHeader.name, PageHeader)
 Vue.component(Statistic.name, Statistic)
 Vue.component(Progress.name, Progress)
 Vue.component(Badge.name, Badge)
+Vue.component(Avatar.name, Avatar)
