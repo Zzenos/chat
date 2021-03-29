@@ -13,13 +13,27 @@
 </template>
 
 <script>
+// import { mapState, mapActions } from 'vuex'
+
 export default {
   name: 'chatFrame',
+  data() {
+    return {
+      // ...mapState['d']
+    }
+  },
   props: {
     // 企微saas账号
     saasId: {
       type: String
     }
+  },
+  created() {
+    if (this.saasId) this.$socket.init(this.saasId)
+    // 消息
+    this.$socket.on('message', () => {})
+    // 会话列表
+    this.$socket.on('chatlist', () => {})
   }
 }
 </script>

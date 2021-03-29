@@ -1,10 +1,9 @@
 import vue from 'vue'
 import vuex from 'vuex'
 import vuexLocal from '@/plugins/vuex.persist'
+import messages from './messages'
 
 vue.use(vuex)
-
-console.log(3334, vuexLocal)
 
 const store = new vuex.Store({
   store: {
@@ -15,6 +14,9 @@ const store = new vuex.Store({
       console.log(222333, token)
       state.token = token
     }
+  },
+  modules: {
+    messages
   },
   plugins: [vuexLocal.plugin]
 })

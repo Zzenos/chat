@@ -1,5 +1,6 @@
 import io from 'weapp.socket.io'
 import { getUuid } from '@/util/util.js'
+import { socketBaseUrl } from '@/apis'
 
 const MAX_QUEUE_LENGTH = 10 // 最大消息队列长度，超过则认为出现消息问题或短期无法恢复
 const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 -1代表无限重试
@@ -35,10 +36,11 @@ class ZSocket {
    * @param {String} url
    * @param {Object} options
    */
-  init = function(url, options = {}) {
+  init = function(nsp, options = {}) {
     if (this.socket) {
       this._disconnect()
     }
+    const url = `${socketBaseUrl}${nsp} `
     options = Object.assign(defaultOptions, options)
     options.query = options.query || {}
     options.query.id = getUuid()
@@ -121,24 +123,13 @@ class ZSocket {
   emit = function(evtName, ...args) {
     // if (this.socket && this.socket.connected) {
     if (this.socket) {
-      // 为了兼容你妹的第一个参数不是对象或者未传递的情况
-      if (typeof args[0] !== 'object') {
-        // 基础库2.7.1以上
-        // log.warn(`错误的提交参数 ${evtName}，参数：`, args);
-        return
-      }
-
-      // 因为约定了参数必须是单个对象，所以理论上最长是长度为2的数组
-      if (args.length >= 1 && typeof args[0] === 'object') {
-        args[0].requestId = getUuid()
-        args[0]._status = MSG_STATUS.READY
-      }
-
       // 超出最大长度则熔断
       if (this.emitMsgs.length > MAX_QUEUE_LENGTH) this.emitMsgs = []
       this.emitMsgs.push({
         evtName,
-        args
+        data: args,
+        requestId: getUuid(),
+        _status: MSG_STATUS.READY
       })
       this._send()
     } else {
@@ -160,17 +151,17 @@ class ZSocket {
       if (msg._status === MSG_STATUS.PENDING) continue
 
       let cb = null
-      if (typeof msg.args[msg.args.length - 1] === 'function') {
-        cb = msg.args.pop()
+      if (msg.data.length > 0 && typeof msg.data[msg.data.length - 1] === 'function') {
+        cb = msg.data.pop()
       }
 
       msg._status = MSG_STATUS.PENDING
 
-      this.socket.emit(msg.evtName, ...msg.args, ack => {
-        const str = msg.args.map(j => JSON.stringify(j))
+      this.socket.emit(msg.evtName, msg.data, ack => {
+        const str = msg.data.map(j => JSON.stringify(j))
         cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
         if (ack) {
-          const index = this.emitMsgs.findIndex(item => item.args[0].requestId === ack.data.requestId)
+          const index = this.emitMsgs.findIndex(item => item.requestId === ack.data.requestId)
           if (index >= 0) this.emitMsgs.splice(index, 1)
         }
         // 有回调

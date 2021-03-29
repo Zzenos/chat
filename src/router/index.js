@@ -69,5 +69,8 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach(hooks)
+Object.values(hooks).forEach(hook => {
+  router.beforeEach(hook.bind(router))
+})
+
 export default router

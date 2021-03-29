@@ -1,6 +1,11 @@
+import store from '@/store'
+
 //
-export default (to, from, next) => {
-  console.log(to, from, next)
-  // if (to.path === '')
-  next()
+export default {
+  waitForStorageToBeReady: async (to, from, next) => {
+    console.log(22222, to, from, next, store, store.restored)
+    // if (to.path === '')
+    await store.restored
+    next()
+  }
 }
