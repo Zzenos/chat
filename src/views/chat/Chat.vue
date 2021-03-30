@@ -538,6 +538,7 @@ header {
     padding-top: 40px;
     padding-left: 10px;
     padding-right: 10px;
+    // overflow: visible;
     overflow-y: auto;
     &::-webkit-scrollbar {
       display: none;
