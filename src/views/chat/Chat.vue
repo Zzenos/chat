@@ -34,7 +34,7 @@
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sysInfo" v-if="item.type == 2088" v-text="item.content"></div>
+            <div class="sysInfo" v-if="item.type == 10000" v-text="item.content"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
@@ -59,10 +59,19 @@
                   <file-message v-else-if="item.type == 2010" :title="item.title" :url="item.url" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.type == 2099" :vid="item.id" />
+                  <video-message v-else-if="item.type == 2004" :vid="item.id" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.type == 2003" :src="item.sender.avatar" :name="item.sender.nickname" />
+                  <card-message v-else-if="item.type == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
+
+                  <!-- 语音消息 -->
+                  <!-- <voice-message/> -->
+
+                  <!-- 链接消息 -->
+                  <!-- <link-message/> -->
+
+                  <!-- 小程序消息 -->
+                  <!-- <weapp-message/> -->
                 </div>
               </div>
             </div>
@@ -202,7 +211,7 @@ export default {
         },
         {
           id: '6757',
-          type: 2099,
+          type: 2004,
           fromId: '222',
           toId: 'dsadafqfdwqdwdq',
           gId: '',
@@ -266,7 +275,7 @@ export default {
         },
         {
           id: '645226',
-          type: 2088,
+          type: 10000,
           fromId: '3',
           toId: 'sadafqfdwqdwdq',
           gId: '',
@@ -298,7 +307,7 @@ export default {
         },
         {
           id: '76',
-          type: 2003,
+          type: 2006,
           fromId: '3',
           toId: 'sadafqfdwqdwdq',
           gId: '',
