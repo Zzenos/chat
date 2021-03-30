@@ -56,7 +56,7 @@
                   <image-message v-else-if="item.type == 2002" :src="item.href" />
 
                   <!-- 文件消息 -->
-                  <file-message v-else-if="item.type == 2010" :title="item.title" :url="item.url" :desc="item.desc" />
+                  <file-message v-else-if="item.type == 2010" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
                   <video-message v-else-if="item.type == 2004" :vid="item.id" />
@@ -68,7 +68,7 @@
                   <!-- <voice-message/> -->
 
                   <!-- 链接消息 -->
-                  <!-- <link-message/> -->
+                  <link-message v-else-if="item.type == 2005" :url="item.url" :desc="item.desc" />
 
                   <!-- 小程序消息 -->
                   <!-- <weapp-message/> -->
@@ -120,6 +120,7 @@ import FileMessage from '@/views/chat/components/FileMessage'
 import VideoMessage from '@/views/chat/components/VideoMessage'
 import CardMessage from '@/views/chat/components/CardMessage'
 import MeEditor from '@/views/chat/components/MeEditor'
+import LinkMessage from './components/LinkMessage.vue'
 
 export default {
   name: 'chat',
@@ -142,7 +143,8 @@ export default {
     FileMessage,
     MeEditor,
     VideoMessage,
-    CardMessage
+    CardMessage,
+    LinkMessage
   },
   data() {
     return {
@@ -372,6 +374,38 @@ export default {
         {
           id: '53',
           type: 2010,
+          fromId: '3',
+          toId: '65',
+          gId: '',
+          atLocation: '',
+          time: '2021-03-20 11:13:05.000',
+          at: '',
+          atIds: 'id1,id2,id3,id4...',
+          // float: "right",
+          sender: {
+            id: '65453434',
+            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+            city: '',
+            country: '',
+            customDescription: '',
+            customId: 'LiuDongXia',
+            favorite: false,
+            gender: 1,
+            isVirtual: 0,
+            mobilephones: null,
+            nickname: '刘东霞'
+          },
+          unread: false,
+          content: '你好',
+          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+          title: '文件/链接标题',
+          voice_time: 72,
+          desc: '链接描述',
+          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          id: '531',
+          type: 2005,
           fromId: '3',
           toId: '65',
           gId: '',
