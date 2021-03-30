@@ -8,7 +8,7 @@ import './components/common/AntIcon'
 import ZSocket from '@/class/ZSocket'
 
 Vue.config.productionTip = false
-Vue.prototype.$socket = new ZSocket()
+Vue.prototype.$socket = ZSocket
 
 new Vue({
   router,

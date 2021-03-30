@@ -1,22 +1,24 @@
-import { Base64 } from '../../util'
+import { Base64 } from '@/util/util'
 /**
  * 消息类
  *
  */
 class Msg {
   constructor(options) {
-    let { sender_serial_no, receiver_serial_no, group_serial_no, msg_id, msg_type, msg_time, at_location, at, at_list, file_serial_no, at_contact_serial_nos } = options
+    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq } = options
     this.id = msg_id || 0 // 发出的消息id为0
-    this.type = msg_type
-    this.fromId = sender_serial_no
-    this.toId = receiver_serial_no
-    this.gId = group_serial_no
-    this.atLocation = at_location
-    this.time = msg_time || 0 // 发出的消息time为0
+    this.chatId = chat_id //会话id
+    this.chatType = chat_type //会话类型 1私聊 2群聊
+    this.fromId = from_id
+    this.toId = to_id
+    this.sender = sender || null // 发送人信息
+    this.msgType = msg_type //消息类型
+    this.atLocation = at_location // @人的位置 0 头 1 尾
+    this.time = msg_time || 0 // 发出的消息time为0， 时间戳
+    this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
-    this.atIds = at_list // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
-    this.fileId = file_serial_no // 文件下载编号
-    this.atContactSerialIds = at_contact_serial_nos
+    this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
+    this.unread = unread // 是否已读
   }
 }
 // 不同消息类型
@@ -50,8 +52,8 @@ export class textMsg extends Msg {
 export class imgMsg extends Msg {
   constructor(options) {
     super(options)
-    let { msg_content } = options
-    this.url = msg_content // 图片需要给图片地址
+    let { url } = options
+    this.url = url // 图片需要给图片地址
   }
 }
 /**
@@ -61,6 +63,9 @@ export class imgMsg extends Msg {
 export class voiceMsg extends Msg {
   constructor(options) {
     super(options)
+    let { voice_time, url } = options
+    this.voiceTime = voice_time
+    this.url = url
   }
 }
 
@@ -71,8 +76,9 @@ export class voiceMsg extends Msg {
 export class videoMsg extends Msg {
   constructor(options) {
     super(options)
-    let { voice_time } = options
+    let { voice_time, url } = options
     this.voiceTime = voice_time // 时长
+    this.url = url
   }
 }
 
@@ -82,8 +88,11 @@ export class videoMsg extends Msg {
 export class hyperLinkMsg extends Msg {
   constructor(options) {
     super(options)
-    let { cover_url } = options
-    this.coverUrl = cover_url
+    let { url, href, title, desc } = options
+    this.url = url
+    this.href = href
+    this.title = title // h5标题
+    this.desc = desc //文字描述
   }
 }
 /**
@@ -92,8 +101,8 @@ export class hyperLinkMsg extends Msg {
 export class contactMsg extends Msg {
   constructor(options) {
     super(options)
-    let { msg_content } = options
-    this.content = Base64.parse(msg_content)
+    let { content } = options
+    this.content = JSON.parse(Base64.parse(content))
   }
 }
 /**
@@ -103,7 +112,8 @@ export class contactMsg extends Msg {
 export class fileMsg extends Msg {
   constructor(options) {
     super(options)
-    this.content = options.content
+    let { href } = options
+    this.href = href
   }
 }
 
@@ -114,7 +124,7 @@ export class fileMsg extends Msg {
 export class mpMsg extends Msg {
   constructor(options) {
     super(options)
-    let { msg_content } = options
-    this.content = JSON.parse(Base64.parse(msg_content)) // 解码后为小程序的配置json,需要parse一次
+    let { content } = options
+    this.content = JSON.parse(Base64.parse(content)) // 解码后为小程序的配置json,需要parse一次
   }
 }

@@ -1,25 +1,24 @@
 import { systemMsg, textMsg, imgMsg, voiceMsg, videoMsg, hyperLinkMsg, contactMsg, fileMsg, mpMsg } from './Msg'
 
 // 支持的消息类型
-const MsgGen = {
-  10000: systemMsg, // 系统消息
-  2001: textMsg, // 文本
-  2002: imgMsg, // 图片
-  2003: voiceMsg, // 语音
-  2004: videoMsg, // 视频
-  2005: hyperLinkMsg, // h5
-  2006: contactMsg, // 名片
-  2010: fileMsg, // 文件
-  2013: mpMsg // 小程序
+const MsgType = {
+  system: systemMsg, // 系统消息 10000
+  text: textMsg, // 文本 2001
+  image: imgMsg, // 图片 2002
+  voice: voiceMsg, // 语音 2003
+  video: videoMsg, // 视频 2004
+  link: hyperLinkMsg, // h5 2005
+  card: contactMsg, // 名片 2006
+  file: fileMsg, // 文件 2010
+  weapp: mpMsg // 小程序 2013
 }
 
 // 数据返回消息
-const data2Msg = function(data) {
-  if (!data || !data.msg_type || !Object.keys(MsgGen).includes(data.msg_type)) {
+const MsgGen = function(data) {
+  if (!data || !data.msg_type || !Object.keys(MsgType).includes(data.msg_type)) {
     throw new Error('Not Support Msg Type')
   }
-  const { msg_type } = data
-  return new MsgGen(msg_type)
+  return new MsgType(data.msg_type)
 }
 
-export default data2Msg
+export default MsgGen

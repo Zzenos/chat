@@ -1,4 +1,7 @@
 import Vue from 'vue'
+import * as types from './actionType'
+import MsgGen from '@/class/Msg'
+import Zsocket from '@/class/ZSocket'
 // import sortedLastIndex from 'lodash/sortedLastIndex'
 /**
  *
@@ -10,16 +13,6 @@ import Vue from 'vue'
  *  msgs<消息列表>
  * }
  */
-// 添加会话
-const ADD_CHAT = 'ADD_CHAT'
-// 添加消息到会话
-const ADD_MSG = 'ADD_MSG'
-// 设置消息缓存
-const CACHE_MSG = 'CACHE_MSG'
-// 获取历史消息
-const ADD_HISTORY_MSG = 'ADD_HISTORY_MSG'
-// 消息分发
-const DISTRIBUTE_MSG = 'DISTRIBUTE_MSG'
 
 export default {
   state: {
@@ -27,11 +20,11 @@ export default {
   },
   mutations: {
     // 新会话
-    [ADD_CHAT](state, chatId) {
+    [types.ADD_CHAT](state, chatId) {
       if (!state[chatId]) Vue.set(state, `${chatId}`, [])
     },
     // 新消息
-    [ADD_MSG](state, msg) {
+    [types.ADD_MSG](state, msg) {
       // 查重
       if (state.chatMsgHash[msg.id]) return
       if (state[msg.chatId]) {
@@ -40,32 +33,85 @@ export default {
       }
     },
     // 历史消息
-    [ADD_HISTORY_MSG](state, chatId, msgs) {
+    [types.ADD_HISTORY_MSG](state, chatId, msgs) {
       if (state[chatId]) {
         state[chatId].splice(0, 0, msgs)
       }
     },
     // 消息缓存
-    [CACHE_MSG](state, msg) {
+    [types.CACHE_MSG](state, msg) {
       if (state.chatMsgHash[msg.id]) return
       Vue.set(state.chatMsgHash, `${msg.chatId}`, msg)
     }
   },
   actions: {
-    // 消息分发
-    [DISTRIBUTE_MSG]: {
+    /**
+     * 消息分发
+     * @param {Array} data 消息数组
+     */
+    [types.DISTRIBUTE_MSG]: {
+      root: true,
+      handler: ({ commit }, data) => {
+        console.log(3322, data, Zsocket)
+        if (Object.prototype.toString.call(data) !== '[object Array]') {
+          data = [data]
+        }
+        data.forEach(msgItem => {
+          const msg = MsgGen(msgItem)
+          commit(types.ADD_CHAT, msg.chatId)
+          commit(types.ADD_MSG, msg)
+          commit(types.CACHE_MSG, msg)
+        })
+      }
+    },
+    /**
+     * 指定会话的历史消息分页
+     * @param {String} chatId 会话id
+     * @param {chatType} chatType 会话类型
+     * */
+
+    [types.PULL_HISTORY_MSG]: {
+      root: true,
+      handler: ({ commit, state }, chatId, chatType) => {
+        Zsocket.emit(
+          'chat_msg_history',
+          {
+            chat_id: chatId,
+            chat_type: chatType,
+            seq: state[chatId] && state[chatId][0] && state[chatId][0].seq,
+            page_size: 20
+          },
+          ack => {
+            if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
+              ack.data = [ack.data]
+            }
+            const hisoryMsgs = ack.data.map(i => {
+              return MsgGen(i)
+            })
+            commit(types.ADD_HISTORY_MSG, hisoryMsgs)
+          }
+        )
+      }
+    },
+    /**
+     * 消息发送
+     * @param {Object} msg 消息实例
+     */
+    [types.SEND_MSG]: {
       root: true,
       handler: ({ commit }, msg) => {
-        if (Object.prototype.toString.call(msg) !== '[object Array]') {
-          msg = [msg]
-        }
-        msg.forEach(msgItem => {
-          commit(ADD_CHAT, msgItem.chatId)
-          commit(ADD_MSG, msgItem)
-          commit(CACHE_MSG, msgItem)
+        Zsocket.emit('msg_send', msg, ack => {
+          commit(types.ADD_MSG, msg)
+          commit(types.CACHE_MSG, MsgGen(ack.msg))
         })
       }
     }
   },
-  getters: {}
+  getters: {
+    getMsgsByChatId: state => {
+      return chatId => {
+        return state[chatId] || []
+      }
+    }
+  }
 }

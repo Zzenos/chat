@@ -157,19 +157,26 @@ class ZSocket {
 
       msg._status = MSG_STATUS.PENDING
 
-      this.socket.emit(msg.evtName, msg.data, ack => {
-        const str = msg.data.map(j => JSON.stringify(j))
-        cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
-        if (ack) {
-          const index = this.emitMsgs.findIndex(item => item.requestId === ack.data.requestId)
-          if (index >= 0) this.emitMsgs.splice(index, 1)
+      this.socket.emit(
+        msg.evtName,
+        {
+          requestId: msg.requestId,
+          data: msg.data
+        },
+        ack => {
+          const str = msg.data.map(j => JSON.stringify(j))
+          cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
+          if (ack) {
+            const index = this.emitMsgs.findIndex(item => item.requestId === ack.data.requestId)
+            if (index >= 0) this.emitMsgs.splice(index, 1)
+          }
+          // 有回调
+          if (cb && typeof cb === 'function') {
+            cb(ack.data)
+            cs('发送成功回调执行')
+          }
         }
-        // 有回调
-        if (cb && typeof cb === 'function') {
-          cb(ack.data)
-          cs('发送成功回调执行')
-        }
-      })
+      )
     }
   }
 
@@ -262,4 +269,4 @@ class ZSocket {
   }
 }
 
-export default ZSocket
+export default new ZSocket()
