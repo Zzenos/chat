@@ -33,8 +33,11 @@
 
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
+            <!-- 系统通知 -->
+            <div class="sysInfo" v-if="item.type == 2088" v-text="item.content"></div>
+
             <!-- 对话消息 -->
-            <div class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
+            <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" icon="user" :src="item.sender.avatar" />
@@ -57,6 +60,9 @@
 
                   <!-- 视频消息 -->
                   <video-message v-else-if="item.type == 2099" :vid="item.id" />
+
+                  <!-- 个人名片 -->
+                  <card-message v-else-if="item.type == 2003" :src="item.sender.avatar" :name="item.sender.nickname" />
                 </div>
               </div>
             </div>
@@ -103,6 +109,7 @@ import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
 import VideoMessage from '@/views/chat/components/VideoMessage'
+import CardMessage from '@/views/chat/components/CardMessage'
 import MeEditor from '@/views/chat/components/MeEditor'
 
 export default {
@@ -125,7 +132,8 @@ export default {
     ImageMessage,
     FileMessage,
     MeEditor,
-    VideoMessage
+    VideoMessage,
+    CardMessage
   },
   data() {
     return {
@@ -250,6 +258,70 @@ export default {
           },
           unread: false,
           content: '你好',
+          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+          title: '文件/链接标题',
+          voice_time: 72,
+          desc: '链接描述',
+          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          id: '645226',
+          type: 2088,
+          fromId: '3',
+          toId: 'sadafqfdwqdwdq',
+          gId: '',
+          atLocation: '',
+          time: '2021-03-20 11:13:05.000',
+          at: '',
+          atIds: 'id1,id2,id3,id4...',
+          // float: "right",
+          sender: {
+            id: '098',
+            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+            city: '',
+            country: '',
+            customDescription: '',
+            customId: 'LiuDongXia',
+            favorite: false,
+            gender: 1,
+            isVirtual: 0,
+            mobilephones: null,
+            nickname: '刘东霞'
+          },
+          unread: false,
+          content: '这是系统通知消息',
+          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+          title: '文件/链接标题',
+          voice_time: 72,
+          desc: '链接描述',
+          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          id: '76',
+          type: 2003,
+          fromId: '3',
+          toId: 'sadafqfdwqdwdq',
+          gId: '',
+          atLocation: '',
+          time: '2021-03-20 11:13:05.000',
+          at: '',
+          atIds: 'id1,id2,id3,id4...',
+          // float: "right",
+          sender: {
+            id: '098',
+            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+            city: '',
+            country: '',
+            customDescription: '',
+            customId: 'LiuDongXia',
+            favorite: false,
+            gender: 1,
+            isVirtual: 0,
+            mobilephones: null,
+            nickname: '刘东霞'
+          },
+          unread: false,
+          content: '这是系统通知消息',
           url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
           title: '文件/链接标题',
           voice_time: 72,
@@ -438,6 +510,18 @@ header {
       margin-bottom: 40px;
     }
 
+    .sysInfo {
+      width: 252px;
+      height: 18px;
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 18px;
+      text-align: center;
+      margin: 0 auto;
+    }
+
     .message-box {
       width: 100%;
       min-height: 46px;
@@ -527,6 +611,7 @@ header {
 
   .memberList {
     padding-left: 20px;
+    text-align: left;
     .memberInfo {
       margin-top: 20px;
       margin-bottom: 20px;

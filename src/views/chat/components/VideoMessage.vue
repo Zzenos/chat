@@ -12,7 +12,7 @@ export default {
   name: 'VideoMessage',
   components: { Xgplayer },
   props: {
-    id: {
+    vid: {
       type: String,
       default: ''
     }
@@ -21,7 +21,7 @@ export default {
     return {
       Player: null,
       videoConfig: {
-        id: 'vs' + this.id,
+        id: 'vs' + this.vid,
         url: 'https://www.bilibili.com/video/BV1uB4y1P7P1?spm_id_from=333.851.b_7265636f6d6d656e64.2',
         height: 330,
         width: 250,
@@ -35,4 +35,4 @@ export default {
   created() {}
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="scss" scoped></style>
