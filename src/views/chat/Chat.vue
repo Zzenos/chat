@@ -53,8 +53,10 @@
                   <image-message v-else-if="item.type == 2002" :src="item.href" />
 
                   <!-- 文件消息 -->
-
                   <file-message v-else-if="item.type == 2010" :title="item.title" :url="item.url" :desc="item.desc" />
+
+                  <!-- 视频消息 -->
+                  <video-message v-else-if="item.type == 2099" :vid="item.id" />
                 </div>
               </div>
             </div>
@@ -64,7 +66,32 @@
           <me-editor />
         </div>
       </div>
-      <div class="talk-record" v-if="records[1].gId">这里是群聊成员列表</div>
+      <div class="talk-record" v-if="records[1].gId">
+        <div class="top">
+          <span class="groupInfo">群资料</span>
+          <span>快捷回复</span>
+        </div>
+        <div class="search">
+          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+        </div>
+        <div class="memberList">
+          群成员 {{ groupNum }}
+          <div class="memberInfo">
+            <!-- 头像 -->
+            <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
+            <!-- 昵称 -->
+            <span class="name"> 次倩润item.group_name </span>
+            <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+          </div>
+          <div class="memberInfo">
+            <!-- 头像 -->
+            <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
+            <!-- 昵称 -->
+            <span class="name"> 次倩润item.group_name </span>
+            <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+          </div>
+        </div>
+      </div>
       <div class="talk-record" v-else></div>
     </main>
   </div>
@@ -75,7 +102,9 @@ import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
+import VideoMessage from '@/views/chat/components/VideoMessage'
 import MeEditor from '@/views/chat/components/MeEditor'
+
 export default {
   name: 'chat',
   props: {
@@ -83,7 +112,7 @@ export default {
     userId: {
       type: String,
       required: false,
-      default: '222'
+      default: '1'
     },
     contactId: {
       type: String,
@@ -95,7 +124,8 @@ export default {
     TextMessage,
     ImageMessage,
     FileMessage,
-    MeEditor
+    MeEditor,
+    VideoMessage
   },
   data() {
     return {
@@ -103,7 +133,7 @@ export default {
         {
           id: '535',
           type: 2001,
-          fromId: '78',
+          fromId: '1',
           toId: 'dsadafqfdwqdwdq',
           gId: '',
           atLocation: '',
@@ -164,7 +194,7 @@ export default {
         },
         {
           id: '6757',
-          type: 2001,
+          type: 2099,
           fromId: '222',
           toId: 'dsadafqfdwqdwdq',
           gId: '',
@@ -470,5 +500,42 @@ header {
   position: relative;
   // top: 752px;
   border-top: 1px solid #e4e5e7;
+}
+.talk-record {
+  .top {
+    width: 300px;
+    height: 60px;
+    font-size: 14px;
+    color: #000;
+    line-height: 22px;
+    background: lightblue;
+    padding-top: 26px;
+    padding-left: 21px;
+    border-bottom: 1px solid #e4e5e7;
+
+    .groupInfo {
+      margin-right: 34px;
+      padding-bottom: 12px;
+      color: #1d61ef;
+      border-bottom: 1px solid #1d61ef;
+    }
+  }
+
+  // .search {
+  //     padding:16px 20px;
+  // }
+
+  .memberList {
+    padding-left: 20px;
+    .memberInfo {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      .name {
+        font-size: 14px;
+        margin-left: 12px;
+        margin-right: 8x;
+      }
+    }
+  }
 }
 </style>
