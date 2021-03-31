@@ -1,1 +1,1 @@
-export const socketBaseUrl = process.env.SOCKET_API
+export const socketBaseUrl = process.env.VUE_APP_SOCKET_API

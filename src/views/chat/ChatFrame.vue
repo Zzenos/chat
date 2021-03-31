@@ -31,8 +31,16 @@ export default {
   },
   methods: {
     initSocket() {
-      if (this.saasId) this.$socket.init(this.saasId)
-      this[types.DISTRIBUTE_MSG](123)
+      // console.log(3344, this.saasId)
+      // if (!this.saasId) return
+      this.$socket.init(`?token=abc123`)
+      console.log(3344, this.$socket)
+      // this[types.DISTRIBUTE_MSG](123)
+      this.$socket.emit('test', 'hahahah')
+      this.$socket.on('test', ack => {
+        console.log(223344, ack)
+        // this[types.DISTRIBUTE_MSG](ack.data)
+      })
       // 消息
       this.$socket.on('msg_new', ack => {
         this[types.DISTRIBUTE_MSG](ack.data)

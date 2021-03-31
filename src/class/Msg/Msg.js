@@ -1,12 +1,17 @@
-import { Base64 } from '@/util/util'
+import { Base64, getUuid } from '@/util/util'
+const MSG_SEND_STATUS = {
+  SUCCESS: 0,
+  PENDING: 1,
+  FAILED: 2
+}
 /**
  * 消息类
  *
  */
 class Msg {
   constructor(options) {
-    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq } = options
-    this.id = msg_id || 0 // 发出的消息id为0
+    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq, sending = false } = options
+    this.id = msg_id || getUuid() // 发出的消息id为uuid
     this.chatId = chat_id //会话id
     this.chatType = chat_type //会话类型 1私聊 2群聊
     this.fromId = from_id
@@ -19,6 +24,19 @@ class Msg {
     this.at = at
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.unread = unread // 是否已读
+    this.status = sending ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
+  }
+
+  mutateSuccess() {
+    this.status = MSG_SEND_STATUS.SUCCESS
+  }
+
+  mutateFail() {
+    this.status = MSG_SEND_STATUS.FAILED
+  }
+
+  mutatePending() {
+    this.status = MSG_SEND_STATUS.PENDING
   }
 }
 // 不同消息类型
