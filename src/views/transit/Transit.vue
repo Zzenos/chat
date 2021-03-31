@@ -15,7 +15,6 @@ export default {
     ...mapMutations(['storeToken'])
   },
   mounted() {
-    console.log(11111, this, this.token)
     this.storeToken(this.token)
   },
   render() {

@@ -17,15 +17,44 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import * as types from '@/store/actionType'
 import AccountList from './components/AccountList'
+
 export default {
   name: 'chatFrame',
   components: { AccountList },
+  data() {
+    return {
+      // ...mapState['d']
+    }
+  },
   props: {
     // 企微saas账号
     saasId: {
       type: String
     }
+  },
+  methods: {
+    initSocket() {
+      if (this.saasId) this.$socket.init(this.saasId)
+      this[types.DISTRIBUTE_MSG](123)
+      // 消息
+      this.$socket.on('msg_new', ack => {
+        this[types.DISTRIBUTE_MSG](ack.data)
+      })
+      // 添加会话列表
+      this.$socket.on('chat_list', ack => {
+        this[types.ADD_CHAT](ack.data)
+      })
+    },
+    ...mapActions([types.DISTRIBUTE_MSG])
+  },
+  created() {
+    this.initSocket()
+  },
+  beforeDestory() {
+    this.$socket.close()
   }
 }
 </script>

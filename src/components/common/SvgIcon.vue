@@ -22,7 +22,6 @@ export default {
       return `#icon-${this.iconClass}`
     },
     svgClass() {
-      console.log(111111, this.className)
       if (this.className) {
         return `svg-icon ${this.className}`
       }
