@@ -6,7 +6,7 @@
       <div class="title" style="height: 100%">
         <!-- <p class="pointer" style="height: 100%"> -->
         <!-- 好友名字 -->
-        <span v-if="!records[0].gId" class="friendName">
+        <span v-if="records[0].chatType == 1" class="friendName">
           {{ records[0].sender.nickname }}
           <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
         </span>
@@ -14,7 +14,7 @@
         <!-- 群聊名称 -->
         <span v-else class="groupName">
           {{ records[0].sender.nickname }}
-          <span class="num">0{{ groupNum }}0</span>
+          <span class="num">群聊人数{{ groupNum }}</span>
         </span>
         <!-- </p> -->
       </div>
@@ -23,7 +23,7 @@
     <div class="noRecords" v-if="records.length == 0"></div>
     <main class="mainContainer" v-else>
       <div class="left">
-        <div class="talk-container" id="chatScrollbar">
+        <div class="talk-container" id="chatScrollbar" ref="list">
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.id">
             <!-- 群消息 加入退出群聊-->
@@ -34,7 +34,7 @@
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sysInfo" v-if="item.type == 10000" v-text="item.content"></div>
+            <div class="sysInfo" v-if="item.msgType == 10000" v-text="item.content"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
@@ -44,31 +44,31 @@
               </div>
               <div class="main-column">
                 <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边盒子-->
-                <div class="talk-title" :class="{ show: item.gId }">
-                  <span class="nickname" v-show="item.gId" v-text="item.sender.nickname"></span>
+                <div class="talk-title" :class="{ show: item.chatType == 2 && item.float == 'left' }">
+                  <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.nickname"></span>
                 </div>
                 <!-- 内容 -->
                 <div class="talk-content">
                   <!-- 文本消息 -->
-                  <text-message v-if="item.type == 2001" :content="item.content" :float="item.float" />
+                  <text-message v-if="item.msgType == 2001" :content="item.content" :float="item.float" />
 
                   <!-- 图片消息 -->
-                  <image-message v-else-if="item.type == 2002" :src="item.href" />
+                  <image-message v-else-if="item.msgType == 2002" :src="item.href" />
 
                   <!-- 文件消息 -->
-                  <file-message v-else-if="item.type == 2010" :href="item.href" :desc="item.desc" />
+                  <file-message v-else-if="item.msgType == 2010" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.type == 2004" :vid="item.id" />
+                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.type == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
+                  <card-message v-else-if="item.msgType == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
 
                   <!-- 语音消息 -->
                   <!-- <voice-message/> -->
 
                   <!-- 链接消息 -->
-                  <link-message v-else-if="item.type == 2005" :url="item.url" :desc="item.desc" />
+                  <link-message v-else-if="item.msgType == 2005" :url="item.url" :desc="item.desc" />
 
                   <!-- 小程序消息 -->
                   <!-- <weapp-message/> -->
@@ -78,10 +78,10 @@
           </div>
         </div>
         <div class="foot">
-          <me-editor />
+          <me-editor :send="sendMsg" />
         </div>
       </div>
-      <div class="talk-record" v-if="records[1].gId">
+      <div class="talk-record" v-if="records[0].chatType == 2">
         <div class="top">
           <span class="groupInfo">群资料</span>
           <span>快捷回复</span>
@@ -90,7 +90,7 @@
           <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
         <div class="memberList">
-          群成员 {{ groupNum }}
+          群成员 数量{{ groupNum }}
           <div class="memberInfo">
             <!-- 头像 -->
             <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
@@ -124,19 +124,6 @@ import LinkMessage from './components/LinkMessage.vue'
 
 export default {
   name: 'chat',
-  props: {
-    // 企微号
-    userId: {
-      type: String,
-      required: false,
-      default: '1'
-    },
-    contactId: {
-      type: String,
-      required: true,
-      default: '1'
-    }
-  },
   components: {
     TextMessage,
     ImageMessage,
@@ -151,10 +138,10 @@ export default {
       records: [
         {
           id: '535',
-          type: 2001,
+          msgType: 2001,
           fromId: '1',
           toId: 'dsadafqfdwqdwdq',
-          gId: '',
+          chatType: '2',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -173,7 +160,7 @@ export default {
             nickname: '刘东霞'
           },
           unread: false,
-          content: '你好',
+          content: '你好1',
           url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
           title: '文件/链接标题',
           voice_time: 72,
@@ -182,10 +169,10 @@ export default {
         },
         {
           id: '6754',
-          type: 2001,
-          fromId: '',
+          msgType: 2001,
+          fromId: '2',
           toId: '87667',
-          gId: '34',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-26 15:13:05.000',
           at: '',
@@ -213,10 +200,10 @@ export default {
         },
         {
           id: '6757',
-          type: 2004,
-          fromId: '222',
+          msgType: 2004,
+          fromId: '3',
           toId: 'dsadafqfdwqdwdq',
-          gId: '',
+          chatType: '2',
           atLocation: '',
           time: '2021-03-20 11:23:05.000',
           at: '',
@@ -245,10 +232,10 @@ export default {
         },
         {
           id: '6456',
-          type: 2001,
-          fromId: '3',
+          msgType: 2001,
+          fromId: '4',
           toId: 'sadafqfdwqdwdq',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -277,10 +264,10 @@ export default {
         },
         {
           id: '645226',
-          type: 10000,
-          fromId: '3',
+          msgType: 10000,
+          fromId: '5',
           toId: 'sadafqfdwqdwdq',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -309,10 +296,10 @@ export default {
         },
         {
           id: '76',
-          type: 2006,
+          msgType: 2006,
           fromId: '3',
           toId: 'sadafqfdwqdwdq',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -341,10 +328,10 @@ export default {
         },
         {
           id: '564',
-          type: 2002,
+          msgType: 2002,
           fromId: '3',
           toId: '23',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -373,10 +360,10 @@ export default {
         },
         {
           id: '53',
-          type: 2010,
-          fromId: '3',
+          msgType: 2010,
+          fromId: '2',
           toId: '65',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -405,10 +392,10 @@ export default {
         },
         {
           id: '531',
-          type: 2005,
+          msgType: 2005,
           fromId: '3',
           toId: '65',
-          gId: '',
+          chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
@@ -436,24 +423,21 @@ export default {
           href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         }
       ],
-      groupNum: 0
+      groupNum: 0,
+      userId: this.$route.params.userId,
+      chatId: this.$route.params.contactId
     }
   },
   mounted() {
-    // this.loadChatRecords();
     let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
-    // console.log(scrollHeight, 1);
     let el = document.getElementById('chatScrollbar')
     if (this.records.length == 0) {
       el.scrollTop = el.scrollHeight
-      // console.log(el.scrollTop, 2)
     } else {
       el.scrollTop = el.scrollHeight - scrollHeight
-      // console.log(el.scrollTop, 3)
     }
   },
   created() {
-    console.log(this.userId)
     this.records.forEach(item => {
       item.float = item.fromId == this.userId ? 'right' : 'left'
     })
@@ -461,19 +445,30 @@ export default {
   methods: {
     parseTime,
     sendTime: formateTime,
-    loadChatRecords() {},
     compareTime(index, datetime) {
       if (datetime == undefined) return false
       datetime = datetime.replace(/-/g, '/')
       let time = Math.floor(Date.parse(datetime) / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)
-
       if (currTime - time < 60) return false
       if (index == this.records.length - 1) return true
-
       let nextDate = this.records[index + 1].time.replace(/-/g, '/')
-
       return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
+    },
+    sendMsg(txt) {
+      this.records.push(txt)
+    }
+  },
+  watch: {
+    $route() {
+      this.chatId = this.$route.params.contactId //获取传来的参数
+      this.records = this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
+        item.float = item.fromId == this.userId ? 'right' : 'left'
+        return item
+      })
+    },
+    records() {
+      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     }
   }
 }
