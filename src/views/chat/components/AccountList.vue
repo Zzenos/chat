@@ -4,7 +4,7 @@
       <a-badge :count="item.msg_count" :overflow-count="99">
         <img :src="item.wechat_avatar" alt="" />
       </a-badge>
-      <div v-html="item.wechat_name"></div>
+      <div class="nickname ellipsis" v-html="item.wechat_name"></div>
     </div>
   </div>
 </template>
@@ -108,7 +108,9 @@ export default {
       border-radius: 18px;
       margin-bottom: 8px;
     }
-    .dot {
+    .nickname {
+      width: 60px;
+      margin: 0 auto;
     }
   }
 }
