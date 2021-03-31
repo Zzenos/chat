@@ -49,7 +49,9 @@ import {
   PageHeader,
   Statistic,
   Progress,
-  Divider
+  Divider,
+  Badge,
+  Avatar
 } from 'ant-design-vue'
 
 moment.locale('zh-cn')
@@ -141,3 +143,5 @@ Vue.component(Collapse.Panel.name, Collapse.Panel)
 Vue.component(PageHeader.name, PageHeader)
 Vue.component(Statistic.name, Statistic)
 Vue.component(Progress.name, Progress)
+Vue.component(Badge.name, Badge)
+Vue.component(Avatar.name, Avatar)
