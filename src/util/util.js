@@ -15,6 +15,7 @@ export const getUuid = function() {
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
   })
   return uuid
+}
 export function formateTime(datetime) {
   if (datetime == null) return ''
 
