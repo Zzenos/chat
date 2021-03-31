@@ -40,7 +40,7 @@ export default {
           time: '2021-03-20 11:13:05.000',
           at: '',
           atIds: 'id1,id2,id3,id4...',
-          // float: "right",
+          float: 'right',
           sender: {
             id: '098',
             avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
