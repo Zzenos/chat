@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chatCotainer">
     <!-- header -->
     <header>
       <!-- title -->
@@ -476,188 +476,173 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-header {
-  width: 1052px;
-  height: 68px;
-  background: rgba(0, 0, 0, 0.3);
-
-  .friendName,
-  .groupName {
-    float: left;
-    margin: 22px 8px 22px 20px;
-  }
-}
-.noRecords {
-  width: 752px;
-  height: 956px;
-  background: lightblue;
-}
-.mainContainer {
+.chatCotainer {
   display: flex;
+  flex-direction: column;
+  height: 100vh;
 
-  .talk-title {
-    display: none;
-    height: 15px;
-    // background: #000;
-    margin-bottom: 4px;
-    color: rgba(0, 0, 0, 0.45);
-    font-weight: 400;
-    line-height: 18px;
-    font-size: 12px;
-    text-align: left;
-    &.show {
-      display: block;
+  header {
+    height: 68px;
+    border-bottom: 1px solid #e4e5e7;
+
+    .friendName,
+    .groupName {
+      float: left;
+      margin: 22px 8px 22px 20px;
     }
   }
+  .noRecords {
+    flex: 1 1 0;
+  }
+  .mainContainer {
+    flex: 1 1 0;
+    display: flex;
 
-  .talk-container {
-    width: 752px;
-    // height: 956px;
-    height: 796px;
-    background: rgba(20, 20, 20, 0.2);
-    box-sizing: border-box;
-    padding-top: 40px;
-    padding-left: 10px;
-    padding-right: 10px;
-    // overflow: visible;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .datetime {
-      height: 18px;
-      color: rgba(0, 0, 0, 0.45);
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      margin-top: 40px;
-      margin-bottom: 40px;
-    }
-
-    .sysInfo {
-      width: 252px;
-      height: 18px;
-      font-size: 12px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.45);
-      line-height: 18px;
-      text-align: center;
-      margin: 0 auto;
-    }
-
-    .message-box {
-      width: 100%;
-      min-height: 46px;
-      margin-top: 20px;
+    .left {
+      flex: 1 1 0;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
+      .talk-container {
+        flex: 1 1 0;
+        box-sizing: border-box;
+        padding-top: 40px;
+        padding-left: 10px;
+        padding-right: 10px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
-      .avatar-column {
-        width: 36px;
-        height: 36px;
-        flex-basis: 36px;
-        flex-shrink: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 10px;
-        order: 2;
-      }
+        .talk-title {
+          display: none;
+          height: 15px;
+          margin-bottom: 4px;
+          color: rgba(0, 0, 0, 0.45);
+          font-weight: 400;
+          line-height: 18px;
+          font-size: 12px;
+          text-align: left;
+          &.show {
+            display: block;
+          }
+        }
 
-      .main-column {
-        order: 3;
-        flex: 1 auto;
+        .datetime {
+          height: 18px;
+          color: rgba(0, 0, 0, 0.45);
+          font-size: 12px;
+          line-height: 18px;
+          text-align: center;
+          margin-top: 40px;
+          margin-bottom: 40px;
+        }
 
-        .talk-content {
+        .sysInfo {
+          width: 252px;
+          height: 18px;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.45);
+          line-height: 18px;
+          text-align: center;
+          margin: 0 auto;
+        }
+
+        .message-box {
+          width: 100%;
+          min-height: 46px;
+          margin-top: 20px;
           display: flex;
-          align-items: flex-start;
-          flex-direction: column;
-        }
-      }
+          flex-direction: row;
 
-      &.direction-rt {
-        .avatar-column {
-          order: 3;
-          margin-right: 0;
-          margin-left: 10px;
-        }
+          .avatar-column {
+            width: 36px;
+            height: 36px;
+            flex-basis: 36px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            order: 2;
+          }
 
-        .main-column {
-          order: 2;
+          .main-column {
+            order: 3;
+            flex: 1 auto;
 
-          .talk-content {
-            align-items: flex-end;
+            .talk-content {
+              display: flex;
+              align-items: flex-start;
+              flex-direction: column;
+            }
+          }
+
+          &.direction-rt {
+            .avatar-column {
+              order: 3;
+              margin-right: 0;
+              margin-left: 10px;
+            }
+
+            .main-column {
+              order: 2;
+
+              .talk-content {
+                align-items: flex-end;
+              }
+            }
           }
         }
       }
+
+      .foot {
+        height: 160px;
+        background: pink;
+        position: relative;
+        border-top: 1px solid #e4e5e7;
+      }
     }
-  }
 
-  .talk-record {
-    width: 300px;
-    height: 956px;
-    background: rgba(100, 100, 100, 0.2);
-  }
-}
-.foot {
-  // width: 752px;
-  width: 100%;
-  height: 160px;
-  background: pink;
-  position: relative;
-  // top: 752px;
-  border-top: 1px solid #e4e5e7;
-}
-.talk-record {
-  .top {
-    width: 300px;
-    height: 60px;
-    font-size: 14px;
-    color: #000;
-    line-height: 22px;
-    background: lightblue;
-    padding-top: 26px;
-    padding-left: 21px;
-    border-bottom: 1px solid #e4e5e7;
+    .talk-record {
+      width: 300px;
 
-    .groupInfo {
-      margin-right: 34px;
-      padding-bottom: 12px;
-      color: #1d61ef;
-      border-bottom: 1px solid #1d61ef;
-    }
-  }
-
-  // .search {
-  //     padding:16px 20px;
-  // }
-
-  .memberList {
-    padding-left: 20px;
-    text-align: left;
-    .memberInfo {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      .name {
+      .top {
+        width: 300px;
+        height: 60px;
         font-size: 14px;
-        margin-left: 12px;
-        margin-right: 8x;
+        color: #000;
+        line-height: 22px;
+        background: lightblue;
+        padding-top: 26px;
+        padding-left: 21px;
+        border-bottom: 1px solid #e4e5e7;
+
+        .groupInfo {
+          margin-right: 34px;
+          padding-bottom: 12px;
+          color: #1d61ef;
+          border-bottom: 1px solid #1d61ef;
+        }
+      }
+
+      // .search {
+      //     padding:16px 20px;
+      // }
+
+      .memberList {
+        padding-left: 20px;
+        text-align: left;
+        .memberInfo {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          .name {
+            font-size: 14px;
+            margin-left: 12px;
+            margin-right: 8x;
+          }
+        }
       }
     }
   }

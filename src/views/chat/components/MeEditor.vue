@@ -31,7 +31,7 @@ export default {
         let currentTime = new Date().getTime()
         // this.$emit('send', this.editorText)
         this.send({
-          id: aaa++,
+          id: '' + aaa++,
           msgType: 2001,
           fromId: '1',
           toId: 'sadafqfdwqdwdq',
@@ -68,8 +68,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .meEditor {
+  width: 100%;
   .emoj {
-    width: 752px;
     height: 52px;
     background: lightblue;
     ul {
@@ -84,7 +84,7 @@ export default {
     }
   }
   textarea {
-    width: 752px;
+    width: 100%;
     height: 108px;
     border: 0 none;
     outline: none;
