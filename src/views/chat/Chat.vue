@@ -126,6 +126,7 @@ import VideoMessage from '@/views/chat/components/VideoMessage'
 import CardMessage from '@/views/chat/components/CardMessage'
 import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from './components/LinkMessage.vue'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'chat',
@@ -140,294 +141,294 @@ export default {
   },
   data() {
     return {
-      records: [
-        {
-          id: '535',
-          msgType: 2001,
-          fromId: '1',
-          toId: 'dsadafqfdwqdwdq',
-          chatType: '2',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          sender: {
-            id: '334',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好1',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '6754',
-          msgType: 2001,
-          fromId: '2',
-          toId: '87667',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-26 15:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          sender: {
-            id: '455665',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '6757',
-          msgType: 2004,
-          fromId: '3',
-          toId: 'dsadafqfdwqdwdq',
-          chatType: '2',
-          atLocation: '',
-          time: '2021-03-20 11:23:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '7668',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '6456',
-          msgType: 2001,
-          fromId: '4',
-          toId: 'sadafqfdwqdwdq',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '098',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '645226',
-          msgType: 10000,
-          fromId: '5',
-          toId: 'sadafqfdwqdwdq',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '098',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '这是系统通知消息',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '76',
-          msgType: 2006,
-          fromId: '3',
-          toId: 'sadafqfdwqdwdq',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '098',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '这是系统通知消息',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '564',
-          msgType: 2002,
-          fromId: '3',
-          toId: '23',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '89',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '53',
-          msgType: 2010,
-          fromId: '2',
-          toId: '65',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '65453434',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          id: '531',
-          msgType: 2005,
-          fromId: '3',
-          toId: '65',
-          chatType: '1',
-          atLocation: '',
-          time: '2021-03-20 11:13:05.000',
-          at: '',
-          atIds: 'id1,id2,id3,id4...',
-          // float: "right",
-          sender: {
-            id: '65453434',
-            avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-            city: '',
-            country: '',
-            customDescription: '',
-            customId: 'LiuDongXia',
-            favorite: false,
-            gender: 1,
-            isVirtual: 0,
-            mobilephones: null,
-            nickname: '刘东霞'
-          },
-          unread: false,
-          content: '你好',
-          url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-          title: '文件/链接标题',
-          voice_time: 72,
-          desc: '链接描述',
-          href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        }
-      ],
+      // records: [
+      //   {
+      //     id: '535',
+      //     msgType: 2001,
+      //     fromId: '1',
+      //     toId: 'dsadafqfdwqdwdq',
+      //     chatType: '2',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     sender: {
+      //       id: '334',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好1',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '6754',
+      //     msgType: 2001,
+      //     fromId: '2',
+      //     toId: '87667',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-26 15:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     sender: {
+      //       id: '455665',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '6757',
+      //     msgType: 2004,
+      //     fromId: '3',
+      //     toId: 'dsadafqfdwqdwdq',
+      //     chatType: '2',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:23:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '7668',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '6456',
+      //     msgType: 2001,
+      //     fromId: '4',
+      //     toId: 'sadafqfdwqdwdq',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '098',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '645226',
+      //     msgType: 10000,
+      //     fromId: '5',
+      //     toId: 'sadafqfdwqdwdq',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '098',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '这是系统通知消息',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '76',
+      //     msgType: 2006,
+      //     fromId: '3',
+      //     toId: 'sadafqfdwqdwdq',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '098',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '这是系统通知消息',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '564',
+      //     msgType: 2002,
+      //     fromId: '3',
+      //     toId: '23',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '89',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '53',
+      //     msgType: 2010,
+      //     fromId: '2',
+      //     toId: '65',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '65453434',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   },
+      //   {
+      //     id: '531',
+      //     msgType: 2005,
+      //     fromId: '3',
+      //     toId: '65',
+      //     chatType: '1',
+      //     atLocation: '',
+      //     time: '2021-03-20 11:13:05.000',
+      //     at: '',
+      //     atIds: 'id1,id2,id3,id4...',
+      //     // float: "right",
+      //     sender: {
+      //       id: '65453434',
+      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
+      //       city: '',
+      //       country: '',
+      //       customDescription: '',
+      //       customId: 'LiuDongXia',
+      //       favorite: false,
+      //       gender: 1,
+      //       isVirtual: 0,
+      //       mobilephones: null,
+      //       nickname: '刘东霞'
+      //     },
+      //     unread: false,
+      //     content: '你好',
+      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
+      //     title: '文件/链接标题',
+      //     voice_time: 72,
+      //     desc: '链接描述',
+      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+      //   }
+      // ],
       loadRecord: 1,
       groupNum: 0,
       userId: this.$route.params.userId,
@@ -435,18 +436,7 @@ export default {
     }
   },
   mounted() {
-    let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
-    let el = document.getElementById('chatScrollbar')
-    if (this.records.length == 0) {
-      el.scrollTop = el.scrollHeight
-    } else {
-      el.scrollTop = el.scrollHeight - scrollHeight
-    }
-  },
-  created() {
-    this.records.forEach(item => {
-      item.float = item.fromId == this.userId ? 'right' : 'left'
-    })
+    this.toBottom()
   },
   methods: {
     parseTime,
@@ -461,6 +451,15 @@ export default {
       let nextDate = this.records[index + 1].time.replace(/-/g, '/')
       return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
     },
+    toBottom() {
+      let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
+      let el = document.getElementById('chatScrollbar')
+      if (this.records.length == 0) {
+        el.scrollTop = el.scrollHeight
+      } else {
+        el.scrollTop = el.scrollHeight - scrollHeight
+      }
+    },
     sendMsg(txt) {
       this.records.push(txt)
       console.log(this.records)
@@ -468,34 +467,41 @@ export default {
     },
     talkScroll(e) {
       if (e.target.scrollTop == 0 && this.loadRecord == 1) {
-        // this.serveRecord()
         console.log('到达顶部需要请求更多消息')
         return
       }
     },
+    ...mapActions('messages', {
+      more: 'PULL_HISTORY_MSG'
+    }),
     loadChatRecords() {
-      // this.$store.getters.getMsgsByChatId(this.chatId)
-      console.log('去请求更多聊天记录')
+      // ('去请求更多聊天记录')
+      this.more(this.chatId, this, this.records[0].chatType)
     }
   },
   watch: {
     $route() {
       this.chatId = this.$route.params.contactId //获取传来的参数
-      this.records = this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
-        item.float = item.fromId == this.userId ? 'right' : 'left'
-        return item
-      })
-      if (this.records.length > 0) {
-        this.loadRecord = 1
-      } else {
-        this.loadRecord = 2
-      }
+      this.toBottom()
+      // if (this.records.length > 0) {
+      //   this.loadRecord = 1
+      // } else {
+      //   this.loadRecord = 2
+      // }
       // this.$refs.editor.clear()
       this.$refs.editor.getDraftText(this.chatId)
     }
-    // records() {
-    //   setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
-    // }
+  },
+  computed: {
+    ...mapGetters('messages', {
+      record: 'getMsgsByChatId'
+    }),
+    records() {
+      return this.record(this.chatId).map(item => {
+        item.float = item.fromId == this.userId ? 'right' : 'left'
+        return item
+      })
+    }
   }
 }
 </script>
