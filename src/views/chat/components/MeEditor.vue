@@ -11,6 +11,7 @@
 </template>
 <script>
 let aaa = 5555
+// function findTalk(index_name){return wechat_account.find(item=>item.wechat_id==index_name)}
 export default {
   name: 'MeEditor',
   props: ['send'],
@@ -62,6 +63,18 @@ export default {
         this.sendTime = currentTime
         e.preventDefault()
       }
+    },
+    // clear() {
+    //   this.draft_text = this.editorText
+    //   this.editorText=''
+    // },
+    getDraftText(index_name) {
+      //1.先获取当前区域内容存起来 2.清空区域  3.给当前区域赋值草稿内容或者空
+      // let item = findTalk(index_name)
+      // item.draft_text = this.editorText
+      // this.editorText = findTalk(index_name).draft_text || ''
+      console.log(index_name)
+      this.editorText = ''
     }
   }
 }

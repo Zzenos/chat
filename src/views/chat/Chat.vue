@@ -21,7 +21,14 @@
     <div class="noRecords" v-if="records.length == 0"></div>
     <main class="mainContainer" v-else>
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list">
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+          <!-- 数据加载状态栏 -->
+          <div class="loading-toolbar">
+            <span v-if="loadRecord == 1" class="pointer color-blue" @click="loadChatRecords"> <i class="el-icon-bottom" /> 查看更多消息... </span>
+
+            <span v-else> 没有更多消息了... </span>
+          </div>
+
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.id">
             <!-- 群消息 加入退出群聊-->
@@ -76,7 +83,7 @@
           </div>
         </div>
         <div class="foot">
-          <me-editor :send="sendMsg" />
+          <me-editor :send="sendMsg" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="records[0].chatType == 2">
@@ -421,6 +428,7 @@ export default {
           href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         }
       ],
+      loadRecord: 1,
       groupNum: 0,
       userId: this.$route.params.userId,
       chatId: this.$route.params.contactId
@@ -455,6 +463,19 @@ export default {
     },
     sendMsg(txt) {
       this.records.push(txt)
+      console.log(this.records)
+      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+    },
+    talkScroll(e) {
+      if (e.target.scrollTop == 0 && this.loadRecord == 1) {
+        // this.serveRecord()
+        console.log('到达顶部需要请求更多消息')
+        return
+      }
+    },
+    loadChatRecords() {
+      // this.$store.getters.getMsgsByChatId(this.chatId)
+      console.log('去请求更多聊天记录')
     }
   },
   watch: {
@@ -464,10 +485,17 @@ export default {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
       })
-    },
-    records() {
-      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+      if (this.records.length > 0) {
+        this.loadRecord = 1
+      } else {
+        this.loadRecord = 2
+      }
+      // this.$refs.editor.clear()
+      this.$refs.editor.getDraftText(this.chatId)
     }
+    // records() {
+    //   setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+    // }
   }
 }
 </script>
