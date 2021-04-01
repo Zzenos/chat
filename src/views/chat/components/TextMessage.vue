@@ -6,7 +6,7 @@
       right: float == 'right'
     }"
   >
-    这里是content:---{{ content }}---
+    {{ content }}
   </div>
 </template>
 <script>

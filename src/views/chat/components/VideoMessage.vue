@@ -1,8 +1,6 @@
 <template>
   <div class="video-message">
     <Xgplayer :config="videoConfig" @player="Player = $event" />
-
-    <!-- https://www.bilibili.com/video/BV1uB4y1P7P1?spm_id_from=333.851.b_7265636f6d6d656e64.2 -->
   </div>
 </template>
 
@@ -15,6 +13,10 @@ export default {
     vid: {
       type: String,
       default: ''
+    },
+    url: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -22,8 +24,9 @@ export default {
       Player: null,
       videoConfig: {
         id: 'vs' + this.vid,
-        url: 'https://www.bilibili.com/video/BV1uB4y1P7P1?spm_id_from=333.851.b_7265636f6d6d656e64.2',
-        height: 330,
+        // url:this.url,
+        url: ' http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+        // height: 330,
         width: 250,
         fitVideoSize: 'auto',
         autoplay: false,

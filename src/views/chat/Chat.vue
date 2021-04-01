@@ -4,7 +4,6 @@
     <header>
       <!-- title -->
       <div class="title" style="height: 100%">
-        <!-- <p class="pointer" style="height: 100%"> -->
         <!-- 好友名字 -->
         <span v-if="records[0].chatType == 1" class="friendName">
           {{ records[0].sender.nickname }}
@@ -16,7 +15,6 @@
           {{ records[0].sender.nickname }}
           <span class="num">群聊人数{{ groupNum }}</span>
         </span>
-        <!-- </p> -->
       </div>
     </header>
     <!-- main -->
@@ -59,7 +57,7 @@
                   <file-message v-else-if="item.msgType == 2010" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" />
+                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" :url="item.url" />
 
                   <!-- 个人名片 -->
                   <card-message v-else-if="item.msgType == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
@@ -598,8 +596,8 @@ export default {
       }
 
       .foot {
-        height: 160px;
-        background: pink;
+        // height: 160px;
+        // background: pink;
         position: relative;
         border-top: 1px solid #e4e5e7;
       }
