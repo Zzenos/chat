@@ -476,7 +476,7 @@ export default {
     }),
     loadChatRecords() {
       // ('去请求更多聊天记录')
-      this.more(this.chatId, this, this.records[0].chatType)
+      this.records = this.more(this.chatId, this.records[0].chatType)
     }
   },
   watch: {
