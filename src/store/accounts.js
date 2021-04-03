@@ -8,7 +8,8 @@ export default {
     [types.ADD_ACCOUNT](state, accounts) {
       state.accounts = accounts.map(i => {
         return {
-          info: i
+          info: i,
+          unread: 1
         }
       })
     }

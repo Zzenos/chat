@@ -22,20 +22,20 @@ export default {
   },
   mutations: {
     // 新会话
-    [types.ADD_CHAT](state, chatId) {
-      if (!state.chatMsgs[chatId]) Vue.set(state.chatMsgs, `${chatId}`, [])
+    [types.ADD_CHAT](state, msg) {
+      if (!state.chatMsgs[msg.chatId]) Vue.set(state.chatMsgs, `${msg.chatId}`, [])
     },
     // 新消息
     [types.ADD_MSG](state, msg) {
       // 查重
-      if (state.chatMsgHash[msg.id]) return
-      if (state.chatMsgs[msg.chat_id]) {
+      if (state.chatMsgHash[msg.msgId]) return
+      if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经发送，进行msg_id的更改即可
-        const index = state.chatMsgs[msg.chat_id].findIndex(i => {
-          return i.cli_msg_id === msg.cli_msg_id
+        const index = state.chatMsgs[msg.chatId].findIndex(i => {
+          return i.cliMsgId === msg.cliMsgId
         })
         if (index >= 0) {
-          state.chatMsgs[msg.chat_id].splice(index, 1, msg)
+          state.chatMsgs[msg.chatId].splice(index, 1, msg)
         } else {
           state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length - 1, 0, msg)
         }
@@ -56,13 +56,18 @@ export default {
       }
     },
     [types.CACHE_SENDING_MSG](state, msg) {
-      if (state.sendingMsgHash[msg.cli_msg_id]) return
-      Vue.set(state.sendingMsgHash, `${msg.cli_msg_id}`, msg)
+      if (state.sendingMsgHash[msg.cliMsgId]) return
+      Vue.set(state.sendingMsgHash, `${msg.cliMsgId}`, msg)
+    },
+    [types.CLEAR_SENDING_MSG](state, msg) {
+      if (state.sendingMsgHash[msg.cliMsgId]) {
+        Vue.delete(state.sendingMsgHash, `${msg.cliMsgId}`, msg)
+      }
     },
     // 消息缓存
     [types.CACHE_MSG](state, msg) {
-      if (state.chatMsgHash[msg.id]) return
-      Vue.set(state.chatMsgHash, `${msg.id}`, msg)
+      if (state.chatMsgHash[msg.msgId]) return
+      Vue.set(state.chatMsgHash, `${msg.msgId}`, msg)
     }
   },
   actions: {
@@ -78,16 +83,13 @@ export default {
         }
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
-          commit(types.ADD_CHAT, msg.chatId)
+          console.log('将要分发消息', msg)
+          commit(types.ADD_CHAT, msg)
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
-          commit(types.CLEAR_SENDING_MSG, msg)
+          // TODO
+          // commit(types.CLEAR_SENDING_MSG, msg)
         })
-      }
-    },
-    [types.CLEAR_SENDING_MSG](state, msg) {
-      if (state.sendingMsgHash[msg.cli_msg_id]) {
-        Vue.delete(state.sendingMsgHash, `${msg.cli_msg_id}`, msg)
       }
     },
     /**
@@ -104,7 +106,7 @@ export default {
           {
             chat_id: chatId,
             chat_type: chatType,
-            seq: state[chatId] && state[chatId][0] && state[chatId][0].seq,
+            seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq,
             page_size: 20
           },
           ack => {
@@ -122,16 +124,18 @@ export default {
     /**
      * 消息发送，收到ack后修改消息状态
      * @param {Object} msg 消息实例
+     * TODO: 消息超时
      */
     [types.SEND_MSG]: {
       root: true,
-      handler: ({ commit, dispatch }, data) => {
-        const newmsg = getSendMsg(data)
+      handler: ({ commit }, data) => {
+        const newMsg = getSendMsg(data)
         commit(types.CACHE_SENDING_MSG, data)
-        Zsocket.emit('msg_send', newmsg, ack => {
-          // 找到对应的消息并且修改消息id
-          if (ack.code === 200) {
-            dispatch(types.DISTRIBUTE_MSG, ack.data)
+        Zsocket.emit('msg_send', newMsg, ack => {
+          // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
+          if (ack) {
+            commit()
+            // dispatch(types.DISTRIBUTE_MSG, ack.data)
           }
         })
       }

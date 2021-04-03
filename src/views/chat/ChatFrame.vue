@@ -7,7 +7,6 @@
         <div class="bot-logo">
           <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
           <div>ZMENG</div>
-          <div>{{ chatId }}</div>
         </div>
       </a-col>
       <a-col flex="auto">
@@ -18,8 +17,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
-import store from '@/store'
+import { mapActions, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import AccountList from './components/AccountList'
 
@@ -27,15 +25,7 @@ export default {
   name: 'chatFrame',
   components: { AccountList },
   data() {
-    return {
-      ...mapState(['accounts'])
-    }
-  },
-  computed: {
-    chatId: function() {
-      console.log(666666, this.accounts)
-      return store.getters.chatsByChatId()
-    }
+    return {}
   },
   props: {
     // 企微saas账号
@@ -46,30 +36,58 @@ export default {
   methods: {
     initSocket() {
       // console.log(3344, this.saasId)
-      // if (!this.saasId) return
       this.$socket.init(`?token=zmeng666`)
       console.log(3344, this.$socket)
-      // this[types.DISTRIBUTE_MSG](123)
       this.$socket.emit('test', 'hahahah')
-      this.$socket.on('test', ack => {
-        console.log(223344, ack)
-        // this[types.DISTRIBUTE_MSG](ack.data)
+
+      // 历史消息
+      this.$socket.on('msg_history', ack => {
+        if (ack.code === 200) {
+          this[types.DISTRIBUTE_MSG](ack.data)
+        }
       })
-      // 消息
+      // 新消息
       this.$socket.on('msg_new', ack => {
         this[types.DISTRIBUTE_MSG](ack.data)
       })
       // 添加会话列表
       this.$socket.on('chat_list', ack => {
-        this[types.ADD_CHAT_LIST](ack.data)
+        if (ack.code === 200) {
+          this[types.ADD_CHAT_LIST](ack.data)
+        }
       })
-      // 探鲸账号列表
+      // 通讯录
+      this.$socket.on('contacts', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_CONTACT](ack.data)
+        }
+      })
+      // 初始化探鲸账号列表
       this.$socket.on('accounts', ack => {
-        this[types.ADD_ACCOUNT](ack.data)
+        if (ack.code === 200) {
+          this[types.ADD_ACCOUNT](ack.data)
+        }
       })
+      // 获取微信号详细信息
+      this.$socket.emit('wechat_info', { tjId: 112 }, ack => {
+        console.log(ack)
+      })
+      // 获取群详细信息
+      this.$socket.emit('group_info', { tjId: 112 }, ack => {
+        console.log(ack)
+      })
+
+      setTimeout(() => {
+        const msg = {
+          fromId: 1112,
+          toID: 1113,
+          msgType: 'text'
+        }
+        this[types.SEND_MSG](msg)
+      }, 5000)
     },
-    ...mapActions([types.DISTRIBUTE_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT])
+    ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT])
   },
   created() {
     this.initSocket()

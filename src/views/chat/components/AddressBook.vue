@@ -107,6 +107,26 @@ export default {
       ]
     }
   },
+  props: {
+    tjId: {
+      type: String
+    }
+  },
+  computed: {
+    // 通信录数据
+    contactData: function() {
+      console.log(77777, this.$store.getters.contactByTjId(this.tjId))
+      return this.$store.getters.contactByTjId(this.tjId)
+    }
+  },
+  watch: {
+    tjId: {
+      immediate: true,
+      handler: function(n) {
+        console.log(8888888, n, this.contactData)
+      }
+    }
+  },
   methods: {
     tabChange() {},
     handleItem(val) {

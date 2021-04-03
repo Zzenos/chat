@@ -3,8 +3,9 @@ import vuex from 'vuex'
 import vuexLocal from '@/plugins/vuex.persist'
 import messages from './messages'
 import chat from './chat'
+import contact from './contact'
 import accounts from './accounts'
-import accountInfo from './accountInfo'
+import accountDetails from './accountDetails'
 
 vue.use(vuex)
 
@@ -20,9 +21,10 @@ const store = new vuex.Store({
   },
   modules: {
     messages,
-    accountInfo,
+    accountDetails,
     accounts,
-    chat
+    chat,
+    contact
   },
   plugins: [vuexLocal.plugin]
 })

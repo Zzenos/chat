@@ -15,12 +15,12 @@ const MsgType = {
 
 // 数据返回消息
 export const MsgGen = function(data) {
-  if (!data || !data.msg_type || !Object.keys(MsgType).includes(data.msg_type)) {
+  if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
     throw new Error('Not Support Msg Type')
   }
-  return new MsgType(data.msg_type, false)
+  return new MsgType[data.msgType](data, false)
 }
 
 export const getSendMsg = function(data) {
-  return new MsgType(data.msg_type, true)
+  return new MsgType[data.msgType](data, true)
 }

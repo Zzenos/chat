@@ -22,7 +22,7 @@ const defaultOptions = {
 class ZSocket {
   constructor(autoPull) {
     this.socket = null
-    this.autoPull = autoPull || true // 断连自动拉取
+    this.autoPull = autoPull || false // 默认关闭自动重发
     this.emitMsgs = []
     this.receiveMsgs = [] // 重新拉取后的消息可能需要重新排序
     this.lastMessageId = null
@@ -168,7 +168,7 @@ class ZSocket {
         ack => {
           const str = msg.data.map(j => JSON.stringify(j))
           cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
-          if (ack) {
+          if (ack && ack.data && ack.data.requestId) {
             const index = this.emitMsgs.findIndex(item => item.requestId === ack.data.requestId)
             if (index >= 0) this.emitMsgs.splice(index, 1)
           }

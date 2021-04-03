@@ -17,7 +17,7 @@ let routes = [
     component: () => import(/* webpackChunkName: "chatframe" */ '../views/chat/ChatFrame'),
     children: [
       {
-        path: ':userId',
+        path: ':tjId',
         name: 'ContactList',
         component: () => import(/* webpackChunkName: "contactlist" */ '../views/chat/ContactList'),
         props: true,

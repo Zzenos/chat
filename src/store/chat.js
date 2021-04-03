@@ -2,37 +2,40 @@ import Vue from 'vue'
 import * as types from './actionType'
 // import sortedLastIndex from 'lodash/sortedLastIndex'
 /**
- *
- * <企微号id>&<会话对方id | 群id> 组成 <会话id>
- * 以 <会话id> 为 key 缓存消息
- * <会话id>:{
- *  lastMsgId<最后一条消息id>
- *  firstSeq<分页加载的最旧一条数据>
- *  msgs<消息列表>
- * }
+ * 根据tjId设置会话列表
  */
 
 export default {
-  state: {
-    chat: {}
-  },
+  state: {},
   mutations: {
     // 根究探鲸id获取会话列表
-    [types.ADD_CHAT_LIST](state, tjId, chatList) {
-      if (!state.chat[tjId]) Vue.set(state.chat, `${tjId}`, chatList)
-      state.chat[tjId] = {
-        chatList
+    [types.ADD_CHAT_LIST](state, chatInfo) {
+      console.log(state, chatInfo)
+
+      // 结构修改后注释
+      const tjId = chatInfo[0].chatId.split('&')[0]
+      if (!state[tjId]) {
+        Vue.set(state, `${tjId}`, chatInfo)
+      } else {
+        state[tjId] = chatInfo
       }
+      // 结构修改后释放
+      // const tjId = chatInfo.chatId.split('&')[0]
+      // if (!state[tjId]) {
+      //   Vue.set(state, `${tjId}`, chatInfo.chatList)
+      // } else {
+      //   state[tjId] = chatInfo.chatList
+      // }
     }
   },
   actions: {},
   getters: {
     chatsByChatId: (state, rootState) => {
-      return chatId => {
-        const chatList = state.chat[chatId].map(i => {
+      return tjId => {
+        const chatList = state[tjId].map(i => {
           return {
             chatInfo: i,
-            lastMsg: rootState[chatId][rootState[chatId].length - 1] || null
+            lastMsg: rootState[tjId][rootState[tjId].length - 1] || null
           }
         })
         return chatList

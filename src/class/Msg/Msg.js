@@ -16,19 +16,19 @@ const MSG_SEND_STATUS = {
  */
 class Msg {
   constructor(options, isSendMsg) {
-    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq } = options
-    this.id = msg_id // 发出的消息id为uuid
+    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msg_time, sender, unread, seq } = options
+    this.msgId = msgId // 发出的消息id为uuid
     if (isSendMsg) {
       this.cliMsgId = getUuid() // 发出的消息id为uuid
     } else {
       this.sender = sender || null // 发送人信息
     }
-    this.chat_id = chat_id //会话id
-    this.chat_type = chat_type //会话类型 1私聊 2群聊
-    this.from_id = from_id
-    this.to_id = to_id
-    this.msg_type = msg_type //消息类型
-    this.atLocation = at_location // @人的位置 0 头 1 尾
+    this.chatId = chatId //会话id
+    this.chatType = chatType //会话类型 1私聊 2群聊
+    this.fromId = fromId
+    this.toId = toId
+    this.msgType = msgType //消息类型
+    this.atLocation = atLocation // @人的位置 0 头 1 尾
     this.time = msg_time || 0 // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
@@ -55,10 +55,10 @@ class Msg {
  *
  */
 export class systemMsg extends Msg {
-  constructor(options) {
-    super(options)
-    let { msg_content } = options
-    this.content = Base64.parse(msg_content)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content } = options
+    this.content = content
   }
 }
 
@@ -67,10 +67,10 @@ export class systemMsg extends Msg {
  *
  */
 export class textMsg extends Msg {
-  constructor(options) {
-    super(options)
-    let { msg_content } = options
-    this.content = Base64.parse(msg_content)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content } = options
+    this.content = content
   }
 }
 
@@ -78,8 +78,8 @@ export class textMsg extends Msg {
  * 2002 图片  jpg/png 超过10M将以文件形式发送， gif 超过5M将以文件形式发送
  */
 export class imgMsg extends Msg {
-  constructor(options) {
-    super(options)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
     let { url } = options
     this.url = url // 图片需要给图片地址
   }
@@ -89,10 +89,10 @@ export class imgMsg extends Msg {
  *  * 2003 语音
  */
 export class voiceMsg extends Msg {
-  constructor(options) {
-    super(options)
-    let { voice_time, url } = options
-    this.voiceTime = voice_time
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { voiceTime, url } = options
+    this.voiceTime = voiceTime
     this.url = url
   }
 }
@@ -102,10 +102,10 @@ export class voiceMsg extends Msg {
  */
 
 export class videoMsg extends Msg {
-  constructor(options) {
-    super(options)
-    let { voice_time, url } = options
-    this.voiceTime = voice_time // 时长
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { voiceTime, url } = options
+    this.voiceTime = voiceTime // 时长
     this.url = url
   }
 }
@@ -114,8 +114,8 @@ export class videoMsg extends Msg {
  * 2005 H5
  */
 export class hyperLinkMsg extends Msg {
-  constructor(options) {
-    super(options)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
     let { url, href, title, desc } = options
     this.url = url
     this.href = href
@@ -127,8 +127,8 @@ export class hyperLinkMsg extends Msg {
  * 2006 好友名片
  */
 export class contactMsg extends Msg {
-  constructor(options) {
-    super(options)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
     let { content } = options
     this.content = JSON.parse(Base64.parse(content))
   }
@@ -138,8 +138,8 @@ export class contactMsg extends Msg {
  * 2010 文件类型
  */
 export class fileMsg extends Msg {
-  constructor(options) {
-    super(options)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
     let { href } = options
     this.href = href
   }
@@ -150,8 +150,8 @@ export class fileMsg extends Msg {
  */
 
 export class mpMsg extends Msg {
-  constructor(options) {
-    super(options)
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
     let { content } = options
     this.content = JSON.parse(Base64.parse(content)) // 解码后为小程序的配置json,需要parse一次
   }

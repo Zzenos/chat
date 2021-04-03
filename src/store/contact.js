@@ -2,23 +2,21 @@ import Vue from 'vue'
 import * as types from './actionType'
 // 通信录
 export default {
-  state: {
-    contact: {}
-  },
+  state: {},
   mutations: {
     [types.ADD_CONTACT](state, contactsData) {
-      if (state.contact[contactsData.tj_id]) {
-        state.contact[contactsData.tj_id] = contactsData
+      if (state[contactsData[0].tjId]) {
+        state[contactsData[0].tjId] = contactsData
       } else {
-        Vue.set(state.contact, `${contactsData.tj_id}`, contactsData)
+        Vue.set(state, `${contactsData[0].tjId}`, contactsData)
       }
     }
   },
   actions: {},
   getters: {
-    getContactByTjId: state => {
+    contactByTjId: state => {
       return tjId => {
-        return state.contact[tjId]
+        return state[tjId]
       }
     }
   }

@@ -16,8 +16,8 @@
           <a-input-search placeholder="搜索" />
         </div>
         <div class="list-wraper">
-          <chat-list v-show="curTab === 1" />
-          <address-book v-show="curTab === 2" />
+          <chat-list v-show="curTab === 1" :tjId="tjId" />
+          <address-book v-show="curTab === 2" :tjId="tjId" />
         </div>
       </a-col>
       <a-col flex="auto">
@@ -35,8 +35,8 @@ export default {
   name: 'contactList',
   components: { ChatList, AddressBook },
   props: {
-    // 企微号
-    userId: {
+    // 探鲸id
+    tjId: {
       type: String,
       required: true
     }
