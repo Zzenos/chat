@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import * as types from './actionType'
-import MsgGen from '@/class/Msg'
+import { MsgGen, getSendMsg } from '@/class/Msg'
 import Zsocket from '@/class/ZSocket'
 // import sortedLastIndex from 'lodash/sortedLastIndex'
 /**
@@ -16,32 +16,53 @@ import Zsocket from '@/class/ZSocket'
 
 export default {
   state: {
+    chatMsgs: {},
+    sendingMsgHash: {},
     chatMsgHash: {}
   },
   mutations: {
     // 新会话
     [types.ADD_CHAT](state, chatId) {
-      if (!state[chatId]) Vue.set(state, `${chatId}`, [])
+      if (!state.chatMsgs[chatId]) Vue.set(state.chatMsgs, `${chatId}`, [])
     },
     // 新消息
     [types.ADD_MSG](state, msg) {
       // 查重
       if (state.chatMsgHash[msg.id]) return
-      if (state[msg.chatId]) {
-        // 这里只需要去重而不需要排序
-        state[msg.chatId].splice(state[msg.chatId].length - 1, 0, msg)
+      if (state.chatMsgs[msg.chat_id]) {
+        // 这里检查cli_msg_id,如果store中存在，则说明已经发送，进行msg_id的更改即可
+        const index = state.chatMsgs[msg.chat_id].findIndex(i => {
+          return i.cli_msg_id === msg.cli_msg_id
+        })
+        if (index >= 0) {
+          state.chatMsgs[msg.chat_id].splice(index, 1, msg)
+        } else {
+          state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length - 1, 0, msg)
+        }
       }
     },
     // 历史消息
     [types.ADD_HISTORY_MSG](state, chatId, msgs) {
-      if (state[chatId]) {
-        state[chatId].splice(0, 0, msgs)
+      if (state.chatMsgs[chatId]) {
+        state.chatMsgs[chatId].splice(0, 0, msgs)
       }
+    },
+    //
+    [types.CLEAR_UNREAD_MSG](state, chatId) {
+      if (state.chatMsgs[chatId]) {
+        state.chatMsgs[chatId].forEach(i => {
+          i.unread = false
+        })
+      }
+    },
+    [types.CACHE_SENDING_MSG](state, msg) {
+      if (state.sendingMsgHash[msg.cli_msg_id]) return
+      Vue.set(state.sendingMsgHash, `${msg.cli_msg_id}`, msg)
     },
     // 消息缓存
     [types.CACHE_MSG](state, msg) {
       if (state.chatMsgHash[msg.id]) return
-      Vue.set(state.chatMsgHash, `${msg.chatId}`, msg)
+      Vue.set(state.chatMsgHash, `${msg.id}`, msg)
     }
   },
   actions: {
@@ -52,7 +73,6 @@ export default {
     [types.DISTRIBUTE_MSG]: {
       root: true,
       handler: ({ commit }, data) => {
-        console.log(3322, data, Zsocket)
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
         }
@@ -61,7 +81,13 @@ export default {
           commit(types.ADD_CHAT, msg.chatId)
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
+          commit(types.CLEAR_SENDING_MSG, msg)
         })
+      }
+    },
+    [types.CLEAR_SENDING_MSG](state, msg) {
+      if (state.sendingMsgHash[msg.cli_msg_id]) {
+        Vue.delete(state.sendingMsgHash, `${msg.cli_msg_id}`, msg)
       }
     },
     /**
@@ -94,15 +120,19 @@ export default {
       }
     },
     /**
-     * 消息发送
+     * 消息发送，收到ack后修改消息状态
      * @param {Object} msg 消息实例
      */
     [types.SEND_MSG]: {
       root: true,
-      handler: ({ commit }, msg) => {
-        Zsocket.emit('msg_send', msg, ack => {
-          commit(types.ADD_MSG, msg)
-          commit(types.CACHE_MSG, MsgGen(ack.msg))
+      handler: ({ commit, dispatch }, data) => {
+        const newmsg = getSendMsg(data)
+        commit(types.CACHE_SENDING_MSG, data)
+        Zsocket.emit('msg_send', newmsg, ack => {
+          // 找到对应的消息并且修改消息id
+          if (ack.code === 200) {
+            dispatch(types.DISTRIBUTE_MSG, ack.data)
+          }
         })
       }
     }

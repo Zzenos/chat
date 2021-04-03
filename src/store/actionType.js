@@ -1,4 +1,4 @@
-// 添加会话
+// 添加企微账号列表
 export const ADD_ACCOUNT = 'ADD_ACCOUNT'
 // 添加会话
 export const ADD_CHAT = 'ADD_CHAT'
@@ -18,3 +18,13 @@ export const ADD_CONTACT = 'ADD_CONTACT'
 export const ADD_GROUP_MEMBER = 'ADD_GROUP_MEMBER'
 // 发送消息
 export const SEND_MSG = 'SEND_MSG'
+//
+export const CACHE_SENDING_MSG = 'CACHE_SENDING_MSG_'
+//
+export const CLEAR_SENDING_MSG = 'CLEAR_SENDING_MSG'
+// 发送消息
+export const FAIL_SENDING_MSG = 'FAIL_SENDING_MSG'
+// 添加会话列表
+export const ADD_CHAT_LIST = 'ADD_CHAT_LIST'
+
+export const CLEAR_UNREAD_MSG = 'CLEAR_UNREAD_MSG'

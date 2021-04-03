@@ -14,11 +14,13 @@ const MsgType = {
 }
 
 // 数据返回消息
-const MsgGen = function(data) {
+export const MsgGen = function(data) {
   if (!data || !data.msg_type || !Object.keys(MsgType).includes(data.msg_type)) {
     throw new Error('Not Support Msg Type')
   }
-  return new MsgType(data.msg_type)
+  return new MsgType(data.msg_type, false)
 }
 
-export default MsgGen
+export const getSendMsg = function(data) {
+  return new MsgType(data.msg_type, true)
+}

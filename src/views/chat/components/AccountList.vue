@@ -1,8 +1,8 @@
 <template>
   <div class="act-list_container">
-    <div v-for="item in wechat_account" :key="item.wechat_id" class="act-item" :class="{ active: curAct.wechat_id === item.wechat_id }" @click="handleAct(item)">
+    <div v-for="item in wechat_account" :key="item.chatId" class="act-item" :class="{ active: curAct.chatId === item.chatId }" @click="handleAct(item)">
       <a-badge :count="item.msg_count" :overflow-count="99">
-        <img :src="item.wechat_avatar" alt="" />
+        <img :src="item.wechatAvatar" alt="" />
       </a-badge>
       <div class="nickname ellipsis" v-html="item.wechat_name"></div>
     </div>
@@ -17,49 +17,49 @@ export default {
       curAct: {},
       wechat_account: [
         {
-          wechat_id: 1,
+          chatId: 1,
           wechat_name: '刘东霞',
           msg_count: 5,
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 2,
+          chatId: 2,
           wechat_name: '张建',
           msg_count: 10,
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 3,
+          chatId: 3,
           wechat_name: '刘东霞3',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 4,
+          chatId: 4,
           wechat_name: '张建4',
           msg_count: 88,
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 5,
+          chatId: 5,
           wechat_name: '刘东霞5',
           msg_count: 100,
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 6,
+          chatId: 6,
           wechat_name: '张建6',
           msg_count: 0,
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 7,
+          chatId: 7,
           wechat_name: '刘东霞7',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 8,
+          chatId: 8,
           wechat_name: '张建8',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         }
       ]
     }
@@ -67,12 +67,12 @@ export default {
   methods: {
     handleAct(val) {
       console.log(val)
-      const { wechat_id } = val
-      if (this.curAct.wechat_id === wechat_id) {
+      const { chatId } = val
+      if (this.curAct.chatId === chatId) {
         return
       }
       this.curAct = val
-      this.$router.push({ path: `/chatframe/${this.curAct.wechat_id}/recent/0` })
+      this.$router.push({ path: `/chatframe/${this.curAct.chatId}/recent/0` })
     }
   },
   mounted() {

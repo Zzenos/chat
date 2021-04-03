@@ -4,27 +4,37 @@ const MSG_SEND_STATUS = {
   PENDING: 1,
   FAILED: 2
 }
+
+// const MSG_TYPE = {
+//   SENDING: 0,
+//   HISTORY: 1,
+//   PUSH: 2
+// }
 /**
  * 消息类
- *
+ * @param {Bool} isSendMsg
  */
 class Msg {
-  constructor(options) {
-    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq, sending = false } = options
-    this.id = msg_id || getUuid() // 发出的消息id为uuid
-    this.chatId = chat_id //会话id
-    this.chatType = chat_type //会话类型 1私聊 2群聊
-    this.fromId = from_id
-    this.toId = to_id
-    this.sender = sender || null // 发送人信息
-    this.msgType = msg_type //消息类型
+  constructor(options, isSendMsg) {
+    let { msg_id, chat_id, chat_type, from_id, to_id, msg_type, at_location, at, at_ids, msg_time, sender, unread, seq } = options
+    this.id = msg_id // 发出的消息id为uuid
+    if (isSendMsg) {
+      this.cliMsgId = getUuid() // 发出的消息id为uuid
+    } else {
+      this.sender = sender || null // 发送人信息
+    }
+    this.chat_id = chat_id //会话id
+    this.chat_type = chat_type //会话类型 1私聊 2群聊
+    this.from_id = from_id
+    this.to_id = to_id
+    this.msg_type = msg_type //消息类型
     this.atLocation = at_location // @人的位置 0 头 1 尾
     this.time = msg_time || 0 // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
-    this.unread = unread // 是否已读
-    this.status = sending ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
+    this.unread = unread || true // 是否已读
+    this.status = isSendMsg ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
   }
 
   mutateSuccess() {

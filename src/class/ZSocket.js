@@ -3,7 +3,7 @@ import { getUuid } from '@/util/util.js'
 import { socketBaseUrl } from '@/apis'
 
 const MAX_QUEUE_LENGTH = 10 // 最大消息队列长度，超过则认为出现消息问题或短期无法恢复
-const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 -1代表无限重试
+const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 Infinity 代表无限重试
 const MSG_STATUS = {
   READY: 1,
   PENDING: 2,
@@ -40,7 +40,7 @@ class ZSocket {
     if (this.socket) {
       this._disconnect()
     }
-    const url = `${socketBaseUrl}${nsp} `
+    const url = `${socketBaseUrl}${nsp}`
     options = Object.assign(defaultOptions, options)
     options.query = options.query || {}
     options.query.id = getUuid()
@@ -50,6 +50,8 @@ class ZSocket {
       ...options
     })
     this.socket.on('connect', () => {
+      // 重置
+      this.tryReconnectAttempts = 0
       // 自动重发
       if (this.emitMsgs.length > 0) this._send()
       cs(`SOCKET链接成功,当前SOCKET_ID：${this.socket.id}`)
@@ -233,6 +235,8 @@ class ZSocket {
         this.socket.connect()
         this.tryReconnectAttempts++
       }, 3000)
+    } else {
+      cs(`已经超过自动重连最大次数`)
     }
   }
 

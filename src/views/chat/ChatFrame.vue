@@ -7,6 +7,7 @@
         <div class="bot-logo">
           <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
           <div>ZMENG</div>
+          <div>{{ chatId }}</div>
         </div>
       </a-col>
       <a-col flex="auto">
@@ -17,7 +18,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
+import store from '@/store'
 import * as types from '@/store/actionType'
 import AccountList from './components/AccountList'
 
@@ -26,7 +28,13 @@ export default {
   components: { AccountList },
   data() {
     return {
-      // ...mapState['d']
+      ...mapState(['accounts'])
+    }
+  },
+  computed: {
+    chatId: function() {
+      console.log(666666, this.accounts)
+      return store.getters.chatsByChatId()
     }
   },
   props: {
@@ -39,7 +47,7 @@ export default {
     initSocket() {
       // console.log(3344, this.saasId)
       // if (!this.saasId) return
-      this.$socket.init(`?token=abc123`)
+      this.$socket.init(`?token=zmeng666`)
       console.log(3344, this.$socket)
       // this[types.DISTRIBUTE_MSG](123)
       this.$socket.emit('test', 'hahahah')
@@ -53,10 +61,15 @@ export default {
       })
       // 添加会话列表
       this.$socket.on('chat_list', ack => {
-        this[types.ADD_CHAT](ack.data)
+        this[types.ADD_CHAT_LIST](ack.data)
+      })
+      // 探鲸账号列表
+      this.$socket.on('accounts', ack => {
+        this[types.ADD_ACCOUNT](ack.data)
       })
     },
-    ...mapActions([types.DISTRIBUTE_MSG])
+    ...mapActions([types.DISTRIBUTE_MSG]),
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT])
   },
   created() {
     this.initSocket()
