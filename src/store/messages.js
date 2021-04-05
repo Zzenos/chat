@@ -26,6 +26,7 @@ export default {
       if (!state.chatMsgs[msg.chatId]) Vue.set(state.chatMsgs, `${msg.chatId}`, [])
     },
     // 新消息
+    // 需要检查是否为ACK中返回的消息体
     [types.ADD_MSG](state, msg) {
       // 查重
       if (state.chatMsgHash[msg.msgId]) return
@@ -88,7 +89,7 @@ export default {
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
           // TODO
-          // commit(types.CLEAR_SENDING_MSG, msg)
+          commit(types.CLEAR_SENDING_MSG, msg)
         })
       }
     },
@@ -128,13 +129,14 @@ export default {
      */
     [types.SEND_MSG]: {
       root: true,
-      handler: ({ commit }, data) => {
+      handler: ({ commit, dispatch }, data) => {
         const newMsg = getSendMsg(data)
-        commit(types.CACHE_SENDING_MSG, data)
+        commit(types.CACHE_SENDING_MSG, newMsg)
+        dispatch(types.DISTRIBUTE_MSG, newMsg)
         Zsocket.emit('msg_send', newMsg, ack => {
+          // TODO
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
-            commit()
             // dispatch(types.DISTRIBUTE_MSG, ack.data)
           }
         })
