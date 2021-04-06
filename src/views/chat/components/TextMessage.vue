@@ -6,7 +6,7 @@
       right: float == 'right'
     }"
   >
-    这里是content:---{{ content }}---
+    {{ content }}
   </div>
 </template>
 <script>
@@ -33,8 +33,8 @@ export default {
 <style lang="scss" scoped>
 .text-message {
   position: relative;
-  min-width: 30px;
-  min-height: 30px;
+  // min-width: 30px;
+  // min-height: 30px;
   max-width: 480px;
   border-radius: 8px;
   padding: 12px;

@@ -15,6 +15,7 @@ import Zsocket from '@/class/ZSocket'
  */
 
 export default {
+  namespaced: true,
   state: {
     chatMsgs: {},
     sendingMsgHash: {},

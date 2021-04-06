@@ -1,10 +1,9 @@
 <template>
-  <div>
+  <div class="chatCotainer">
     <!-- header -->
     <header>
       <!-- title -->
       <div class="title" style="height: 100%">
-        <!-- <p class="pointer" style="height: 100%"> -->
         <!-- 好友名字 -->
         <span v-if="records[0].chatType == 1" class="friendName">
           {{ records[0].sender.nickname }}
@@ -16,14 +15,20 @@
           {{ records[0].sender.nickname }}
           <span class="num">群聊人数{{ groupNum }}</span>
         </span>
-        <!-- </p> -->
       </div>
     </header>
     <!-- main -->
     <div class="noRecords" v-if="records.length == 0"></div>
     <main class="mainContainer" v-else>
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list">
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+          <!-- 数据加载状态栏 -->
+          <div class="loading-toolbar">
+            <span v-if="loadRecord == 1" class="pointer color-blue" @click="loadChatRecords"> <i class="el-icon-bottom" /> 查看更多消息... </span>
+
+            <span v-else> 没有更多消息了... </span>
+          </div>
+
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.id">
             <!-- 群消息 加入退出群聊-->
@@ -59,26 +64,26 @@
                   <file-message v-else-if="item.msgType == 2010" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" />
+                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" :url="item.url" />
 
                   <!-- 个人名片 -->
                   <card-message v-else-if="item.msgType == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
 
                   <!-- 语音消息 -->
-                  <!-- <voice-message/> -->
+                  <audio-message v-else-if="item.msgType == 2003" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
                   <!-- 链接消息 -->
                   <link-message v-else-if="item.msgType == 2005" :url="item.url" :desc="item.desc" />
 
                   <!-- 小程序消息 -->
-                  <!-- <weapp-message/> -->
+                  <webapp-message v-else-if="item.msgType == 2013" :href="item.href" :url="item.url" />
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="foot">
-          <me-editor :send="sendMsg" />
+          <me-editor :send="sendMsg" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="records[0].chatType == 2">
@@ -120,7 +125,10 @@ import FileMessage from '@/views/chat/components/FileMessage'
 import VideoMessage from '@/views/chat/components/VideoMessage'
 import CardMessage from '@/views/chat/components/CardMessage'
 import MeEditor from '@/views/chat/components/MeEditor'
-import LinkMessage from './components/LinkMessage.vue'
+import LinkMessage from '@/views/chat/components/LinkMessage.vue'
+import AudioMessage from '@/views/chat/components/AudioMessage'
+import WebappMessage from '@/views/chat/components/WebappMessage'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'chat',
@@ -131,7 +139,9 @@ export default {
     MeEditor,
     VideoMessage,
     CardMessage,
-    LinkMessage
+    LinkMessage,
+    AudioMessage,
+    WebappMessage
   },
   data() {
     return {
@@ -392,15 +402,15 @@ export default {
         },
         {
           id: '531',
-          msgType: 2005,
-          fromId: '3',
+          msgType: 2013,
+          fromId: '1',
           toId: '65',
+          float: 'right',
           chatType: '1',
           atLocation: '',
           time: '2021-03-20 11:13:05.000',
           at: '',
           atIds: 'id1,id2,id3,id4...',
-          // float: "right",
           sender: {
             id: '65453434',
             avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
@@ -423,24 +433,14 @@ export default {
           href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         }
       ],
+      loadRecord: 1,
       groupNum: 0,
       userId: this.$route.params.userId,
       chatId: this.$route.params.contactId
     }
   },
   mounted() {
-    let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
-    let el = document.getElementById('chatScrollbar')
-    if (this.records.length == 0) {
-      el.scrollTop = el.scrollHeight
-    } else {
-      el.scrollTop = el.scrollHeight - scrollHeight
-    }
-  },
-  created() {
-    this.records.forEach(item => {
-      item.float = item.fromId == this.userId ? 'right' : 'left'
-    })
+    this.toBottom()
   },
   methods: {
     parseTime,
@@ -455,209 +455,230 @@ export default {
       let nextDate = this.records[index + 1].time.replace(/-/g, '/')
       return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
     },
+    toBottom() {
+      let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
+      let el = document.getElementById('chatScrollbar')
+      if (this.records.length == 0) {
+        el.scrollTop = el.scrollHeight
+      } else {
+        el.scrollTop = el.scrollHeight - scrollHeight
+      }
+    },
     sendMsg(txt) {
       this.records.push(txt)
+      console.log(this.records)
+      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+    },
+    talkScroll(e) {
+      if (e.target.scrollTop == 0 && this.loadRecord == 1) {
+        console.log('到达顶部需要请求更多消息')
+        return
+      }
+    },
+    ...mapActions('messages', {
+      more: 'PULL_HISTORY_MSG'
+    }),
+    loadChatRecords() {
+      // ('去请求更多聊天记录')
+      this.records = this.more(this.chatId, this.records[0].chatType)
     }
   },
   watch: {
     $route() {
       this.chatId = this.$route.params.contactId //获取传来的参数
-      this.records = this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
-        item.float = item.fromId == this.userId ? 'right' : 'left'
-        return item
-      })
-    },
-    records() {
-      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+      this.toBottom()
+      // if (this.records.length > 0) {
+      //   this.loadRecord = 1
+      // } else {
+      //   this.loadRecord = 2
+      // }
+      // this.$refs.editor.clear()
+      this.$refs.editor.getDraftText(this.chatId)
     }
+  },
+  computed: {
+    ...mapGetters('messages', {
+      record: 'getMsgsByChatId'
+    })
+    // records() {
+    //   return this.record(this.chatId).map(item => {
+    //     item.float = item.fromId == this.userId ? 'right' : 'left'
+    //     return item
+    //   })
+    // }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-header {
-  width: 1052px;
-  height: 68px;
-  background: rgba(0, 0, 0, 0.3);
-
-  .friendName,
-  .groupName {
-    float: left;
-    margin: 22px 8px 22px 20px;
-  }
-}
-.noRecords {
-  width: 752px;
-  height: 956px;
-  background: lightblue;
-}
-.mainContainer {
+.chatCotainer {
   display: flex;
+  flex-direction: column;
+  height: 100vh;
 
-  .talk-title {
-    display: none;
-    height: 15px;
-    // background: #000;
-    margin-bottom: 4px;
-    color: rgba(0, 0, 0, 0.45);
-    font-weight: 400;
-    line-height: 18px;
-    font-size: 12px;
-    text-align: left;
-    &.show {
-      display: block;
+  header {
+    height: 68px;
+    border-bottom: 1px solid #e4e5e7;
+
+    .friendName,
+    .groupName {
+      float: left;
+      margin: 22px 8px 22px 20px;
     }
   }
+  .noRecords {
+    flex: 1 1 0;
+  }
+  .mainContainer {
+    flex: 1 1 0;
+    display: flex;
 
-  .talk-container {
-    width: 752px;
-    // height: 956px;
-    height: 796px;
-    background: rgba(20, 20, 20, 0.2);
-    box-sizing: border-box;
-    padding-top: 40px;
-    padding-left: 10px;
-    padding-right: 10px;
-    // overflow: visible;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .datetime {
-      height: 18px;
-      color: rgba(0, 0, 0, 0.45);
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      margin-top: 40px;
-      margin-bottom: 40px;
-    }
-
-    .sysInfo {
-      width: 252px;
-      height: 18px;
-      font-size: 12px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.45);
-      line-height: 18px;
-      text-align: center;
-      margin: 0 auto;
-    }
-
-    .message-box {
-      width: 100%;
-      min-height: 46px;
-      margin-top: 20px;
+    .left {
+      flex: 1 1 0;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
+      .talk-container {
+        flex: 1 1 0;
+        box-sizing: border-box;
+        padding-top: 40px;
+        padding-left: 10px;
+        padding-right: 10px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
-      .avatar-column {
-        width: 36px;
-        height: 36px;
-        flex-basis: 36px;
-        flex-shrink: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 10px;
-        order: 2;
-      }
+        .talk-title {
+          display: none;
+          height: 15px;
+          margin-bottom: 4px;
+          color: rgba(0, 0, 0, 0.45);
+          font-weight: 400;
+          line-height: 18px;
+          font-size: 12px;
+          text-align: left;
+          &.show {
+            display: block;
+          }
+        }
 
-      .main-column {
-        order: 3;
-        flex: 1 auto;
+        .datetime {
+          height: 18px;
+          color: rgba(0, 0, 0, 0.45);
+          font-size: 12px;
+          line-height: 18px;
+          text-align: center;
+          margin-top: 40px;
+          margin-bottom: 40px;
+        }
 
-        .talk-content {
+        .sysInfo {
+          width: 252px;
+          height: 18px;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.45);
+          line-height: 18px;
+          text-align: center;
+          margin: 0 auto;
+        }
+
+        .message-box {
+          width: 100%;
+          min-height: 46px;
+          margin-top: 20px;
           display: flex;
-          align-items: flex-start;
-          flex-direction: column;
-        }
-      }
+          flex-direction: row;
 
-      &.direction-rt {
-        .avatar-column {
-          order: 3;
-          margin-right: 0;
-          margin-left: 10px;
-        }
+          .avatar-column {
+            width: 36px;
+            height: 36px;
+            flex-basis: 36px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            order: 2;
+          }
 
-        .main-column {
-          order: 2;
+          .main-column {
+            order: 3;
+            flex: 1 auto;
 
-          .talk-content {
-            align-items: flex-end;
+            .talk-content {
+              display: flex;
+              align-items: flex-start;
+              flex-direction: column;
+            }
+          }
+
+          &.direction-rt {
+            .avatar-column {
+              order: 3;
+              margin-right: 0;
+              margin-left: 10px;
+            }
+
+            .main-column {
+              order: 2;
+
+              .talk-content {
+                align-items: flex-end;
+              }
+            }
           }
         }
       }
+
+      .foot {
+        // height: 160px;
+        // background: pink;
+        position: relative;
+        border-top: 1px solid #e4e5e7;
+      }
     }
-  }
 
-  .talk-record {
-    width: 300px;
-    height: 956px;
-    background: rgba(100, 100, 100, 0.2);
-  }
-}
-.foot {
-  // width: 752px;
-  width: 100%;
-  height: 160px;
-  background: pink;
-  position: relative;
-  // top: 752px;
-  border-top: 1px solid #e4e5e7;
-}
-.talk-record {
-  .top {
-    width: 300px;
-    height: 60px;
-    font-size: 14px;
-    color: #000;
-    line-height: 22px;
-    background: lightblue;
-    padding-top: 26px;
-    padding-left: 21px;
-    border-bottom: 1px solid #e4e5e7;
+    .talk-record {
+      width: 300px;
 
-    .groupInfo {
-      margin-right: 34px;
-      padding-bottom: 12px;
-      color: #1d61ef;
-      border-bottom: 1px solid #1d61ef;
-    }
-  }
-
-  // .search {
-  //     padding:16px 20px;
-  // }
-
-  .memberList {
-    padding-left: 20px;
-    text-align: left;
-    .memberInfo {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      .name {
+      .top {
+        width: 300px;
+        height: 60px;
         font-size: 14px;
-        margin-left: 12px;
-        margin-right: 8x;
+        color: #000;
+        line-height: 22px;
+        background: lightblue;
+        padding-top: 26px;
+        padding-left: 21px;
+        border-bottom: 1px solid #e4e5e7;
+
+        .groupInfo {
+          margin-right: 34px;
+          padding-bottom: 12px;
+          color: #1d61ef;
+          border-bottom: 1px solid #1d61ef;
+        }
+      }
+
+      // .search {
+      //     padding:16px 20px;
+      // }
+
+      .memberList {
+        padding-left: 20px;
+        text-align: left;
+        .memberInfo {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          .name {
+            font-size: 14px;
+            margin-left: 12px;
+            margin-right: 8x;
+          }
+        }
       }
     }
   }

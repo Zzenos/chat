@@ -1,6 +1,5 @@
 <template>
   <div class="link-message">
-    这里是 链接消息- -----链接
     <a :href="url">{{ desc }}</a>
   </div>
 </template>

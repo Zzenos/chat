@@ -1,21 +1,5 @@
 <template>
   <div class="card-message ">
-    <!-- <div class="card" @click="showModal">
-      <div class="avatar">
-        <a-avatar :src="src" />
-        <span class="nickname">{{ name }}</span>
-      </div>
-      <div class="person">
-        个人名片
-      </div>
-    </div>
-   
- <div v-show="visible" class="modal">
-      <p>Some contents...</p>
-      <p>Some contents...</p>
-      <p>Some contents...</p>
- </div> -->
-
     <a-popover
       placement="right"
       trigger="click"
@@ -86,15 +70,7 @@ export default {
       // visible:false
     }
   },
-  methods: {
-    // showModal(){
-    //   this.visible=!this.visible;
-    // },
-    // handleOK(e){
-    //   console.log(e);
-    //   this.visible=false
-    // }
-  }
+  methods: {}
 }
 </script>
 <style lang="scss" scoped>
