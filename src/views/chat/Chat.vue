@@ -7,17 +7,18 @@
         <div v-if="records.length">
           <!-- 好友名字 -->
           <span v-if="records[0].chatType == 1" class="friendName">
-            {{ records[0].sender.nickname }}
+            {{ records[0].fromId == userId ? records[0].sender.wechat_name : records[0].to.wechat_name }}
             <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
           </span>
           <!-- 群聊名称 -->
           <span v-else class="groupName">
-            {{ records[0].sender.nickname }}
-            <span class="num">群聊人数{{ groupNum }}</span>
+            {{ groupInfo[0].group_name }}
+            <span class="num">{{ member_count }}</span>
           </span>
         </div>
 
         <div v-else>
+          <!-- 暂无消息时的头部显示 好友名字 或 群聊名称 -->
           <span class="friendName">
             <!-- <span>{{ item.name }}</span> -->
             <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
@@ -115,26 +116,26 @@
         <div class="search">
           <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
-        <div class="memberList">
-          群成员 数量{{ groupNum }}
-          <div class="memberInfo">
+        <div class="memberList" v-for="item in groupInfo" :key="item.group_id">
+          群成员({{ item.member_count }})
+          <div class="memberInfo" v-for="itm in item.members" :key="itm.user_id">
             <!-- 头像 -->
-            <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
+            <a-avatar shape="square" :size="36" icon="user" :src="itm.avatar" />
             <!-- 昵称 -->
-            <span class="name"> 次倩润item.group_name </span>
+            <span class="name"> 次倩润itm.name </span>
             <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
           </div>
-          <div class="memberInfo">
-            <!-- 头像 -->
+          <!-- <div class="memberInfo">
+    
             <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
-            <!-- 昵称 -->
+         
             <span class="name"> 次倩润item.group_name </span>
             <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="talk-record" v-else>
-        资料
+        好友
       </div>
     </main>
   </div>
@@ -289,18 +290,18 @@ export default {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
       })
-    }
-    // ...mapGetters('accountDetails', {
-    //   friendDetail: 'wechatDetailsById',
-    //   groupDeatil: 'groupDetailsById'
-    // }),
+    },
+    ...mapGetters('accountDetails', {
+      // friendDetail: 'wechatDetailsById',
+      groupDeatil: 'groupDetailsById'
+    }),
     // friendInfo() {
     //   //this.chatId 是 contactId 不是    需要chatType 来判断
     //   return this.friendDetail(this.chatId)
     // },
-    // groupInfo() {
-    //   return this.groupDeatil(this.chatId)
-    // }
+    groupInfo() {
+      return this.groupDeatil(this.chatId)
+    }
   }
 }
 </script>
