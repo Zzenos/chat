@@ -1,7 +1,7 @@
 <template>
   <div class="address-book_container">
     <div class="address-book_tab">
-      <a-tabs :default-active-key="activeKey" :tabBarGutter="5">
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="1" tab="客户">
           <div class="list-wraper">
             <div v-for="item in contactData.customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
@@ -44,78 +44,7 @@ export default {
     return {
       activeKey: '1', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
-      customerList: [
-        {
-          wechatId: 1,
-          wechatName: '刘东霞',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 2,
-          wechatName: '张建',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 3,
-          wechatName: '刘东霞3',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 4,
-          wechatName: '张建4',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 5,
-          wechatName: '刘东霞5',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 6,
-          wechatName: '张建6',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 7,
-          wechatName: '刘东霞7',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 8,
-          wechatName: '张建8',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 13,
-          wechatName: '刘东霞3',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 14,
-          wechatName: '张建4',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 15,
-          wechatName: '刘东霞5',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 16,
-          wechatName: '张建6',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        },
-        {
-          wechatId: 17,
-          wechatName: '刘东霞7',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 18,
-          wechatName: '张建8',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        }
-      ],
+      customerList: [],
       groupList: [
         {
           wechatId: 7,
@@ -168,10 +97,10 @@ export default {
       console.log(val)
       const { wechatId } = val
       if (this.curAddress.wechatId === wechatId) {
-        return
+        // return
       }
       this.curAddress = val
-      this.$router.push({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
+      this.$router.replace({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
     }
   }
 }
