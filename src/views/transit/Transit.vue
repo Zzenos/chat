@@ -16,6 +16,7 @@ export default {
   },
   mounted() {
     this.storeToken(this.token)
+    this.$router.push({ path: `/chatframe` })
   },
   render() {
     return <div>正在进行跳转...</div>

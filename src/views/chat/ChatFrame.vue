@@ -36,7 +36,7 @@ export default {
   methods: {
     initSocket() {
       // console.log(3344, this.saasId)
-      this.$socket.init(`?token=zmeng666`)
+      this.$socket.init(`?token=${this.$store.state.token}`)
       console.log(3344, this.$socket)
       this.$socket.emit('test', 'hahahah')
 

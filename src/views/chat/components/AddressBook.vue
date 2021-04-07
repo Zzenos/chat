@@ -1,28 +1,34 @@
 <template>
   <div class="address-book_container">
     <div class="address-book_tab">
-      <a-tabs :default-active-key="activeKey" @change="tabChange">
-        <a-tab-pane key="customer" tab="客户">
-          <div v-for="item in customer_list" :key="item.wechat_id" class="item" :class="{ active: curAddress.wechat_id === item.wechat_id }" @click="handleItem(item)">
-            <img class="avatar" :src="item.wechat_avatar" alt="" />
-            <div class="nickname">
-              <span v-html="item.wechat_name"></span>
-              <span v-if="item.wechat_avatar" class="label">@微信</span>
+      <a-tabs :default-active-key="activeKey" :tabBarGutter="5">
+        <a-tab-pane key="1" tab="客户">
+          <div class="list-wraper">
+            <div v-for="item in contactData.customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+              <img class="avatar" :src="item.wechatAvatar" alt="" />
+              <div class="nickname">
+                <span v-html="item.wechatName"></span>
+                <span v-if="item.wechatAvatar" class="label">@微信</span>
+              </div>
             </div>
           </div>
         </a-tab-pane>
-        <a-tab-pane key="group" tab="群聊">
-          <div v-for="item in group_list" :key="item.wechat_id" class="item" :class="{ active: curAddress.group_id === item.group_id }" @click="handleItem(item)">
-            <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-            <span v-html="item.group_name"> </span><span>（{{ item.group_num }}）</span>
+        <a-tab-pane key="2" tab="群聊">
+          <div class="list-wraper">
+            <div v-for="item in contactData.groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+              <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
+              <span v-html="item.wechatName"> </span><span>（{{ item.group_num }}）</span>
+            </div>
           </div>
         </a-tab-pane>
-        <a-tab-pane key="member" tab="成员">
-          <div v-for="item in member_list" :key="item.wechat_id" class="item" :class="{ active: curAddress.wechat_id === item.wechat_id }" @click="handleItem(item)">
-            <img class="avatar" :src="item.wechat_avatar" alt="" />
-            <div class="nickname">
-              <span v-html="item.wechat_name"></span>
-              <span v-if="item.wechat_avatar" :style="{ color: item.source === 'work' ? '#FF8000' : '#0ead63' }" class="label">@微信</span>
+        <a-tab-pane key="3" tab="成员">
+          <div class="list-wraper">
+            <div v-for="item in contactData.memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+              <img class="avatar" :src="item.wechatAvatar" alt="" />
+              <div class="nickname">
+                <span v-html="item.wechatName"></span>
+                <span v-if="item.wechatAvatar" :style="{ color: item.source === 'work' ? '#FF8000' : '#0ead63' }" class="label">@微信</span>
+              </div>
             </div>
           </div>
         </a-tab-pane>
@@ -36,73 +42,103 @@ export default {
   name: 'addressBook',
   data() {
     return {
-      activeKey: 'customer',
+      activeKey: '1', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
-      customer_list: [
+      customerList: [
         {
-          wechat_id: 1,
-          wechat_name: '刘东霞',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatId: 1,
+          wechatName: '刘东霞',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 2,
-          wechat_name: '张建',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatId: 2,
+          wechatName: '张建',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 3,
-          wechat_name: '刘东霞3',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatId: 3,
+          wechatName: '刘东霞3',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 4,
-          wechat_name: '张建4',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatId: 4,
+          wechatName: '张建4',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 5,
-          wechat_name: '刘东霞5',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatId: 5,
+          wechatName: '刘东霞5',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 6,
-          wechat_name: '张建6',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatId: 6,
+          wechatName: '张建6',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         },
         {
-          wechat_id: 7,
-          wechat_name: '刘东霞7',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatId: 7,
+          wechatName: '刘东霞7',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 8,
-          wechat_name: '张建8',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatId: 8,
+          wechatName: '张建8',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+        },
+        {
+          wechatId: 13,
+          wechatName: '刘东霞3',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          wechatId: 14,
+          wechatName: '张建4',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+        },
+        {
+          wechatId: 15,
+          wechatName: '刘东霞5',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          wechatId: 16,
+          wechatName: '张建6',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+        },
+        {
+          wechatId: 17,
+          wechatName: '刘东霞7',
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        },
+        {
+          wechatId: 18,
+          wechatName: '张建8',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         }
       ],
-      group_list: [
+      groupList: [
         {
-          group_id: 7,
-          group_name: 'BizChat群聊测试',
+          wechatId: 7,
+          wechatName: 'BizChat群聊测试',
           group_num: 60
         },
         {
-          group_id: 8,
-          group_name: 'BizChat群聊测试',
+          wechatId: 8,
+          wechatName: 'BizChat群聊测试',
           group_num: 3
         }
       ],
-      member_list: [
+      memberList: [
         {
-          wechat_id: 7,
-          wechat_name: '刘东霞7',
+          wechatId: 7,
+          wechatName: '刘东霞7',
           source: 'work',
-          wechat_avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
         },
         {
-          wechat_id: 8,
-          wechat_name: '张建8',
-          wechat_avatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+          wechatId: 8,
+          wechatName: '张建8',
+          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
         }
       ]
     }
@@ -116,7 +152,7 @@ export default {
     // 通信录数据
     contactData: function() {
       console.log(77777, this.$store.getters.contactByTjId(this.tjId))
-      return this.$store.getters.contactByTjId(this.tjId)
+      return this.$store.getters.contactByTjId(this.tjId)[0]
     }
   },
   watch: {
@@ -128,15 +164,14 @@ export default {
     }
   },
   methods: {
-    tabChange() {},
     handleItem(val) {
       console.log(val)
-      const { wechat_id } = val
-      if (this.curAddress.wechat_id === wechat_id) {
+      const { wechatId } = val
+      if (this.curAddress.wechatId === wechatId) {
         return
       }
       this.curAddress = val
-      this.$router.push({ path: `/chatframe/${wechat_id}/contactInfo/0` })
+      this.$router.push({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
     }
   }
 }
@@ -145,6 +180,14 @@ export default {
 <style lang="scss" scoped>
 .address-book_container {
   width: 100%;
+  .list-wraper {
+    height: calc(100vh - 193px);
+    overflow-y: scroll;
+  }
+  /deep/ .ant-tabs-nav-scroll {
+    text-align: left;
+    padding-left: 16px;
+  }
   .item {
     box-sizing: border-box;
     width: 100%;

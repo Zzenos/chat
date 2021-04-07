@@ -17,53 +17,6 @@ export default {
   data() {
     return {
       curAct: null
-      // wechat_account: [
-      //   {
-      //     chatId: 1,
-      //     wechat_name: '刘东霞',
-      //     msg_count: 5,
-      //     wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-      //   },
-      //   {
-      //     chatId: 2,
-      //     wechat_name: '张建',
-      //     msg_count: 10,
-      //     wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-      //   },
-      //   {
-      //     chatId: 3,
-      //     wechat_name: '刘东霞3',
-      //     wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-      //   },
-      //   {
-      //     chatId: 4,
-      //     wechat_name: '张建4',
-      //     msg_count: 88,
-      //     wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-      //   },
-      //   {
-      //     chatId: 5,
-      //     wechat_name: '刘东霞5',
-      //     msg_count: 100,
-      //     wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-      //   },
-      //   {
-      //     chatId: 6,
-      //     wechat_name: '张建6',
-      //     msg_count: 0,
-      //     wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-      //   },
-      //   {
-      //     chatId: 7,
-      //     wechat_name: '刘东霞7',
-      //     wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-      //   },
-      //   {
-      //     chatId: 8,
-      //     wechat_name: '张建8',
-      //     wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-      //   }
-      // ]
     }
   },
   computed: {
@@ -92,10 +45,6 @@ export default {
       this.curAct = account
       this.$router.push({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
     }
-  },
-  mounted() {
-    // this.curAct = this.accounts[0]
-    // console.log(3333, this.accounts[0])
   }
 }
 </script>

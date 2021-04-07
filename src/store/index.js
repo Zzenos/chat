@@ -10,7 +10,7 @@ import accountDetails from './accountDetails'
 vue.use(vuex)
 
 const store = new vuex.Store({
-  store: {
+  state: {
     token: null
   },
   mutations: {

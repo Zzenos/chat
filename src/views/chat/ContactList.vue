@@ -15,7 +15,7 @@
         <div class="input-container">
           <a-input-search placeholder="搜索" />
         </div>
-        <div class="list-wraper">
+        <div>
           <chat-list v-show="curTab === 1" :tjId="tjId" />
           <address-book v-show="curTab === 2" :tjId="tjId" />
         </div>

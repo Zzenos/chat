@@ -108,7 +108,7 @@ export default {
           {
             chat_id: chatId,
             chat_type: chatType,
-            seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq,
+            seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
             page_size: 20
           },
           ack => {
