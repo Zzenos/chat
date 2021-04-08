@@ -86,17 +86,8 @@ export default {
     // 切换企微号，拉取会话列表、通讯录、历史消息
     pullData(tjId) {
       console.log('tjId:', tjId)
-      this.$socket.emit('chat_list', { tjId }, ack => {
+      this.$socket.emit('init', { tjId }, ack => {
         console.log(ack)
-        this[types.ADD_CHAT_LIST](ack.data)
-      })
-      this.$socket.emit('contacts', { tjId }, ack => {
-        console.log(ack)
-        this[types.ADD_CONTACT](ack.data)
-      })
-      this.$socket.emit('msg_history', { tjId }, ack => {
-        console.log(ack)
-        this[types.DISTRIBUTE_MSG](ack.data)
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
