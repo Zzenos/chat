@@ -169,7 +169,6 @@ export default {
   },
   data() {
     return {
-      // aa: [],
       // records: [
       //   {
       //     id: '535',
@@ -204,9 +203,9 @@ export default {
       //   }
       // ],
       loadRecord: 1,
-      groupNum: 0,
       userId: this.$route.params.tjId,
-      chatId: this.$route.params.contactId
+      chatId: this.$route.params.contactId,
+      wechatId: this.$route.query.wechatId
     }
   },
   mounted() {
@@ -290,7 +289,7 @@ export default {
       })
     },
     groupInfo() {
-      return this.$store.getters.groupDetailsById(this.chatId)
+      return this.$store.getters.groupDetailsById(this.wechatId)
     }
   }
 }

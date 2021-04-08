@@ -71,14 +71,14 @@ export default {
   name: 'contactInfo',
   data() {
     return {
-      chatId: this.$route.params.contactId,
+      wechatId: this.$route.params.contactId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type
     }
   },
   computed: {
     allInfo() {
-      return this.type == 1 ? this.$store.getters.wechatDetailsById(this.chatId) : this.$store.getters.groupDetailsById(this.chatId)
+      return this.type == 1 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
     }
   }
 }
