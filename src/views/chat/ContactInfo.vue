@@ -66,24 +66,19 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
 export default {
   name: 'contactInfo',
   data() {
     return {
-      chatId: this.$route.params.contactId,
+      wechatId: this.$route.params.contactId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type
-      // type: 2
     }
   },
   computed: {
-    ...mapGetters('accountDetails', {
-      friendDetail: 'wechatDetailsById',
-      groupDeatil: 'groupDetailsById'
-    }),
     allInfo() {
-      return this.type == 1 ? this.friendDetail(this.chatId) : this.groupDeatil(this.chatId)
+      return this.type == 1 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
     }
   }
 }
