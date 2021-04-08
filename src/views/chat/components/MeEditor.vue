@@ -37,7 +37,10 @@ export default {
         this[types.SEND_MSG]({
           msgType: 'text',
           msgId: '222',
-          chatId: this.$route.query.wechatName,
+          chatId:
+            this.$route.params.tjId +
+            '&' +
+            (this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0]),
           chatType: this.$route.query.chatType,
           fromId: this.$route.params.tjId,
           toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
