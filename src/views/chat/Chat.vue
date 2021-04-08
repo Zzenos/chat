@@ -143,7 +143,9 @@
     <header></header>
     <div class="noRecords">
       <div class="left">
-        <img class="none" src="../../assets/None.png" alt="" />
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+          <img class="none" src="../../assets/None.png" alt="" />
+        </div>
       </div>
       <div class="talk-record">
         <img class="none" src="../../assets/None.png" alt="" />
