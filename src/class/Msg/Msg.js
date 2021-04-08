@@ -19,7 +19,7 @@ class Msg {
     let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msg_time, sender, unread, seq } = options
     this.msgId = msgId // 发出的消息id为uuid
     if (isSendMsg) {
-      this.cliMsgId = getUuid() // 发出的消息id为uuid
+      this.clientMsgId = getUuid() // 发出的消息id为uuid
     } else {
       this.sender = sender || null // 发送人信息
     }

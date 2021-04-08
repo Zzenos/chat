@@ -33,7 +33,7 @@ export default {
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经发送，进行msg_id的更改即可
         const index = state.chatMsgs[msg.chatId].findIndex(i => {
-          return i.cliMsgId === msg.cliMsgId
+          return i.clientMsgId === msg.clientMsgId
         })
         if (index >= 0) {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
@@ -57,12 +57,12 @@ export default {
       }
     },
     [types.CACHE_SENDING_MSG](state, msg) {
-      if (state.sendingMsgHash[msg.cliMsgId]) return
-      Vue.set(state.sendingMsgHash, `${msg.cliMsgId}`, msg)
+      if (state.sendingMsgHash[msg.clientMsgId]) return
+      Vue.set(state.sendingMsgHash, `${msg.clientMsgId}`, msg)
     },
     [types.CLEAR_SENDING_MSG](state, msg) {
-      if (state.sendingMsgHash[msg.cliMsgId]) {
-        Vue.delete(state.sendingMsgHash, `${msg.cliMsgId}`, msg)
+      if (state.sendingMsgHash[msg.clientMsgId]) {
+        Vue.delete(state.sendingMsgHash, `${msg.clientMsgId}`, msg)
       }
     },
     // 消息缓存

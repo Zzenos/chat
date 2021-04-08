@@ -36,7 +36,7 @@ export default {
         console.log(currentTime)
         this[types.SEND_MSG]({
           msgType: 'text',
-          msgId: '222',
+          // msgId: '222',
           chatId: this.$route.query.wechatName,
           chatType: this.$route.query.chatType,
           fromId: this.$route.params.tjId,
