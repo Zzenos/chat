@@ -276,20 +276,6 @@ export default {
       // this.$refs.editor.clear()
       this.$refs.editor.getDraftText(this.chatId)
     }
-    // records() {
-    //   if (!this.records.length) {
-    //     this.aa = [{ name: 'aname', key: 'acb' }]
-    //   } else {
-    //     if (this.records[0].chatType == 1) {
-    //       //friendInfo:[]
-    //       //this.get
-    //       console.log('私聊请求用户信息')
-    //     }
-    //     if (this.records[0].chatType == 2) {
-    //       console.log('群聊请求群聊信息')
-    //     }
-    //   }
-    // }
   },
   computed: {
     records() {
@@ -301,9 +287,6 @@ export default {
     groupInfo() {
       return this.$store.getters.groupDetailsById(this.wechatId)
     }
-  },
-  created() {
-    console.log(this.chatId, 296296)
   }
 }
 </script>
