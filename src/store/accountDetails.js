@@ -2,7 +2,6 @@ import Vue from 'vue'
 import * as types from './actionType'
 // 探鲸账号
 export default {
-  namespaced: true,
   state: {
     wechat: {},
     group: {}

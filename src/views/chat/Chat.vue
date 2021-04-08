@@ -152,7 +152,7 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
-import { mapActions, mapGetters } from 'vuex'
+// import { mapActions } from 'vuex'
 
 export default {
   name: 'chat',
@@ -246,12 +246,13 @@ export default {
         return
       }
     },
-    ...mapActions('messages', {
-      more: 'PULL_HISTORY_MSG'
-    }),
+    // ...mapActions('messages', {
+    //   more: 'PULL_HISTORY_MSG'
+    // }),
     loadChatRecords() {
       // ('去请求更多聊天记录')
-      this.records = this.more(this.chatId, this.records[0].chatType)
+      // this.records = this.more(this.chatId, this.records[0].chatType)
+      this.records.unshift(this.$store.actions.PULL_HISTORY_MSG(this.chatId, this.records[0].chatType))
     }
   },
   watch: {
@@ -282,25 +283,14 @@ export default {
     // }
   },
   computed: {
-    ...mapGetters('messages', {
-      record: 'getMsgsByChatId'
-    }),
     records() {
-      return this.record(this.chatId).map(item => {
+      return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
       })
     },
-    ...mapGetters('accountDetails', {
-      // friendDetail: 'wechatDetailsById',
-      groupDeatil: 'groupDetailsById'
-    }),
-    // friendInfo() {
-    //   //this.chatId 是 contactId 不是    需要chatType 来判断
-    //   return this.friendDetail(this.chatId)
-    // },
     groupInfo() {
-      return this.groupDeatil(this.chatId)
+      return this.$store.getters.groupDetailsById(this.chatId)
     }
   }
 }
