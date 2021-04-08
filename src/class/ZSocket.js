@@ -173,7 +173,7 @@ class ZSocket {
             if (index >= 0) this.emitMsgs.splice(index, 1)
           }
           // 有回调
-          if (cb && typeof cb === 'function') {
+          if (cb && typeof cb === 'function' && ack.data) {
             cb(ack.data)
             cs('发送成功回调执行')
           }

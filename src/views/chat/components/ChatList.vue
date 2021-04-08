@@ -37,7 +37,7 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        this.chatList = this.$store.getters.chatsByChatId(this.tjId) || []
+        this.chatList = this.$store.getters.chatsByChatId(this.tjId)
         // this.chatList = this.$store.state.chat[this.tjId] || []
         console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
         if (!this.curChat && this.chatList.length > 0) this.curChat = this.chatList[0]

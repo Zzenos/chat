@@ -33,13 +33,17 @@ export default {
     chatsByChatId: state => {
       return tjId => {
         console.log(tjId, state[tjId])
-        const chatList = state[tjId].map(i => {
-          return {
-            ...i
-            // lastMsg: rootState[tjId][rootState[tjId].length - 1] || null
-          }
-        })
-        return chatList
+        if (state[tjId]) {
+          return state[tjId].map(i => {
+            return {
+              ...i
+              // lastMsg: rootState[tjId][rootState[tjId].length - 1] || null
+            }
+          })
+        } else {
+          Vue.set(state, `${tjId}`, [])
+          return state[tjId]
+        }
       }
     }
   }
