@@ -152,7 +152,8 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
+import * as types from '@/store/actionType'
 
 export default {
   name: 'chat',
@@ -245,13 +246,11 @@ export default {
         return
       }
     },
-    // ...mapActions('messages', {
-    //   more: 'PULL_HISTORY_MSG'
-    // }),
+    ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
       // ('去请求更多聊天记录')
       // this.records = this.more(this.chatId, this.records[0].chatType)
-      this.records.unshift(this.$store.actions.PULL_HISTORY_MSG(this.chatId, this.records[0].chatType))
+      this.records.unshift(this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType))
     }
   },
   watch: {

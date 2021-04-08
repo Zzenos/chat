@@ -11,6 +11,7 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
+import * as types from '@/store/actionType'
 // function findTalk(index_name){return wechat_account.find(item=>item.wechat_id==index_name)}
 export default {
   name: 'MeEditor',
@@ -22,9 +23,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('messages', {
-      send: 'SEND_MSG'
-    }),
+    ...mapActions([types.SEND_MSG]),
     inputEvent() {
       // this.$emit('keyboard-event', e.target.value)
       // console.log('send', e)
@@ -33,7 +32,7 @@ export default {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
       if (e.keyCode == 13 && this.editorText !== '') {
         // let currentTime = new Date().getTime()
-        this.send(this.editorText)
+        this[types.SEND_MSG](this.editorText)
         this.sendToBottom()
         this.editorText = ''
         // this.sendTime = currentTime
