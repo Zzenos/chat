@@ -80,6 +80,13 @@ export default {
     allInfo() {
       return this.type == 1 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
     }
+  },
+  watch: {
+    $route() {
+      this.wechatId = this.$route.params.contactId
+      this.type = this.$route.query.type
+      // console.log(this.$route.params,this.$route.query);
+    }
   }
 }
 </script>
