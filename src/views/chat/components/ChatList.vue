@@ -8,7 +8,7 @@
       <div class="info">
         <div class="nickname">
           <span v-html="item.wechatName"></span>
-          <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span>
+          <!-- <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span> -->
         </div>
         <div class="time">{{ item.lastActiveTime | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
@@ -100,6 +100,7 @@ export default {
         position: absolute;
         right: 12px;
         top: 16px;
+        font-size: 12px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.45);

@@ -6,9 +6,9 @@ export default {
   mutations: {
     [types.ADD_CONTACT](state, contactsData) {
       if (state[contactsData[0].tjId]) {
-        state[contactsData[0].tjId] = contactsData
+        state[contactsData[0].tjId] = contactsData[0]
       } else {
-        Vue.set(state, `${contactsData[0].tjId}`, contactsData)
+        Vue.set(state, `${contactsData[0].tjId}`, contactsData[0])
       }
     }
   },

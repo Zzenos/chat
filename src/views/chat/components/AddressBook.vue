@@ -4,18 +4,18 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="1" tab="客户">
           <div class="list-wraper">
-            <div v-for="item in contactData.customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
-                <span v-if="item.wechatAvatar" class="label">@微信</span>
+                <!-- <span v-if="item.wechatAvatar" class="label">@微信</span> -->
               </div>
             </div>
           </div>
         </a-tab-pane>
         <a-tab-pane key="2" tab="群聊">
           <div class="list-wraper">
-            <div v-for="item in contactData.groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <span v-html="item.wechatName"> </span><span>（{{ item.group_num }}）</span>
             </div>
@@ -23,7 +23,7 @@
         </a-tab-pane>
         <a-tab-pane key="3" tab="成员">
           <div class="list-wraper">
-            <div v-for="item in contactData.memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
@@ -48,31 +48,8 @@ export default {
       activeKey: '1', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
       customerList: [],
-      groupList: [
-        // {
-        //   wechatId: 7,
-        //   wechatName: 'BizChat群聊测试',
-        //   group_num: 60
-        // },
-        // {
-        //   wechatId: 8,
-        //   wechatName: 'BizChat群聊测试',
-        //   group_num: 3
-        // }
-      ],
-      memberList: [
-        // {
-        //   wechatId: 7,
-        //   wechatName: '刘东霞7',
-        //   source: 'work',
-        //   wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        // },
-        // {
-        //   wechatId: 8,
-        //   wechatName: '张建8',
-        //   wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        // }
-      ]
+      groupList: [],
+      memberList: []
     }
   },
   props: {
@@ -80,18 +57,25 @@ export default {
       type: String
     }
   },
-  computed: {
+  /* computed: {
     // 通信录数据
     contactData: function() {
       console.log(77777, this.$store.getters.contactByTjId(this.tjId))
       return this.$store.getters.contactByTjId(this.tjId)
     }
-  },
+  }, */
   watch: {
     tjId: {
       immediate: true,
       handler: function(n) {
         console.log(8888888, n, this.contactData)
+        this.contactData = this.$store.getters.contactByTjId(n)
+        if (this.contactData) {
+          const { customerList, groupList, memberList } = this.contactData
+          this.customerList = customerList
+          this.groupList = groupList
+          this.memberList = memberList
+        }
       }
     }
   },
