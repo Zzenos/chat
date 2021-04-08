@@ -56,6 +56,12 @@ export default {
       this.$socket.on('msg_new', ack => {
         this[types.DISTRIBUTE_MSG](ack.data)
       })
+      // 通讯录
+      this.$socket.on('contacts', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_CONTACT](ack.data)
+        }
+      })
       // 添加会话列表
       this.$socket.on('chat_list', ack => {
         if (ack.code === 200) {

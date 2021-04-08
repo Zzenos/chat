@@ -4,7 +4,7 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="1" tab="客户">
           <div class="list-wraper">
-            <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in contactData.customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
@@ -15,7 +15,7 @@
         </a-tab-pane>
         <a-tab-pane key="2" tab="群聊">
           <div class="list-wraper">
-            <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in contactData.groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <span v-html="item.wechatName"> </span><span>（{{ item.group_num }}）</span>
             </div>
@@ -23,7 +23,7 @@
         </a-tab-pane>
         <a-tab-pane key="3" tab="成员">
           <div class="list-wraper">
-            <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in contactData.memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>

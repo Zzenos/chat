@@ -33,7 +33,7 @@ export default {
     chatsByChatId: (state, rootState) => {
       return tjId => {
         const chatList = state[tjId].map(i => {
-          console.log(tjId, rootState)
+          console.log(tjId, state, rootState)
           return {
             ...i
             // lastMsg: rootState[tjId][rootState[tjId].length - 1] || null

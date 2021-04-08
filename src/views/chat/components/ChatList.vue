@@ -10,7 +10,7 @@
           <span v-html="item.wechatName"></span>
           <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span>
         </div>
-        <div class="time">22:00</div>
+        <div class="time">{{ item.lastActiveTime | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
         <div class="msg ellipsis">{{ item.content }}</div>
       </div>

@@ -7,6 +7,7 @@ import './config/icon.config'
 import './config/antd.config'
 import './components/common/AntIcon'
 import ZSocket from '@/class/ZSocket'
+import './util/filters'
 
 Vue.config.productionTip = false
 Vue.prototype.$socket = ZSocket
