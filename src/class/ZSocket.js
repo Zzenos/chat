@@ -158,7 +158,7 @@ class ZSocket {
       }
 
       msg._status = MSG_STATUS.PENDING
-
+      console.log('emitMsg', msg)
       this.socket.emit(
         msg.evtName,
         {

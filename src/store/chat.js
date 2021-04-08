@@ -13,19 +13,19 @@ export default {
       console.log(state, chatInfo)
 
       // 结构修改后注释
-      const tjId = chatInfo[0].chatId.split('&')[0]
-      if (!state[tjId]) {
-        Vue.set(state, `${tjId}`, chatInfo)
-      } else {
-        state[tjId] = chatInfo
-      }
-      // 结构修改后释放
-      // const tjId = chatInfo.chatId.split('&')[0]
+      // const tjId = chatInfo[0].chatId.split('&')[0]
       // if (!state[tjId]) {
-      //   Vue.set(state, `${tjId}`, chatInfo.chatList)
+      //   Vue.set(state, `${tjId}`, chatInfo)
       // } else {
-      //   state[tjId] = chatInfo.chatList
+      //   state[tjId] = chatInfo
       // }
+      // 结构修改后释放
+      const tjId = chatInfo.chatId.split('&')[0]
+      if (!state[tjId]) {
+        Vue.set(state, `${tjId}`, chatInfo.chatList)
+      } else {
+        state[tjId] = chatInfo.chatList
+      }
     }
   },
   actions: {},

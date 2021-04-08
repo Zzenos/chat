@@ -85,6 +85,7 @@ export default {
     },
     // 切换企微号，拉取会话列表、通讯录、历史消息
     pullData(tjId) {
+      console.log('tjId:', tjId)
       this.$socket.emit('chat_list', { tjId }, ack => {
         console.log(ack)
         this[types.ADD_CHAT_LIST](ack.data)

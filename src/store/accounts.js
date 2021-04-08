@@ -8,8 +8,8 @@ export default {
     [types.ADD_ACCOUNT](state, accounts) {
       state.accounts = accounts.map(i => {
         return {
-          info: i,
-          unread: 1
+          info: i
+          // unread: 1 // 服务端拿不到，所以，一期不做
         }
       })
     }
