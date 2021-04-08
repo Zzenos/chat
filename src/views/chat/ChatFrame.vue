@@ -62,10 +62,22 @@ export default {
           this[types.ADD_CHAT_LIST](ack.data)
         }
       })
-      // 通讯录
-      this.$socket.on('contacts', ack => {
+      // 客户详细信息
+      this.$socket.on('customer_info', ack => {
         if (ack.code === 200) {
-          this[types.ADD_CONTACT](ack.data)
+          this[types.ADD_WECHAT_DETAILS](ack.data)
+        }
+      })
+      // 群聊详细信息
+      this.$socket.on('group_info', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_GROUP_DETAILS](ack.data)
+        }
+      })
+      // 员工详细信息
+      this.$socket.on('member_info', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_WECHAT_DETAILS](ack.data)
         }
       })
 
@@ -91,7 +103,7 @@ export default {
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT])
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_WECHAT_DETAILS, types.ADD_GROUP_DETAILS])
   },
   created() {
     this.initSocket()

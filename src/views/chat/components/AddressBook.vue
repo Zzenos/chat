@@ -102,24 +102,21 @@ export default {
       const { wechatId } = val
       switch (this.activeKey) {
         case '1':
-          // 获取微信号详细信息
+          // 获取客户信息
           this.$socket.emit('customer_info', { tjId: this.tjId }, ack => {
             console.log(ack)
-            this[types.ADD_WECHAT_DETAILS](ack.data)
           })
           break
         case '2':
           // 获取群详细信息
-          this.$socket.emit('group_info', { tjId: 112 }, ack => {
+          this.$socket.emit('group_info', { tjId: this.tjId }, ack => {
             console.log(ack)
-            this[types.ADD_GROUP_DETAILS](ack.data)
           })
           break
         case '3':
-          // 获取微信号详细信息
+          // 获取员工详细信息
           this.$socket.emit('member_info', { tjId: this.tjId }, ack => {
             console.log(ack)
-            this[types.ADD_WECHAT_DETAILS](ack.data)
           })
           break
 
