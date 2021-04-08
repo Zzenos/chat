@@ -270,7 +270,7 @@ export default {
       this.wechatName = this.$route.query.wechatName
       // this.toBottom()
       // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
-      console.log(this.records, this.records[0].sender)
+      console.log(this.records)
       console.log(this.$route.query)
       // console.log(this.$route.params,this.$route.query.wechatName);
       // if (this.records.length > 0) {
