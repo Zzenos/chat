@@ -4,7 +4,7 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="1" tab="客户">
           <div class="list-wraper">
-            <div v-for="item in contactData.customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
@@ -15,7 +15,7 @@
         </a-tab-pane>
         <a-tab-pane key="2" tab="群聊">
           <div class="list-wraper">
-            <div v-for="item in contactData.groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <span v-html="item.wechatName"> </span><span>（{{ item.group_num }}）</span>
             </div>
@@ -23,7 +23,7 @@
         </a-tab-pane>
         <a-tab-pane key="3" tab="成员">
           <div class="list-wraper">
-            <div v-for="item in contactData.memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+            <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
@@ -49,29 +49,29 @@ export default {
       curAddress: {},
       customerList: [],
       groupList: [
-        {
-          wechatId: 7,
-          wechatName: 'BizChat群聊测试',
-          group_num: 60
-        },
-        {
-          wechatId: 8,
-          wechatName: 'BizChat群聊测试',
-          group_num: 3
-        }
+        // {
+        //   wechatId: 7,
+        //   wechatName: 'BizChat群聊测试',
+        //   group_num: 60
+        // },
+        // {
+        //   wechatId: 8,
+        //   wechatName: 'BizChat群聊测试',
+        //   group_num: 3
+        // }
       ],
       memberList: [
-        {
-          wechatId: 7,
-          wechatName: '刘东霞7',
-          source: 'work',
-          wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-        },
-        {
-          wechatId: 8,
-          wechatName: '张建8',
-          wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
-        }
+        // {
+        //   wechatId: 7,
+        //   wechatName: '刘东霞7',
+        //   source: 'work',
+        //   wechatAvatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
+        // },
+        // {
+        //   wechatId: 8,
+        //   wechatName: '张建8',
+        //   wechatAvatar: 'http://wx.qlogo.cn/mmhead/Q3auHgzwzM5JkicMu1sD1UZ8seFx9vPcAAjyaOfoBLiaV0cNz51xmPCg/0'
+        // }
       ]
     }
   },
@@ -84,7 +84,7 @@ export default {
     // 通信录数据
     contactData: function() {
       console.log(77777, this.$store.getters.contactByTjId(this.tjId))
-      return this.$store.getters.contactByTjId(this.tjId)[0]
+      return this.$store.getters.contactByTjId(this.tjId)
     }
   },
   watch: {
@@ -103,7 +103,7 @@ export default {
       switch (this.activeKey) {
         case '1':
           // 获取微信号详细信息
-          this.$socket.emit('wechat_info', { tjId: this.tjId }, ack => {
+          this.$socket.emit('customer_info', { tjId: this.tjId }, ack => {
             console.log(ack)
             this[types.ADD_WECHAT_DETAILS](ack.data)
           })
@@ -117,7 +117,7 @@ export default {
           break
         case '3':
           // 获取微信号详细信息
-          this.$socket.emit('wechat_info', { tjId: this.tjId }, ack => {
+          this.$socket.emit('member_info', { tjId: this.tjId }, ack => {
             console.log(ack)
             this[types.ADD_WECHAT_DETAILS](ack.data)
           })
