@@ -31,14 +31,20 @@ export default {
     keydownEvent(e) {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
       if (e.keyCode == 13 && this.editorText !== '') {
-        // let currentTime = new Date().getTime()
+        let currentTime = new Date().getTime()
+        console.log(currentTime)
         this[types.SEND_MSG]({
           msgType: 'text',
-          data: this.editorText
+          msgId: '222',
+          chatId: this.$route.query.wechatName,
+          chatType: this.$route.query.chatType,
+          fromId: this.$route.params.tjId,
+          toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
+          content: this.editorText,
+          msg_time: currentTime
         })
         this.sendToBottom()
         this.editorText = ''
-        // this.sendTime = currentTime
         e.preventDefault()
       }
     }
