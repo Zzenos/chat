@@ -27,7 +27,7 @@
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <span v-html="item.wechatName"></span>
-                <!-- <span v-if="item.wechatAvatar" :style="{ color: item.source === 'work' ? '#FF8000' : '#0ead63' }" class="label">@微信</span> -->
+                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">{{ item.company || '@微信' }}</span>
               </div>
             </div>
           </div>
