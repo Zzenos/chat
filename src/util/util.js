@@ -18,7 +18,7 @@ export const getUuid = function() {
 }
 export function formateTime(datetime) {
   if (datetime == null) return ''
-
+  datetime = datetime.toString()
   datetime = datetime.replace(/-/g, '/')
 
   //当前时间戳

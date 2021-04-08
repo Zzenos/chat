@@ -146,7 +146,7 @@ export default {
   getters: {
     getMsgsByChatId: state => {
       return chatId => {
-        return state[chatId] || []
+        return state.chatMsgs[chatId] || []
       }
     }
   }

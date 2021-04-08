@@ -12,8 +12,8 @@
           </span>
           <!-- 群聊名称 -->
           <span v-else class="groupName">
-            {{ groupInfo[0].group_name }}
-            <span class="num">{{ member_count }}</span>
+            <!-- {{ groupInfo[0].group_name }}
+            <span class="num">{{ member_count }}</span> -->
           </span>
         </div>
 
@@ -52,7 +52,7 @@
           </div>
 
           <!-- 消息主体 -->
-          <div v-for="(item, index) in records" :key="item.id">
+          <div v-for="(item, index) in records" :key="item.msgId">
             <!-- 群消息 加入退出群聊-->
             <!-- <div v-if="item.msg_type == 2" class="message-box"></div> -->
 
@@ -67,7 +67,7 @@
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
               <!-- 头像 -->
               <div class="avatar-column">
-                <a-avatar shape="square" :size="36" icon="user" :src="item.sender.avatar" />
+                <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
               </div>
               <div class="main-column">
                 <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边盒子-->
@@ -77,7 +77,7 @@
                 <!-- 内容 -->
                 <div class="talk-content">
                   <!-- 文本消息 -->
-                  <text-message v-if="item.msgType == 2001" :content="item.content" :float="item.float" />
+                  <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
                   <!-- 图片消息 -->
                   <image-message v-else-if="item.msgType == 2002" :src="item.href" />
@@ -116,23 +116,16 @@
         <div class="search">
           <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
-        <div class="memberList" v-for="item in groupInfo" :key="item.group_id">
+        <!-- <div class="memberList" v-for="item in groupInfo" :key="item.group_id">
           群成员({{ item.member_count }})
           <div class="memberInfo" v-for="itm in item.members" :key="itm.user_id">
-            <!-- 头像 -->
+
             <a-avatar shape="square" :size="36" icon="user" :src="itm.avatar" />
-            <!-- 昵称 -->
+
             <span class="name"> 次倩润itm.name </span>
             <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
           </div>
-          <!-- <div class="memberInfo">
-    
-            <a-avatar shape="square" :size="36" icon="user" src="https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0" />
-         
-            <span class="name"> 次倩润item.group_name </span>
-            <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-          </div> -->
-        </div>
+        </div> -->
       </div>
       <div class="talk-record" v-else>
         好友
@@ -231,6 +224,7 @@ export default {
     sendTime: formateTime,
     compareTime(index, datetime) {
       if (datetime == undefined) return false
+      datetime = datetime.toString()
       datetime = datetime.replace(/-/g, '/')
       let time = Math.floor(Date.parse(datetime) / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)
@@ -272,9 +266,10 @@ export default {
       this.chatId = this.$route.params.contactId //获取传来的参数
       this.wechatId = this.$route.query.wechatId
       this.wechatName = this.$route.query.wechatName
-      this.toBottom()
+      // this.toBottom()
       // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
-      console.log(this.records)
+      console.log(this.records, this.records[0].sender)
+      console.log(this.chatId)
       // console.log(this.$route.params,this.$route.query.wechatName);
       // if (this.records.length > 0) {
       //   this.loadRecord = 1
