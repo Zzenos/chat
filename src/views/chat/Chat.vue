@@ -7,13 +7,15 @@
         <div v-if="records.length">
           <!-- 好友名字 -->
           <span v-if="records[0].chatType == 1" class="friendName">
-            {{ records[0].fromId == userId ? records[0].sender.wechat_name : records[0].to.wechat_name }}
+            <!-- {{ records[0].fromId == userId ? records[0].to.wechatName : records[0].sender.wechatName }} -->
+            {{ $route.query.wechatName }}
             <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
           </span>
           <!-- 群聊名称 -->
           <span v-else class="groupName">
             <!-- {{ groupInfo[0].group_name }}
             <span class="num">{{ member_count }}</span> -->
+            {{ $route.query.wechatName }}
           </span>
         </div>
 
@@ -269,7 +271,7 @@ export default {
       // this.toBottom()
       // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
       console.log(this.records, this.records[0].sender)
-      console.log(this.chatId)
+      console.log(this.$route.query)
       // console.log(this.$route.params,this.$route.query.wechatName);
       // if (this.records.length > 0) {
       //   this.loadRecord = 1
