@@ -77,7 +77,7 @@ export default {
      * @param {Array} data 消息数组
      */
     [types.DISTRIBUTE_MSG]: {
-      root: true,
+      // root: true,
       handler: ({ commit }, data) => {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
@@ -100,7 +100,7 @@ export default {
      * */
 
     [types.PULL_HISTORY_MSG]: {
-      root: true,
+      // root: true,
       handler: ({ commit, state }, chatId, chatType) => {
         Zsocket.emit(
           'chat_msg_history',
@@ -128,7 +128,7 @@ export default {
      * TODO: 消息超时
      */
     [types.SEND_MSG]: {
-      root: true,
+      // root: true,
       handler: ({ commit, dispatch }, data) => {
         const newMsg = getSendMsg(data)
         commit(types.CACHE_SENDING_MSG, newMsg)
