@@ -72,7 +72,7 @@
               <div class="main-column">
                 <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边盒子-->
                 <div class="talk-title" :class="{ show: item.chatType == 2 && item.float == 'left' }">
-                  <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.nickname"></span>
+                  <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.wechatName"></span>
                 </div>
                 <!-- 内容 -->
                 <div class="talk-content">
