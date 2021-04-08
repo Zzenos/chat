@@ -3,7 +3,7 @@
     <a-row type="flex">
       <a-col flex="88px" class="side-bar">
         <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
-        <account-list />
+        <account-list @pullData="pullData" />
         <div class="bot-logo">
           <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
           <div>ZMENG</div>
@@ -38,8 +38,14 @@ export default {
       // console.log(3344, this.saasId)
       this.$socket.init(`?token=${this.$store.state.token}`)
       console.log(3344, this.$socket)
-      this.$socket.emit('test', 'hahahah')
+      // this.$socket.emit('test', 'hahahah')
 
+      // 初始化探鲸账号列表
+      this.$socket.on('accounts', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_ACCOUNT](ack.data)
+        }
+      })
       // 历史消息
       this.$socket.on('msg_history', ack => {
         if (ack.code === 200) {
@@ -62,29 +68,35 @@ export default {
           this[types.ADD_CONTACT](ack.data)
         }
       })
-      // 初始化探鲸账号列表
-      this.$socket.on('accounts', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_ACCOUNT](ack.data)
-        }
-      })
-      // 获取微信号详细信息
-      this.$socket.emit('wechat_info', { tjId: 112 }, ack => {
-        console.log(ack)
-      })
-      // 获取群详细信息
-      this.$socket.emit('group_info', { tjId: 112 }, ack => {
-        console.log(ack)
-      })
 
-      setTimeout(() => {
+      if (this.$route.params.tjId) {
+        console.log('首次进入', this.$route.params.tjId)
+        this.pullData(this.$route.params.tjId)
+      }
+
+      /* setTimeout(() => {
         const msg = {
           fromId: 1112,
           toID: 1113,
           msgType: 'text'
         }
         this[types.SEND_MSG](msg)
-      }, 5000)
+      }, 5000) */
+    },
+    // 切换企微号，拉取会话列表、通讯录、历史消息
+    pullData(tjId) {
+      this.$socket.emit('chat_list', { tjId }, ack => {
+        console.log(ack)
+        this[types.ADD_CHAT_LIST](ack.data)
+      })
+      this.$socket.emit('contacts', { tjId }, ack => {
+        console.log(ack)
+        this[types.ADD_CONTACT](ack.data)
+      })
+      this.$socket.emit('msg_history', { tjId }, ack => {
+        console.log(ack)
+        this[types.DISTRIBUTE_MSG](ack.data)
+      })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT])

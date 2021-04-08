@@ -43,7 +43,9 @@ export default {
         return
       }
       this.curAct = account
-      this.$router.push({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
+      // 拉取数据
+      this.$emit('pullData', tjId)
+      this.$router.push({ path: `/chatframe/${tjId}/recent/0` })
     }
   }
 }
