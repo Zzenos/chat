@@ -65,7 +65,7 @@ const notFound = {
 routes = routes.concat([notFound])
 
 const router = new VueRouter({
-  mode: 'history',
+  // mode: 'history',
   routes
 })
 
