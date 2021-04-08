@@ -1,5 +1,5 @@
 <template>
-  <div class="chatCotainer">
+  <div class="chatCotainer" v-if="chatId != 0">
     <!-- header -->
     <header>
       <!-- title -->
@@ -138,6 +138,17 @@
         好友
       </div>
     </main>
+  </div>
+  <div class="chatCotainer" v-else>
+    <header></header>
+    <div class="noRecords">
+      <div class="left">
+        <img class="none" src="../../assets/None.png" alt="" />
+      </div>
+      <div class="talk-record">
+        <img class="none" src="../../assets/None.png" alt="" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -290,6 +301,9 @@ export default {
     groupInfo() {
       return this.$store.getters.groupDetailsById(this.wechatId)
     }
+  },
+  created() {
+    console.log(this.chatId, 296296)
   }
 }
 </script>
@@ -326,6 +340,11 @@ export default {
     .talk-record {
       width: 300px;
       border-left: 1px solid #e4e5e7;
+    }
+    .none {
+      width: 96px;
+      height: 96px;
+      margin: 300px auto;
     }
   }
   .mainContainer {
