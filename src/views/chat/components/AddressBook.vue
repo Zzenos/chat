@@ -83,23 +83,23 @@ export default {
     ...mapMutations([types.ADD_WECHAT_DETAILS, types.ADD_GROUP_DETAILS]),
     handleItem(val) {
       console.log(val)
-      const { wechatId } = val
+      const { wechatId, tjId } = val
       switch (this.activeKey) {
         case '1':
           // 获取客户信息
-          this.$socket.emit('customer_info', { tjId: this.tjId }, ack => {
+          this.$socket.emit('customer_info', { tjId }, ack => {
             console.log(ack)
           })
           break
         case '2':
           // 获取群详细信息
-          this.$socket.emit('group_info', { tjId: this.tjId }, ack => {
+          this.$socket.emit('group_info', { tjId }, ack => {
             console.log(ack)
           })
           break
         case '3':
           // 获取员工详细信息
-          this.$socket.emit('member_info', { tjId: this.tjId }, ack => {
+          this.$socket.emit('member_info', { tjId }, ack => {
             console.log(ack)
           })
           break
@@ -108,7 +108,7 @@ export default {
           break
       }
       this.curAddress = val
-      this.$router.replace({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
+      this.$router.push({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
     }
   }
 }

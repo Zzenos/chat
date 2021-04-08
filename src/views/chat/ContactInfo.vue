@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     allInfo() {
-      return this.type == 1 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
+      return this.type == 3 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
     }
   },
   watch: {
