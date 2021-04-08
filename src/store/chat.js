@@ -20,7 +20,7 @@ export default {
       //   state[tjId] = chatInfo
       // }
       // 结构修改后释放
-      const tjId = chatInfo.chatId.split('&')[0]
+      const tjId = chatInfo.tjId
       if (!state[tjId]) {
         Vue.set(state, `${tjId}`, chatInfo.chatList)
       } else {
