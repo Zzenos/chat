@@ -47,12 +47,12 @@ export default {
   methods: {
     handleItem(val) {
       console.log(val)
-      const { chatId } = val
+      const { chatId, wechatName } = val
       if (this.curChat.chatId === chatId) {
         // return
       }
       this.curChat = val
-      this.$router.push({ path: `/chatframe/${this.tjId}/recent/${chatId}?wechatId=${this.curChat.wechatId}` })
+      this.$router.push({ path: `/chatframe/${this.tjId}/recent/${chatId}?wechatId=${this.curChat.wechatId}&wechatName=${wechatName}` })
     }
   },
   mounted() {}

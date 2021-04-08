@@ -20,7 +20,7 @@
         <div v-else>
           <!-- 暂无消息时的头部显示 好友名字 或 群聊名称 -->
           <span class="friendName">
-            <!-- <span>{{ item.name }}</span> -->
+            <span>{{ wechatName }}</span>
             <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
           </span>
         </div>
@@ -219,7 +219,8 @@ export default {
       loadRecord: 1,
       userId: this.$route.params.tjId,
       chatId: this.$route.params.contactId,
-      wechatId: this.$route.query.wechatId
+      wechatId: this.$route.query.wechatId,
+      wechatName: this.$route.query.wechatName
     }
   },
   mounted() {
@@ -269,14 +270,19 @@ export default {
   watch: {
     $route() {
       this.chatId = this.$route.params.contactId //获取传来的参数
+      this.wechatId = this.$route.query.wechatId
+      this.wechatName = this.$route.query.wechatName
       this.toBottom()
+      // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
+      console.log(this.records)
+      // console.log(this.$route.params,this.$route.query.wechatName);
       // if (this.records.length > 0) {
       //   this.loadRecord = 1
       // } else {
       //   this.loadRecord = 2
       // }
       // this.$refs.editor.clear()
-      this.$refs.editor.getDraftText(this.chatId)
+      // this.$refs.editor.getDraftText(this.chatId)
     }
   },
   computed: {
