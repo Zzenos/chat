@@ -12,6 +12,7 @@
 <script>
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
+// import {getSendMsg} from '@/class/Msg'
 // function findTalk(index_name){return wechat_account.find(item=>item.wechat_id==index_name)}
 export default {
   name: 'MeEditor',
@@ -43,6 +44,16 @@ export default {
           content: this.editorText,
           msg_time: currentTime
         })
+        // getSendMsg({
+        //     msgType: 'text',
+        //     msgId: '222',
+        //     chatId: this.$route.query.wechatName,
+        //     chatType: this.$route.query.chatType,
+        //     fromId: this.$route.params.tjId,
+        //     toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
+        //     content: this.editorText,
+        //     msg_time: currentTime
+        //   })
         this.sendToBottom()
         this.editorText = ''
         e.preventDefault()

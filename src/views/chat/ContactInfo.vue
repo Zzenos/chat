@@ -1,5 +1,5 @@
 <template>
-  <div class="default" v-if="wechatId != 0">
+  <div class="default" v-if="allInfo && wechatId != 0">
     <div class="contact-info" v-if="type == 1 || type == 3">
       <div class="top">
         <!-- 头像  -->
