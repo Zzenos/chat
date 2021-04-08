@@ -1,5 +1,5 @@
 <template>
-  <div class="chatCotainer">
+  <div class="chatCotainer" v-if="chatId != 0">
     <!-- header -->
     <header>
       <!-- title -->
@@ -139,6 +139,19 @@
       </div>
     </main>
   </div>
+  <div class="chatCotainer" v-else>
+    <header></header>
+    <div class="noRecords">
+      <div class="left">
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+          <img class="none" src="../../assets/None.png" alt="" />
+        </div>
+      </div>
+      <div class="talk-record">
+        <img class="none" src="../../assets/None.png" alt="" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -265,20 +278,6 @@ export default {
       // this.$refs.editor.clear()
       this.$refs.editor.getDraftText(this.chatId)
     }
-    // records() {
-    //   if (!this.records.length) {
-    //     this.aa = [{ name: 'aname', key: 'acb' }]
-    //   } else {
-    //     if (this.records[0].chatType == 1) {
-    //       //friendInfo:[]
-    //       //this.get
-    //       console.log('私聊请求用户信息')
-    //     }
-    //     if (this.records[0].chatType == 2) {
-    //       console.log('群聊请求群聊信息')
-    //     }
-    //   }
-    // }
   },
   computed: {
     records() {
@@ -326,6 +325,11 @@ export default {
     .talk-record {
       width: 300px;
       border-left: 1px solid #e4e5e7;
+    }
+    .none {
+      width: 96px;
+      height: 96px;
+      margin: 300px auto;
     }
   }
   .mainContainer {
