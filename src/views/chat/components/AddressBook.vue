@@ -38,6 +38,9 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import * as types from '@/store/actionType'
+
 export default {
   name: 'addressBook',
   data() {
@@ -93,11 +96,35 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([types.ADD_WECHAT_DETAILS, types.ADD_GROUP_DETAILS]),
     handleItem(val) {
       console.log(val)
       const { wechatId } = val
-      if (this.curAddress.wechatId === wechatId) {
-        // return
+      switch (this.activeKey) {
+        case '1':
+          // 获取微信号详细信息
+          this.$socket.emit('wechat_info', { tjId: this.tjId }, ack => {
+            console.log(ack)
+            this[types.ADD_WECHAT_DETAILS](ack.data)
+          })
+          break
+        case '2':
+          // 获取群详细信息
+          this.$socket.emit('group_info', { tjId: 112 }, ack => {
+            console.log(ack)
+            this[types.ADD_GROUP_DETAILS](ack.data)
+          })
+          break
+        case '3':
+          // 获取微信号详细信息
+          this.$socket.emit('wechat_info', { tjId: this.tjId }, ack => {
+            console.log(ack)
+            this[types.ADD_WECHAT_DETAILS](ack.data)
+          })
+          break
+
+        default:
+          break
       }
       this.curAddress = val
       this.$router.replace({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
