@@ -6,12 +6,19 @@ function resolve(dir) {
 const isProd = process.env.NODE_ENV === 'production'
 const TARGET = process.env.npm_lifecycle_event
 const port = 8080
+const title = 'BizChat-聊天工具'
 
 module.exports = {
-  productionSourceMap: !isProd,
+  publicPath: '/chat/',
+  outputDir: 'chat',
+  productionSourceMap: process.env.VUE_APP_MODE !== 'production',
   integrity: TARGET !== 'serve',
   // integrity: false,
   // crossorigin: TARGET !== 'serve' ? 'anonymous' : undefined,
+  configureWebpack: config => {
+    config.name = title
+    config.mode = isProd ? 'production' : 'development'
+  },
   devServer: {
     port,
     disableHostCheck: true
