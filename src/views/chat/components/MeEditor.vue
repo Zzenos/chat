@@ -31,7 +31,7 @@ export default {
     },
     keydownEvent(e) {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
-      if (e.keyCode == 13 && this.editorText !== '') {
+      if (e.keyCode == 13 && this.editorText !== '' && e.shiftKey == false) {
         let currentTime = new Date().getTime()
         console.log(currentTime)
         this[types.SEND_MSG]({

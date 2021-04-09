@@ -13,7 +13,7 @@
           <!-- 备注 -->
           <div>
             <div class="left">备注<i></i></div>
-            <span>wachat_name </span>
+            <span>{{ info.wechatName }}</span>
             <span class="edit"><a-icon type="edit"/></span>
           </div>
           <!-- 电话 -->
@@ -98,7 +98,7 @@ export default {
       this.info.wechatName = this.$route.query.wechatName
 
       // console.log(this.$route.params, this.$route.query)
-      // console.log(this.allInfo, this.type)
+      console.log(this.allInfo)
       // console.log(this.info)
     }
   }
