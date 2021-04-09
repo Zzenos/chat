@@ -68,6 +68,7 @@ export default {
     tjId: {
       immediate: true,
       handler: function(n) {
+        this.activeKey = '1'
         console.log(8888888, n, this.contactData)
         this.contactData = this.$store.getters.contactByTjId(n)
         if (this.contactData) {

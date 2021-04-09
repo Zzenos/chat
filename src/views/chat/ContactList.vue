@@ -41,6 +41,15 @@ export default {
       required: true
     }
   },
+  watch: {
+    tjId: {
+      immediate: true,
+      handler: function(n, o) {
+        if (n === o) return
+        this.curTab = 1
+      }
+    }
+  },
   data() {
     return {
       tabOptions: [],
