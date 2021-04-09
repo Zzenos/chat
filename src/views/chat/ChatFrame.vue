@@ -41,49 +41,49 @@ export default {
       // this.$socket.emit('test', 'hahahah')
 
       // 初始化探鲸账号列表
-      this.$socket.on('accounts', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_ACCOUNT](ack.data)
+      this.$socket.on('accounts', res => {
+        if (res.code === 200) {
+          this[types.ADD_ACCOUNT](res.data)
         }
       })
       // 历史消息
-      this.$socket.on('msg_history', ack => {
-        if (ack.code === 200) {
-          this[types.DISTRIBUTE_MSG](ack.data)
+      this.$socket.on('msg_history', res => {
+        if (res.code === 200) {
+          this[types.DISTRIBUTE_MSG](res.data)
         }
       })
       // 新消息
-      this.$socket.on('msg_new', ack => {
-        this[types.DISTRIBUTE_MSG](ack.data)
+      this.$socket.on('msg_new', res => {
+        this[types.DISTRIBUTE_MSG](res.data)
       })
       // 通讯录
-      this.$socket.on('contacts', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_CONTACT](ack.data)
+      this.$socket.on('contacts', res => {
+        if (res.code === 200) {
+          this[types.ADD_CONTACT](res.data)
         }
       })
       // 添加会话列表
-      this.$socket.on('chat_list', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_CHAT_LIST](ack.data)
+      this.$socket.on('chat_list', res => {
+        if (res.code === 200) {
+          this[types.ADD_CHAT_LIST](res.data)
         }
       })
       // 客户详细信息
-      this.$socket.on('customer_info', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_WECHAT_DETAILS](ack.data)
+      this.$socket.on('customer_info', res => {
+        if (res.code === 200) {
+          this[types.ADD_WECHAT_DETAILS](res.data)
         }
       })
       // 群聊详细信息
-      this.$socket.on('group_info', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_GROUP_DETAILS](ack.data)
+      this.$socket.on('group_info', res => {
+        if (res.code === 200) {
+          this[types.ADD_GROUP_DETAILS](res.data)
         }
       })
       // 员工详细信息
-      this.$socket.on('member_info', ack => {
-        if (ack.code === 200) {
-          this[types.ADD_WECHAT_DETAILS](ack.data)
+      this.$socket.on('member_info', res => {
+        if (res.code === 200) {
+          this[types.ADD_WECHAT_DETAILS](res.data)
         }
       })
 
