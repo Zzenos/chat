@@ -2,11 +2,11 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <li>表情</li>
-        <li>图片</li>
+        <li></li>
+        <li></li>
       </ul>
     </div>
-    <textarea placeholder="在这里输入....." v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
+    <textarea placeholder="输入内容，shift+enter换行，enter发送" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
   </div>
 </template>
 <script>
@@ -78,8 +78,8 @@ export default {
 .meEditor {
   width: 100%;
   .emoj {
-    height: 52px;
-    background: lightblue;
+    height: 51px;
+    border-top: 1px solid #e4e5e7;
     ul {
       display: flex;
       padding-left: 24px;

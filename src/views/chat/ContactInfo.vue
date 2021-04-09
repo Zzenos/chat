@@ -90,7 +90,8 @@ export default {
     $route() {
       this.wechatId = this.$route.params.contactId
       this.type = this.$route.query.type
-      // console.log(this.$route.params,this.$route.query);
+      console.log(this.$route.params, this.$route.query)
+      console.log(this.allInfo, this.type)
     }
   }
 }
