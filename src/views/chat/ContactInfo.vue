@@ -1,11 +1,11 @@
 <template>
-  <div class="default" v-if="allInfo && wechatId != 0">
+  <div class="default" v-if="wechatId != 0">
     <div class="contact-info" v-if="type == 1 || type == 3">
       <div class="top">
         <!-- 头像  -->
-        <a-avatar shape="square" :size="112" icon="user" :src="allInfo[0].wechat_avatar" />
+        <a-avatar shape="square" :size="112" :src="info.wechatAvatar" />
         <!-- 名字 -->
-        <div class="name">{{ allInfo[0].wachat_name }}<i></i></div>
+        <div class="name">{{ info.wechatName }}</div>
         <div style="color: #0ead63; font-size: 12px; margin-top: 8px">@微信</div>
       </div>
       <div class="bottom">
@@ -13,13 +13,13 @@
           <!-- 备注 -->
           <div>
             <div class="left">备注<i></i></div>
-            <span>{{ allInfo[0].wachat_name }}</span>
+            <span>wachat_name </span>
             <span class="edit"><a-icon type="edit"/></span>
           </div>
           <!-- 电话 -->
           <div v-if="type == 1">
             <div class="left">电话<i></i></div>
-            <span>{{ allInfo[0].mobilephones }}}</span>
+            <span>mobilephones</span>
           </div>
           <!-- 添加时间 -->
           <div v-if="type == 1">
@@ -51,15 +51,11 @@
     </div>
     <div class="groupBox" v-else>
       <div class="group">
-        <a-avatar shape="square" :size="112" icon="user" :src="allInfo[0].group_avatar" />
+        <a-avatar shape="square" :size="112" icon="user" :src="info.wechatAvatar" />
         <div class="nameNum">
-          <div class="name">{{ allInfo[0].group_name }}</div>
-          <div class="num">
-            <span>成员</span><span style="color:rgba(0, 0, 0, 0.85)">{{ allInfo[0].member_count }}人</span>
-          </div>
-          <div class="owner">
-            <span>群主</span><span style="color:rgba(0, 0, 0, 0.85)">{{ allInfo[0].owner_name }}</span>
-          </div>
+          <div class="name">{{ info.wechatName }}</div>
+          <div class="num"><span>成员</span><span style="color:rgba(0, 0, 0, 0.85)"> - 人</span></div>
+          <div class="owner"><span>群主</span><span style="color:rgba(0, 0, 0, 0.85)"> owner_name </span></div>
         </div>
       </div>
       <div class="sendmsg">发消息</div>
@@ -78,7 +74,8 @@ export default {
     return {
       wechatId: this.$route.params.contactId,
       //type 1 客户  2 群聊 3 成员
-      type: this.$route.query.type
+      type: this.$route.query.type,
+      info: []
     }
   },
   computed: {
@@ -86,12 +83,23 @@ export default {
       return this.type == 3 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
     }
   },
+  created() {
+    // 解决第一次点击头像 显示不出来
+    this.wechatId = this.$route.params.contactId
+    this.type = this.$route.query.type
+    this.info.wechatAvatar = this.$route.query.wechatAvatar
+    this.info.wechatName = this.$route.query.wechatName
+  },
   watch: {
     $route() {
       this.wechatId = this.$route.params.contactId
       this.type = this.$route.query.type
-      console.log(this.$route.params, this.$route.query)
-      console.log(this.allInfo, this.type)
+      this.info.wechatAvatar = this.$route.query.wechatAvatar
+      this.info.wechatName = this.$route.query.wechatName
+
+      // console.log(this.$route.params, this.$route.query)
+      // console.log(this.allInfo, this.type)
+      // console.log(this.info)
     }
   }
 }
@@ -147,7 +155,7 @@ export default {
           }
           span {
             display: block;
-            margin-top: 16px;
+            margin-top: 21px;
           }
           .edit {
             //  align-items: flex-end;
