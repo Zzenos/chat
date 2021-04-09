@@ -108,7 +108,13 @@ export default {
           break
       }
       this.curAddress = val
-      this.$router.push({ path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}` })
+      this.$router.push({
+        path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}`,
+        query: {
+          ...val,
+          type: this.activeKey
+        }
+      })
     }
   }
 }
