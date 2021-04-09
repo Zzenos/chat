@@ -31,16 +31,21 @@
     <!-- main -->
     <div class="noRecords" v-if="!records.length">
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
-          暂无消息
-        </div>
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)"></div>
 
         <div class="foot">
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
       <div class="talk-record">
-        资料
+        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
+        <div class="search">
+          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
+        </div>
+        <div class="foot">
+          <!-- <span>全部</span> -->
+          <img class="none" src="../../assets/None.png" alt="" style="margin:100px auto" />
+        </div>
       </div>
     </div>
     <main class="mainContainer" v-else>
@@ -129,9 +134,7 @@
           </div>
         </div> -->
       </div>
-      <div class="talk-record" v-else>
-        好友
-      </div>
+      <div class="talk-record" v-else></div>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -343,6 +346,7 @@ export default {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
+      border-right: 1px solid #e4e5e7;
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
@@ -455,7 +459,7 @@ export default {
         font-size: 14px;
         color: #000;
         line-height: 22px;
-        background: lightblue;
+        // background: lightblue;
         padding-top: 26px;
         padding-left: 21px;
         border-bottom: 1px solid #e4e5e7;
