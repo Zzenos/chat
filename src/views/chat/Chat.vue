@@ -231,12 +231,13 @@ export default {
       if (datetime == undefined) return false
       datetime = datetime + ''
       datetime = datetime.replace(/-/g, '/')
-      let time = Math.floor(Date.parse(datetime) / 1000)
+      // let time = Math.floor(Date.parse(datetime) / 1000)
+      let time = Math.floor(datetime / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)
       if (currTime - time < 60) return false
-      if (index == this.records.length - 1) return true
-      let nextDate = this.records[index + 1].time.replace(/-/g, '/')
-      return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
+      // if (index == this.records.length - 1) return true
+      // let nextDate = this.records[index + 1].time.replace(/-/g, '/')
+      // return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
     },
     toBottom() {
       let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
@@ -262,8 +263,8 @@ export default {
     ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
       // ('去请求更多聊天记录')
-      // this.records = this.more(this.chatId, this.records[0].chatType)
-      this.records.unshift(this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType))
+      // this.records.unshift(this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType))
+      this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType)
     }
   },
   watch: {
@@ -272,6 +273,7 @@ export default {
       this.wechatId = this.$route.query.wechatId
       this.wechatName = this.$route.query.wechatName
       // this.toBottom()
+      this.sendToBottom()
       // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
       console.log(this.records)
       console.log(this.$route.query)
