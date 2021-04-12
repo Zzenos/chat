@@ -7,7 +7,8 @@ Vue.filter('placeholder', value => {
 })
 
 Vue.filter('timeFilter', ts => {
-  return ts ? moment(ts).format('YYYY-MM-DD HH:mm') : '--'
+  const startOfDay = new Date(moment().format('YYYY-MM-DD')).setHours(0, 0, 0, 0)
+  return ts ? (ts >= startOfDay ? moment(ts).format('HH:mm') : moment(ts).format('YYYY-MM-DD')) : '--'
 })
 
 Vue.filter('nullFilter', str => {

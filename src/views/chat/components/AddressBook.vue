@@ -6,7 +6,7 @@
           <div class="list-wraper">
             <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
-              <div class="nickname">
+              <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
                 <!-- <span v-if="item.wechatAvatar" class="label">@微信</span> -->
               </div>
@@ -17,7 +17,10 @@
           <div class="list-wraper">
             <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-              <span v-html="item.wechatName"> </span><span>（{{ item.group_num }}）</span>
+              <div class="nickname ellipsis">
+                <span v-html="item.wechatName"></span>
+                <span>（{{ item.group_num }}）</span>
+              </div>
             </div>
           </div>
         </a-tab-pane>
@@ -25,7 +28,7 @@
           <div class="list-wraper">
             <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
-              <div class="nickname">
+              <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
                 <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">{{ item.company || '@微信' }}</span>
               </div>
@@ -149,6 +152,8 @@ export default {
       margin-right: 12px;
     }
     .nickname {
+      width: 230px;
+      text-align: left;
       .label {
         color: #0ead63;
         margin-left: 8px;

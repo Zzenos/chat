@@ -6,7 +6,7 @@
       <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
       <!-- </a-badge> -->
       <div class="info">
-        <div class="nickname">
+        <div class="nickname ellipsis">
           <span v-html="item.wechatName"></span>
           <!-- <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span> -->
         </div>
@@ -86,12 +86,13 @@ export default {
       width: 36px;
       height: 36px;
       border-radius: 4px;
-      margin-right: 18px;
+      margin-right: 12px;
     }
     .info {
       text-align: left;
       height: 44px;
       .nickname {
+        width: 145px;
         line-height: 22px;
         margin-bottom: 4px;
         .label {
