@@ -44,7 +44,7 @@
             <span class="edit"><a-icon type="edit"/></span>
           </div>
         </div>
-        <div class="sendmsg">
+        <div class="sendmsg" @click="tochat">
           发消息
         </div>
       </div>
@@ -103,9 +103,17 @@ export default {
       this.info.wechatAvatar = this.$route.query.wechatAvatar
       this.info.wechatName = this.$route.query.wechatName
 
-      // console.log(this.$route.params, this.$route.query)
+      console.log(this.$route.params, this.$route.query)
       console.log(this.allInfo)
       // console.log(this.info)
+    }
+  },
+  methods: {
+    tochat() {
+      this.$router.push({
+        path: `/chatframe/${this.$route.params.tjId}/recent/${this.$route.params.tjId + '&' + this.wechatId}`,
+        query: { ...this.$route.query }
+      })
     }
   }
 }

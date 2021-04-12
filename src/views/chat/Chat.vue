@@ -267,6 +267,13 @@ export default {
       this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType)
     }
   },
+  created() {
+    this.chatId = this.$route.params.contactId //获取传来的参数
+    console.log(this.chatId, 272)
+    this.wechatId = this.$route.query.wechatId
+    this.wechatName = this.$route.query.wechatName
+    this.sendToBottom()
+  },
   watch: {
     $route() {
       this.chatId = this.$route.params.contactId //获取传来的参数
