@@ -109,7 +109,7 @@ export default {
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_CUSTOMER_DETAILS, types.ADD_GROUP_DETAILS])
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
   },
   created() {
     this.initSocket()
