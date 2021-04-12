@@ -15,10 +15,13 @@
         <div class="msg ellipsis">{{ item.content }}</div>
       </div>
     </div>
+    <no-data v-if="chatList.length === 0" />
   </div>
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep'
+
 export default {
   name: 'chatList',
   data() {
@@ -30,6 +33,9 @@ export default {
   props: {
     tjId: {
       type: String
+    },
+    searchText: {
+      type: String
     }
   },
   watch: {
@@ -37,11 +43,16 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
+        console.log(n, o)
         this.chatList = this.$store.getters.chatsByChatId(this.tjId)
         // this.chatList = this.$store.state.chat[this.tjId] || []
         console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
         if (!this.curChat && this.chatList.length > 0) this.curChat = this.chatList[0]
       }
+    },
+    searchText(n) {
+      const chatList = cloneDeep(this.$store.getters.chatsByChatId(this.tjId))
+      this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
     }
   },
   methods: {

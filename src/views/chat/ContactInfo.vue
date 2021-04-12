@@ -65,9 +65,10 @@
       <div class="sendmsg">发消息</div>
     </div>
   </div>
-  <div class="default" v-else>
-    <img class="none" src="../../assets/None.png" alt="" />
-  </div>
+  <no-data v-else />
+  <!-- <div class="default" v-else>
+    <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+  </div> -->
 </template>
 
 <script>
