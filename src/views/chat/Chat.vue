@@ -13,8 +13,8 @@
           </span>
           <!-- 群聊名称 -->
           <span v-else class="groupName">
-            <!-- {{ groupInfo[0].group_name }}
-            <span class="num">{{ member_count }}</span> -->
+            <!-- {{ groupInfo[0].groupName }}
+            <span class="num">{{ memberCount }}</span> -->
             {{ $route.query.wechatName }}
           </span>
         </div>
@@ -123,13 +123,13 @@
         <div class="search">
           <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
-        <!-- <div class="memberList" v-for="item in groupInfo" :key="item.group_id">
-          群成员({{ item.member_count }})
-          <div class="memberInfo" v-for="itm in item.members" :key="itm.user_id">
+        <!-- <div class="memberList" v-for="item in groupInfo" :key="item.groupId">
+          群成员({{ item.memberCount }})
+          <div class="memberInfo" v-for="itm in item.members" :key="itm.wechatId">
 
-            <a-avatar shape="square" :size="36" icon="user" :src="itm.avatar" />
+            <a-avatar shape="square" :size="36" icon="user" :src="itm.wechatAvatar" />
 
-            <span class="name"> 次倩润itm.name </span>
+            <span class="name"> itm.wechatName </span>
             <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
           </div>
         </div> -->
@@ -229,7 +229,7 @@ export default {
     sendTime: formateTime,
     compareTime(index, datetime) {
       if (datetime == undefined) return false
-      datetime = datetime.toString()
+      datetime = datetime + ''
       datetime = datetime.replace(/-/g, '/')
       let time = Math.floor(Date.parse(datetime) / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)

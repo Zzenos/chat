@@ -41,6 +41,10 @@ export default {
   font-size: 14px;
   line-height: 22px;
   color: #000;
+  text-align: left;
+  // overflow: hidden;
+  word-break: break-word;
+  word-wrap: break-word;
 
   &.left {
     // color: #000;
