@@ -36,7 +36,6 @@ export default {
           return i.clientMsgId && i.clientMsgId === msg.clientMsgId
         })
 
-        console.log(7777777, state.chatMsgs[msg.chatId].length - 1, 'index', index)
         if (index >= 0) {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
         } else {
@@ -46,8 +45,9 @@ export default {
     },
     // 历史消息
     [types.ADD_HISTORY_MSG](state, chatId, msgs) {
+      console.log(88888, state.chatMsgs[chatId], chatId)
       if (state.chatMsgs[chatId]) {
-        state.chatMsgs[chatId].splice(0, 0, msgs)
+        state.chatMsgs[chatId].splice(0, 0, ...msgs)
       }
     },
     //
@@ -86,7 +86,6 @@ export default {
         }
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
-          console.log('将要分发消息', msg)
           commit(types.ADD_CHAT, msg)
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
@@ -104,24 +103,27 @@ export default {
     [types.PULL_HISTORY_MSG]: {
       // root: true,
       handler: ({ commit, state }, chatId, chatType) => {
-        Zsocket.emit(
-          'chat_msg_history',
-          {
-            chatId,
-            chatType,
-            seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
-            pageSize: 20
-          },
-          ack => {
-            if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
-              ack.data = [ack.data]
+        return new Promise(resolve => {
+          Zsocket.emit(
+            'chat_msg_history',
+            {
+              chatId,
+              chatType,
+              seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
+              pageSize: 20
+            },
+            ack => {
+              if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
+                ack.data = [ack.data]
+              }
+              const hisoryMsgs = ack.data.map(i => {
+                return MsgGen(i)
+              })
+              commit(types.ADD_HISTORY_MSG, ack.chatId, hisoryMsgs)
+              resolve(hisoryMsgs)
             }
-            const hisoryMsgs = ack.data.map(i => {
-              return MsgGen(i)
-            })
-            commit(types.ADD_HISTORY_MSG, hisoryMsgs)
-          }
-        )
+          )
+        })
       }
     },
     /**
