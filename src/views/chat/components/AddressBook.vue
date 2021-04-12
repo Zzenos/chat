@@ -2,7 +2,7 @@
   <div class="address-book_container">
     <div class="address-book_tab">
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
-        <a-tab-pane key="1" tab="客户">
+        <a-tab-pane key="customer" tab="客户">
           <div class="list-wraper">
             <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
@@ -14,7 +14,7 @@
             <no-data v-if="customerList.length === 0" />
           </div>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="群聊">
+        <a-tab-pane key="group" tab="群聊">
           <div class="list-wraper">
             <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
@@ -26,7 +26,7 @@
             <no-data v-if="groupList.length === 0" />
           </div>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="成员">
+        <a-tab-pane key="member" tab="成员">
           <div class="list-wraper">
             <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
@@ -44,12 +44,21 @@
 </template>
 
 <script>
+import cloneDeep from 'lodash/cloneDeep'
+
+const ADDRESS_BOOK_CONFIG = {
+  customer: '1',
+  group: '2',
+  member: '3'
+}
+
 export default {
   name: 'addressBook',
   data() {
     return {
-      activeKey: '1', // 1 客户 2 群聊 3 成员 查询详情的时候使用
+      activeKey: 'customer', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
+      contactData: {},
       customerList: [],
       groupList: [],
       memberList: []
@@ -58,66 +67,56 @@ export default {
   props: {
     tjId: {
       type: String
+    },
+    searchText: {
+      type: String
     }
   },
-  /* computed: {
-    // 通信录数据
-    contactData: function() {
-      console.log(77777, this.$store.getters.contactByTjId(this.tjId))
-      return this.$store.getters.contactByTjId(this.tjId)
-    }
-  }, */
   watch: {
     tjId: {
       immediate: true,
       handler: function(n) {
-        this.activeKey = '1'
+        this.activeKey = 'customer'
         console.log(8888888, n, this.contactData)
-        this.contactData = this.$store.getters.contactByTjId(n)
-        if (this.contactData) {
-          const { customerList, groupList, memberList } = this.contactData
-          this.customerList = customerList
-          this.groupList = groupList
-          this.memberList = memberList
-        }
+        this.handleData(n)
       }
+    },
+    searchText(n) {
+      const list = `${this.activeKey}List`
+      this[list] = n ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactData[list]
+    },
+    activeKey(n) {
+      const list = `${n}List`
+      this[list] = this.searchText ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactData[list]
     }
   },
   methods: {
     handleItem(val) {
       console.log(val)
       const { wechatId, tjId } = val
-      switch (this.activeKey) {
-        case '1':
-          // 获取客户信息
-          this.$socket.emit('customer_info', { tjId }, ack => {
-            console.log(ack)
-          })
-          break
-        case '2':
-          // 获取群详细信息
-          this.$socket.emit('group_info', { tjId }, ack => {
-            console.log(ack)
-          })
-          break
-        case '3':
-          // 获取员工详细信息
-          this.$socket.emit('member_info', { tjId }, ack => {
-            console.log(ack)
-          })
-          break
-
-        default:
-          break
-      }
+      const type = ADDRESS_BOOK_CONFIG[this.activeKey]
+      this.$socket.emit(`${this.activeKey}_info`, { tjId }, ack => {
+        console.log(ack)
+      })
       this.curAddress = val
       this.$router.push({
-        path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${this.activeKey}`,
+        path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${type}`,
         query: {
           ...val,
-          type: this.activeKey
+          type
         }
       })
+    },
+    handleData(n) {
+      const contactData = cloneDeep(this.$store.getters.contactByTjId(n))
+      this.contactData = contactData
+      if (contactData) {
+        for (const key in contactData) {
+          if (Object.prototype.hasOwnProperty.call(contactData, key)) {
+            this[key] = contactData[key]
+          }
+        }
+      }
     }
   }
 }
