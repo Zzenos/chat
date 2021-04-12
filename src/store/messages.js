@@ -105,10 +105,10 @@ export default {
         Zsocket.emit(
           'chat_msg_history',
           {
-            chat_id: chatId,
-            chat_type: chatType,
+            chatId,
+            chatType,
             seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
-            page_size: 20
+            pageSize: 20
           },
           ack => {
             if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
