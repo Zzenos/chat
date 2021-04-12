@@ -62,7 +62,7 @@
           </div>
         </div>
       </div>
-      <div class="sendmsg">发消息</div>
+      <div class="sendmsg" @click="tochat">发消息</div>
     </div>
   </div>
   <no-data v-else />
