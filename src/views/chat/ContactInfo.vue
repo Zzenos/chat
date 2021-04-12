@@ -13,18 +13,18 @@
           <!-- 备注 -->
           <div>
             <div class="left">备注<i></i></div>
-            <span>{{ info.wechatName }}</span>
+            <span>{{ allInfo.remarkAlias }}</span>
             <span class="edit"><a-icon type="edit"/></span>
           </div>
           <!-- 电话 -->
           <div v-if="type == 1">
             <div class="left">电话<i></i></div>
-            <span>mobilephones</span>
+            <span>{{ allInfo.mobilephones }}</span>
           </div>
           <!-- 添加时间 -->
           <div v-if="type == 1">
             <div class="left">添加时间<i></i></div>
-            <span>2021-03-20</span>
+            <span>{{ allInfo.addTime }}</span>
           </div>
           <!-- 标签 -->
           <div v-if="type == 1">
@@ -35,12 +35,12 @@
           <!-- 部门 -->
           <div v-if="type == 3">
             <div class="left">部门<i></i></div>
-            <span>产品部</span>
+            <span>{{ allInfo.department }}</span>
           </div>
           <!-- 描述 -->
           <div v-if="type == 3">
             <div class="left">描述<i></i></div>
-            <span>产品部负责人</span>
+            <span>{{ allInfo.description }}</span>
             <span class="edit"><a-icon type="edit"/></span>
           </div>
         </div>
@@ -54,8 +54,12 @@
         <a-avatar shape="square" :size="112" icon="user" :src="info.wechatAvatar" />
         <div class="nameNum">
           <div class="name">{{ info.wechatName }}</div>
-          <div class="num"><span>成员</span><span style="color:rgba(0, 0, 0, 0.85)"> - 人</span></div>
-          <div class="owner"><span>群主</span><span style="color:rgba(0, 0, 0, 0.85)"> owner_name </span></div>
+          <div class="num">
+            <span>成员</span><span style="color:rgba(0, 0, 0, 0.85)"> {{ allInfo.memberCount }}人</span>
+          </div>
+          <div class="owner">
+            <span>群主</span><span style="color:rgba(0, 0, 0, 0.85)"> {{ allInfo.ownerName }}</span>
+          </div>
         </div>
       </div>
       <div class="sendmsg">发消息</div>
@@ -67,7 +71,7 @@
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   name: 'contactInfo',
   data() {
@@ -79,8 +83,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById']),
     allInfo() {
-      return this.type == 3 ? this.$store.getters.wechatDetailsById(this.wechatId) : this.$store.getters.groupDetailsById(this.wechatId)
+      return this.type == 1 ? this.customerDetailsById(this.wechatId) : this.type == 2 ? this.groupDetailsById(this.wechatId) : this.memberDetailsById(this.wechatId)
     }
   },
   created() {
