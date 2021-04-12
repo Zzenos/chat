@@ -3,7 +3,8 @@ import { getUuid } from '@/util/util.js'
 import { socketBaseUrl } from '@/apis'
 
 const MAX_QUEUE_LENGTH = 10 // 最大消息队列长度，超过则认为出现消息问题或短期无法恢复
-const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 Infinity 代表无限重试
+// const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 Infinity 代表无限重试
+const MAX_RECONNECTION_ATTEMPTS = 15 // 最大重试次数 Infinity 代表无限重试
 const MSG_STATUS = {
   READY: 1,
   PENDING: 2,

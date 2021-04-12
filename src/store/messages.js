@@ -33,8 +33,10 @@ export default {
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经发送，进行msg_id的更改即可
         const index = state.chatMsgs[msg.chatId].findIndex(i => {
-          return i.clientMsgId === msg.clientMsgId
+          return i.clientMsgId && i.clientMsgId === msg.clientMsgId
         })
+
+        console.log(7777777, state.chatMsgs[msg.chatId].length - 1, 'index', index)
         if (index >= 0) {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
         } else {
