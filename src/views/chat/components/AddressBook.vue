@@ -11,6 +11,7 @@
                 <!-- <span v-if="item.wechatAvatar" class="label">@微信</span> -->
               </div>
             </div>
+            <no-data v-if="customerList.length === 0" />
           </div>
         </a-tab-pane>
         <a-tab-pane key="2" tab="群聊">
@@ -22,6 +23,7 @@
                 <span>（{{ item.group_num }}）</span>
               </div>
             </div>
+            <no-data v-if="groupList.length === 0" />
           </div>
         </a-tab-pane>
         <a-tab-pane key="3" tab="成员">
@@ -34,6 +36,7 @@
               </div>
             </div>
           </div>
+          <no-data v-if="memberList.length === 0" />
         </a-tab-pane>
       </a-tabs>
     </div>

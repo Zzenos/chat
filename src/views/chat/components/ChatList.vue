@@ -15,6 +15,7 @@
         <div class="msg ellipsis">{{ item.content }}</div>
       </div>
     </div>
+    <no-data v-if="chatList.length === 0" />
   </div>
 </template>
 

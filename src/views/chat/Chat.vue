@@ -44,7 +44,7 @@
         </div>
         <div class="foot">
           <!-- <span>全部</span> -->
-          <img class="none" src="../../assets/None.png" alt="" style="margin:100px auto" />
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
         </div>
       </div>
     </div>
@@ -142,11 +142,11 @@
     <div class="noRecords">
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
-          <img class="none" src="../../assets/None.png" alt="" />
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
         </div>
       </div>
       <div class="talk-record">
-        <img class="none" src="../../assets/None.png" alt="" />
+        <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
       </div>
     </div>
   </div>
