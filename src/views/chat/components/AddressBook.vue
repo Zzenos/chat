@@ -8,7 +8,7 @@
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
-                <!-- <span v-if="item.wechatAvatar" class="label">@微信</span> -->
+                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">{{ item.company || '@微信' }}</span>
               </div>
             </div>
             <no-data v-if="customerList.length === 0" />
@@ -20,7 +20,7 @@
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
-                <span>（{{ item.group_num }}）</span>
+                <span>（{{ item.memberCount }}）</span>
               </div>
             </div>
             <no-data v-if="groupList.length === 0" />
