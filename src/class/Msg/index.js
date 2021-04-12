@@ -16,7 +16,7 @@ const MsgType = {
 // 数据返回消息
 export const MsgGen = function(data) {
   if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
-    throw new Error('Not Support Msg Type')
+    throw new Error(`${data.msgType} is Not Support Msg Type`)
   }
   return new MsgType[data.msgType](data, false)
 }
