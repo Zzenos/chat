@@ -38,9 +38,6 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import * as types from '@/store/actionType'
-
 export default {
   name: 'addressBook',
   data() {
@@ -81,7 +78,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([types.ADD_WECHAT_DETAILS, types.ADD_GROUP_DETAILS]),
     handleItem(val) {
       console.log(val)
       const { wechatId, tjId } = val

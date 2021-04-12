@@ -71,7 +71,7 @@ export default {
       // 客户详细信息
       this.$socket.on('customer_info', res => {
         if (res.code === 200) {
-          this[types.ADD_WECHAT_DETAILS](res.data)
+          this[types.ADD_CUSTOMER_DETAILS](res.data)
         }
       })
       // 群聊详细信息
@@ -83,7 +83,7 @@ export default {
       // 员工详细信息
       this.$socket.on('member_info', res => {
         if (res.code === 200) {
-          this[types.ADD_WECHAT_DETAILS](res.data)
+          this[types.ADD_MEMBER_DETAILS](res.data)
         }
       })
 
@@ -109,7 +109,7 @@ export default {
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_WECHAT_DETAILS, types.ADD_GROUP_DETAILS])
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_CUSTOMER_DETAILS, types.ADD_GROUP_DETAILS])
   },
   created() {
     this.initSocket()

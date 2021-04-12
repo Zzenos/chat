@@ -3,22 +3,32 @@ import * as types from './actionType'
 // 探鲸账号
 export default {
   state: {
-    wechat: {},
-    group: {}
+    customer: {},
+    group: {},
+    member: {}
   },
   mutations: {
-    // 微信细信息
-    [types.ADD_WECHAT_DETAILS](state, wechatDetailsData) {
-      const data = wechatDetailsData[0]
-      if (!state.wechat[data.wechatId]) {
-        Vue.set(state.wechat, `${data.wechatId}`, data)
+    // 客户信息
+    [types.ADD_CUSTOMER_DETAILS](state, wechatDetailsData) {
+      const data = wechatDetailsData
+      if (!state.customer[data.wechatId]) {
+        Vue.set(state.customer, `${data.wechatId}`, data)
       } else {
-        state.wechat[data.wechatId] = data
+        state.customer[data.wechatId] = data
+      }
+    },
+    // 成员信息
+    [types.ADD_MEMBER_DETAILS](state, wechatDetailsData) {
+      const data = wechatDetailsData
+      if (!state.member[data.wechatId]) {
+        Vue.set(state.member, `${data.wechatId}`, data)
+      } else {
+        state.member[data.wechatId] = data
       }
     },
     // 群详细信息
     [types.ADD_GROUP_DETAILS](state, groupDetailsData) {
-      const data = groupDetailsData[0]
+      const data = groupDetailsData
       if (!state.group[data.groupId]) {
         Vue.set(state.group, `${data.groupId}`, data)
       } else {
@@ -28,14 +38,19 @@ export default {
   },
   actions: {},
   getters: {
-    wechatDetailsById: state => {
+    customerDetailsById: state => {
       return wechatId => {
-        return state.wechat[wechatId]
+        return state.customer[wechatId]
       }
     },
     groupDetailsById: state => {
+      return groupId => {
+        return state.group[groupId]
+      }
+    },
+    memberDetailsById: state => {
       return wechatId => {
-        return state.group[wechatId]
+        return state.member[wechatId]
       }
     }
   }
