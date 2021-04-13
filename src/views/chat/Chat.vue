@@ -360,9 +360,10 @@ export default {
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
-        padding-top: 40px;
-        padding-left: 10px;
-        padding-right: 10px;
+        // padding-top: 40px;
+        // padding-left: 10px;
+        // padding-right: 10px;
+        padding: 40px 10px 10px;
         overflow-y: auto;
         &::-webkit-scrollbar {
           display: none;

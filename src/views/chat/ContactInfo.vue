@@ -6,42 +6,43 @@
         <a-avatar shape="square" :size="112" :src="info.wechatAvatar" />
         <!-- 名字 -->
         <div class="name">{{ info.wechatName }}</div>
-        <div style="color: #0ead63; font-size: 12px; margin-top: 8px">@微信</div>
+        <div style="color: #FF8000; font-size: 12px; margin-top: 8px" v-if="allInfo && allInfo.company">@{{ allInfo.company }}</div>
+        <div style="color: #0ead63; font-size: 12px; margin-top: 8px" v-else>@微信</div>
       </div>
       <div class="bottom">
         <div class="info">
           <!-- 备注 -->
           <div>
             <div class="left">备注<i></i></div>
-            <span>{{ allInfo.remarkAlias }}</span>
-            <span class="edit"><a-icon type="edit"/></span>
+            <span v-if="allInfo && allInfo.remarkAlias">{{ allInfo.remarkAlias }}</span>
+            <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 电话 -->
           <div v-if="type == 1">
             <div class="left">电话<i></i></div>
-            <span>{{ allInfo.mobilephones }}</span>
+            <span v-if="allInfo && allInfo.mobilephones">{{ allInfo.mobilephones }}</span>
           </div>
           <!-- 添加时间 -->
           <div v-if="type == 1">
             <div class="left">添加时间<i></i></div>
-            <span>{{ allInfo.addTime }}</span>
+            <span v-if="allInfo && allInfo.addTime">{{ allInfo.addTime }}</span>
           </div>
           <!-- 标签 -->
           <div v-if="type == 1">
             <div class="left">标签<i></i></div>
             <span>一般用户</span>
-            <span class="edit"><a-icon type="edit"/></span>
+            <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 部门 -->
           <div v-if="type == 3">
             <div class="left">部门<i></i></div>
-            <span>{{ allInfo.department }}</span>
+            <span v-if="allInfo && allInfo.department">{{ allInfo.department }}</span>
           </div>
           <!-- 描述 -->
           <div v-if="type == 3">
             <div class="left">描述<i></i></div>
-            <span>{{ allInfo.description }}</span>
-            <span class="edit"><a-icon type="edit"/></span>
+            <span v-if="allInfo && allInfo.description">{{ allInfo.description }}</span>
+            <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
         </div>
         <div class="sendmsg" @click="tochat">
@@ -55,10 +56,12 @@
         <div class="nameNum">
           <div class="name">{{ info.wechatName }}</div>
           <div class="num">
-            <span>成员</span><span style="color:rgba(0, 0, 0, 0.85)"> {{ allInfo.memberCount }}人</span>
+            <span>成员</span>
+            <span style="color:rgba(0, 0, 0, 0.85)" v-if="allInfo && allInfo.memberCount"> {{ allInfo.memberCount }}人</span>
           </div>
           <div class="owner">
-            <span>群主</span><span style="color:rgba(0, 0, 0, 0.85)"> {{ allInfo.ownerName }}</span>
+            <span>群主</span>
+            <span style="color:rgba(0, 0, 0, 0.85)" v-if="allInfo && allInfo.ownerName"> {{ allInfo.ownerName }}</span>
           </div>
         </div>
       </div>
@@ -80,12 +83,13 @@ export default {
       wechatId: this.$route.params.contactId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type,
-      info: []
+      info: [],
+      allInfo: {}
     }
   },
   computed: {
     ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById']),
-    allInfo() {
+    ainfo() {
       return this.type == 1 ? this.customerDetailsById(this.wechatId) : this.type == 2 ? this.groupDetailsById(this.wechatId) : this.memberDetailsById(this.wechatId)
     }
   },
@@ -95,6 +99,7 @@ export default {
     this.type = this.$route.query.type
     this.info.wechatAvatar = this.$route.query.wechatAvatar
     this.info.wechatName = this.$route.query.wechatName
+    this.allInfo = this.ainfo || {}
   },
   watch: {
     $route() {
@@ -102,9 +107,10 @@ export default {
       this.type = this.$route.query.type
       this.info.wechatAvatar = this.$route.query.wechatAvatar
       this.info.wechatName = this.$route.query.wechatName
+      this.allInfo = this.ainfo || {}
 
       console.log(this.$route.params, this.$route.query)
-      console.log(this.allInfo)
+      console.log(this.allInfo, this.allInfo.remarkAlias, 777)
       // console.log(this.info)
     }
   },
