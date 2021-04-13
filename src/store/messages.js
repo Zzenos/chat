@@ -51,7 +51,6 @@ export default {
     },
     // 历史消息
     [types.ADD_HISTORY_MSG](state, chatId, msgs) {
-      console.log(88888, state.chatMsgs[chatId], chatId)
       if (state.chatMsgs[chatId]) {
         state.chatMsgs[chatId].splice(0, 0, ...msgs)
       }
