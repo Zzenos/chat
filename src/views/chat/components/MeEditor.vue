@@ -23,6 +23,11 @@ export default {
       sendTime: 0
     }
   },
+  computed: {
+    userInfo() {
+      return this.$store.getters.userDetailsById(this.$route.params.tjId)
+    }
+  },
   methods: {
     ...mapActions([types.SEND_MSG]),
     inputEvent() {
@@ -32,20 +37,21 @@ export default {
     keydownEvent(e) {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
       if (e.keyCode == 13 && this.editorText !== '' && e.shiftKey == false) {
-        let currentTime = new Date().getTime()
-        console.log(currentTime)
+        // let currentTime = new Date().getTime()
+        // console.log(currentTime)
+        // console.log(this.userInfo[0].info.wechatName);
         this[types.SEND_MSG]({
           msgType: 'text',
           // msgId: '222',
           chatId: this.$route.query.chatId,
-          sender: {
-            wechatAvatar: this.$route.params.wechatName,
-            wechatName: this.$route.params.wechatName
-          },
-          // chatType: this.$route.query.chatType,
+          chatType: this.$route.query.chatType,
           fromId: this.$route.params.tjId,
           toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
-          content: this.editorText
+          content: this.editorText,
+          sender: {
+            wechatName: this.userInfo[0].info.wechatName,
+            wechatAvatar: this.userInfo[0].info.wechatAvatar
+          }
           // msg_time: currentTime
         })
         // getSendMsg({
