@@ -16,12 +16,12 @@ const MSG_SEND_STATUS = {
  */
 class Msg {
   constructor(options, isSendMsg) {
-    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msg_time, sender, unread, seq } = options
+    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msgTime, sender, unread, seq, clientMsgId } = options
     this.msgId = msgId // 发出的消息id为uuid
+    this.clientMsgId = clientMsgId
+    this.sender = sender // 发送人信息
     if (isSendMsg) {
       this.clientMsgId = getUuid() // 发出的消息id为uuid
-    } else {
-      this.sender = sender || null // 发送人信息
     }
     this.chatId = chatId //会话id
     this.chatType = chatType //会话类型 1私聊 2群聊
@@ -29,7 +29,7 @@ class Msg {
     this.toId = toId
     this.msgType = msgType //消息类型
     this.atLocation = atLocation // @人的位置 0 头 1 尾
-    this.time = msg_time || 0 // 发出的消息time为0， 时间戳
+    this.time = msgTime || 0 // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'

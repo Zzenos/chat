@@ -276,6 +276,7 @@ export default {
   },
   watch: {
     $route() {
+      this.userId = this.$route.params.tjId
       this.chatId = this.$route.params.contactId //获取传来的参数
       this.wechatId = this.$route.query.wechatId
       this.wechatName = this.$route.query.wechatName
