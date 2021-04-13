@@ -33,7 +33,7 @@ let routes = [
             // 联系人信息
             path: 'contactInfo/:contactId',
             name: 'contactInfo',
-            component: () => import(/* webpackChunkName: "chat" */ '../views/chat/ContactInfo'),
+            component: () => import(/* webpackChunkName: "contactinfo" */ '../views/chat/ContactInfo'),
             props: true
           }
         ]
@@ -43,7 +43,7 @@ let routes = [
   {
     path: '/transit/:token',
     name: 'Transit',
-    component: () => import(/* webpackChunkName: "about" */ '../views/transit/Transit'),
+    component: () => import(/* webpackChunkName: "transit" */ '../views/transit/Transit'),
     props: true
   },
   {
