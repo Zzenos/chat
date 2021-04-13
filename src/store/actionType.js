@@ -4,6 +4,8 @@ export const ADD_ACCOUNT = 'ADD_ACCOUNT'
 export const ADD_CHAT = 'ADD_CHAT'
 // 添加消息到会话
 export const ADD_MSG = 'ADD_MSG'
+// 本地发送消息
+export const ADD_MSG_LOCAL = 'ADD_MSG_LOCAL'
 // 设置消息缓存
 export const CACHE_MSG = 'CACHE_MSG'
 // 添加历史消息到会话

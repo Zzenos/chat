@@ -1,6 +1,5 @@
 <script>
 import { mapMutations } from 'vuex'
-console.log(1223, mapMutations)
 export default {
   name: 'transit',
   data() {

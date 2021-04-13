@@ -1,6 +1,6 @@
 import vue from 'vue'
 import vuex from 'vuex'
-import vuexLocal from '@/plugins/vuex.persist'
+// import vuexLocal from '@/plugins/vuex.persist'
 import messages from './messages'
 import chat from './chat'
 import contact from './contact'
@@ -25,7 +25,7 @@ const store = new vuex.Store({
     accounts,
     chat,
     contact
-  },
-  plugins: [vuexLocal.plugin]
+  }
+  // plugins: [vuexLocal.plugin]
 })
 export default store
