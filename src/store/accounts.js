@@ -20,8 +20,7 @@ export default {
     },
     userDetailsById: state => {
       return tjId => {
-        console.log(tjId, state.accounts)
-        return state.accounts.filter(item => item.info.tjId == tjId)
+        return state.accounts.find(item => item.info.tjId === tjId)
       }
     }
   }

@@ -22,6 +22,7 @@ class Msg {
     this.sender = sender // 发送人信息
     if (isSendMsg) {
       this.clientMsgId = getUuid() // 发出的消息id为uuid
+      this.msgId = this.clientMsgId
     }
     this.chatId = chatId //会话id
     this.chatType = chatType //会话类型 1私聊 2群聊
