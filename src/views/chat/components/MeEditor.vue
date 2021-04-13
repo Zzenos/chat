@@ -38,6 +38,10 @@ export default {
           msgType: 'text',
           // msgId: '222',
           chatId: this.$route.query.chatId,
+          sender: {
+            wechatAvatar: this.$route.params.wechatName,
+            wechatName: this.$route.params.wechatName
+          },
           // chatType: this.$route.query.chatType,
           fromId: this.$route.params.tjId,
           toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],

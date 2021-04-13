@@ -35,18 +35,17 @@ export default {
         const index = state.chatMsgs[msg.chatId].findIndex(i => {
           return msg.clientMsgId && i.clientMsgId === msg.clientMsgId
         })
-        console.log(1111111111, index, state.chatMsgs[msg.chatId].length)
         if (index >= 0) {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
+          console.log('找到了对应的clientMsgId并置换')
         } else {
-          state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length - 1, 0, msg)
+          state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length, 0, msg)
         }
       }
     },
     [types.ADD_MSG_LOCAL](state, msg) {
-      console.log(66666, msg, msg.chatId)
       if (state.chatMsgs[msg.chatId]) {
-        state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length - 1, 0, msg)
+        state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length, 0, msg)
       }
     },
     // 历史消息
@@ -139,19 +138,19 @@ export default {
      */
     [types.SEND_MSG]: {
       // root: true,
-      handler: ({ commit }, data) => {
+      handler: ({ commit, dispatch }, data) => {
         const newMsg = getSendMsg(data)
         // 发送消息不需要放到hash
         commit(types.CACHE_SENDING_MSG, newMsg)
         commit(types.ADD_CHAT, newMsg)
         commit(types.ADD_MSG_LOCAL, newMsg)
-        // Zsocket.emit('msg_send', newMsg, ack => {
-        //   // TODO
-        //   // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
-        //   if (ack) {
-        //     // dispatch(types.DISTRIBUTE_MSG, ack)
-        //   }
-        // })
+        Zsocket.emit('msg_send', newMsg, ack => {
+          // TODO
+          // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
+          if (ack) {
+            dispatch(types.DISTRIBUTE_MSG, ack)
+          }
+        })
       }
     }
   },
