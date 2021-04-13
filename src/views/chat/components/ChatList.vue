@@ -27,7 +27,7 @@ export default {
   name: 'chatList',
   data() {
     return {
-      curChat: null,
+      curChat: { chatId: null },
       chatList: []
     }
   },
@@ -46,9 +46,17 @@ export default {
         if (n === o) return
         console.log(n, o)
         this.chatList = this.$store.getters.chatsByChatId(this.tjId)
-        // this.chatList = this.$store.state.chat[this.tjId] || []
         console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
-        if (!this.curChat && this.chatList.length > 0) this.curChat = this.chatList[0]
+
+        // 切换账号或者刷新后进入，会话的默认选中状态
+        const { contactId } = this.$route.params
+        if (contactId === '0') {
+          this.curChat = { chatId: null }
+          return
+        }
+        this.chatList.forEach(ele => {
+          if (ele.chatId === contactId) this.curChat = ele
+        })
       }
     },
     searchText(n) {
