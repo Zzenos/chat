@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chat-frame_con">
     <a-row type="flex">
       <a-col flex="88px" class="side-bar">
         <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
@@ -122,6 +122,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.chat-frame_con {
+  min-width: 1440px;
+}
 .side-bar {
   width: 88px;
   height: 100vh;
