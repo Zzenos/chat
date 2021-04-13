@@ -170,7 +170,7 @@ class ZSocket {
           const str = msg.data.map(j => JSON.stringify(j))
           cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
           if (ack && ack.data && ack.data.requestId) {
-            const index = this.emitMsgs.findIndex(item => item.requestId === ack.data.requestId)
+            const index = this.emitMsgs.findIndex(item => item.requestId === ack.requestId)
             if (index >= 0) this.emitMsgs.splice(index, 1)
           }
           // 有回调
