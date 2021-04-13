@@ -43,6 +43,7 @@ export default {
         }
       }
     },
+    // 本地发送消息
     [types.ADD_MSG_LOCAL](state, msg) {
       if (state.chatMsgs[msg.chatId]) {
         state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length, 0, msg)
@@ -145,7 +146,6 @@ export default {
         commit(types.ADD_CHAT, newMsg)
         commit(types.ADD_MSG_LOCAL, newMsg)
         Zsocket.emit('msg_send', newMsg, ack => {
-          // TODO
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
             dispatch(types.DISTRIBUTE_MSG, ack)
