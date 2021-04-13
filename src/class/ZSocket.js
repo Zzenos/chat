@@ -25,7 +25,7 @@ class ZSocket {
     this.lastMessageId = null
     this.tryReconnectAttempts = 0
     this.tryReconnectTimer = null
-    this.debug = options.debug || false
+    this.debug = options.debug || true
     return this
   }
   cs = function(str) {
