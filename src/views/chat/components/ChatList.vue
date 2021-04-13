@@ -8,7 +8,8 @@
       <div class="info">
         <div class="nickname ellipsis">
           <span v-html="item.wechatName"></span>
-          <!-- <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span> -->
+          <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span>
+          <span v-else>（{{ item.memberCount }}）</span>
         </div>
         <div class="time">{{ item.lastActiveTime | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->

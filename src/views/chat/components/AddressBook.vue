@@ -8,7 +8,7 @@
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
-                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">{{ item.company || '@微信' }}</span>
+                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
               </div>
             </div>
             <no-data v-if="customerList.length === 0" />
@@ -32,7 +32,7 @@
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname ellipsis">
                 <span v-html="item.wechatName"></span>
-                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">{{ item.company || '@微信' }}</span>
+                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
               </div>
             </div>
           </div>
@@ -94,6 +94,9 @@ export default {
     handleItem(val) {
       console.log(val)
       const { wechatId, tjId } = val
+      if (this.curAddress.tjId === tjId) {
+        return
+      }
       const type = ADDRESS_BOOK_CONFIG[this.activeKey]
       this.$socket.emit(`${this.activeKey}_info`, { tjId }, ack => {
         console.log(ack)
