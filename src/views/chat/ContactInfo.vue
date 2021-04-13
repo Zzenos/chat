@@ -75,7 +75,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
+import * as types from '@/store/actionType'
+
 export default {
   name: 'contactInfo',
   data() {
@@ -116,11 +118,25 @@ export default {
   },
   methods: {
     tochat() {
+      const chatId = `${this.$route.params.tjId + '&' + this.wechatId}`
       this.$router.push({
-        path: `/chatframe/${this.$route.params.tjId}/recent/${this.$route.params.tjId + '&' + this.wechatId}`,
+        path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
         query: { ...this.$route.query }
       })
-    }
+      this[types.ADD_CHAT_LIST]({
+        tjId: this.$route.params.tjId,
+        chatList: [
+          {
+            chatId,
+            chatType: this.type,
+            wechatAvatar: this.info.wechatAvatar,
+            wechatName: this.info.wechatName,
+            lastActiveTime: new Date().getTime()
+          }
+        ]
+      })
+    },
+    ...mapMutations([types.ADD_CHAT_LIST])
   }
 }
 </script>

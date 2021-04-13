@@ -37,6 +37,9 @@ export default {
     },
     searchText: {
       type: String
+    },
+    selected: {
+      type: Boolean
     }
   },
   watch: {
@@ -62,6 +65,10 @@ export default {
     searchText(n) {
       const chatList = cloneDeep(this.$store.getters.chatsByChatId(this.tjId))
       this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
+    },
+    selected(n, o) {
+      if (n === o) return
+      this.chatList = this.$store.getters.chatsByChatId(this.tjId)
     }
   },
   methods: {

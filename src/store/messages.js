@@ -22,8 +22,8 @@ export default {
   },
   mutations: {
     // 新会话
-    [types.ADD_CHAT](state, msg) {
-      if (!state.chatMsgs[msg.chatId]) Vue.set(state.chatMsgs, `${msg.chatId}`, [])
+    [types.ADD_CHAT](state, chatId) {
+      if (!state.chatMsgs[chatId]) Vue.set(state.chatMsgs, `${chatId}`, [])
     },
     // 新消息
     // 需要检查是否为ACK中返回的消息体
@@ -51,7 +51,6 @@ export default {
     },
     // 历史消息
     [types.ADD_HISTORY_MSG](state, chatId, msgs) {
-      console.log(88888, state.chatMsgs[chatId], chatId)
       if (state.chatMsgs[chatId]) {
         state.chatMsgs[chatId].splice(0, 0, ...msgs)
       }
@@ -92,7 +91,7 @@ export default {
         }
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
-          commit(types.ADD_CHAT, msg)
+          commit(types.ADD_CHAT, msg.chatId)
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
           // TODO
@@ -143,7 +142,7 @@ export default {
         const newMsg = getSendMsg(data)
         // 发送消息不需要放到hash
         commit(types.CACHE_SENDING_MSG, newMsg)
-        commit(types.ADD_CHAT, newMsg)
+        commit(types.ADD_CHAT, newMsg.chatId)
         commit(types.ADD_MSG_LOCAL, newMsg)
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
