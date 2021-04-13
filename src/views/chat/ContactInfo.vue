@@ -30,7 +30,7 @@
           <!-- 标签 -->
           <div v-if="type == 1">
             <div class="left">标签<i></i></div>
-            <span>一般用户</span>
+            <!-- <span>一般用户</span> -->
             <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 部门 -->
