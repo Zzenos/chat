@@ -49,8 +49,8 @@ export default {
           toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
           content: this.editorText,
           sender: {
-            wechatName: this.userInfo[0].info.wechatName,
-            wechatAvatar: this.userInfo[0].info.wechatAvatar
+            wechatName: this.userInfo.info.wechatName,
+            wechatAvatar: this.userInfo.info.wechatAvatar
           }
           // msg_time: currentTime
         })
