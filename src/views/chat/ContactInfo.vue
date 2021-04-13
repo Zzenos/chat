@@ -128,7 +128,7 @@ export default {
         chatList: [
           {
             chatId,
-            chatType: this.type,
+            chatType: Number(this.type),
             wechatAvatar: this.info.wechatAvatar,
             wechatName: this.info.wechatName,
             lastActiveTime: new Date().getTime()
