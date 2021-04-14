@@ -20,7 +20,12 @@ export default {
   data() {
     return {
       options: {
-        url: 'data-src'
+        url: 'data-src',
+        button: true,
+        navbar: false,
+        title: false,
+        toolbar: false,
+        tooltip: false
       }
     }
   },

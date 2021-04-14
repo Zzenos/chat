@@ -2,7 +2,7 @@ import Vue from 'vue'
 import * as types from './actionType'
 import { MsgGen, getSendMsg } from '@/class/Msg'
 import Zsocket from '@/class/ZSocket'
-// import sortedLastIndex from 'lodash/sortedLastIndex'
+import sortedIndexBy from 'lodash/sortedIndexBy'
 /**
  *
  * <企微号id>&<会话对方id | 群id> 组成 <会话id>
@@ -39,7 +39,10 @@ export default {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
           console.log('找到了对应的clientMsgId并置换')
         } else {
-          state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length, 0, msg)
+          const index = sortedIndexBy(state.chatMsgs[msg.chatId], msg, function(obj) {
+            return obj.seq
+          })
+          state.chatMsgs[msg.chatId].splice(index, 0, msg)
         }
       }
     },
@@ -50,9 +53,9 @@ export default {
       }
     },
     // 历史消息
-    [types.ADD_HISTORY_MSG](state, chatId, msgs) {
-      if (state.chatMsgs[chatId]) {
-        state.chatMsgs[chatId].splice(0, 0, ...msgs)
+    [types.ADD_HISTORY_MSG](state, payload) {
+      if (state.chatMsgs[payload.chatId]) {
+        state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
       }
     },
     //
@@ -97,6 +100,7 @@ export default {
           // TODO
           commit(types.CLEAR_SENDING_MSG, msg)
         })
+        // 排序
       }
     },
     /**
@@ -117,14 +121,14 @@ export default {
               seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
               pageSize: 20
             },
-            ack => {
-              if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
-                ack.data = [ack.data]
+            msgList => {
+              if (Object.prototype.toString.call(msgList) !== '[object Array]') {
+                msgList = [msgList]
               }
-              const hisoryMsgs = ack.data.map(i => {
+              const hisoryMsgs = msgList.map(i => {
                 return MsgGen(i)
               })
-              commit(types.ADD_HISTORY_MSG, ack.chatId, hisoryMsgs)
+              commit(types.ADD_HISTORY_MSG, { chatId, msgs: hisoryMsgs })
               resolve(hisoryMsgs)
             }
           )

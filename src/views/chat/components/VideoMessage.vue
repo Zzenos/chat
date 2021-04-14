@@ -25,7 +25,8 @@ export default {
       videoConfig: {
         id: 'vs' + this.vid,
         // url:this.url,
-        url: ' http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+        // url: ' http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+        url: this.url,
         // height: 330,
         width: 250,
         fitVideoSize: 'auto',

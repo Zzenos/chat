@@ -3,7 +3,7 @@
     <!-- 文件描述  大小 -->
     <div class="file-box">
       <span class="name">{{ desc }}</span>
-      <span class="size">5.3MB<a :href="href">下载</a></span>
+      <span class="size"><a :href="href">下载</a></span>
     </div>
     <!-- 文件图片 -->
     <div class="ext">

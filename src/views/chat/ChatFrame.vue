@@ -35,9 +35,6 @@ export default {
   },
   methods: {
     initSocket() {
-      setTimeout(() => {
-        console.log(33333334, this.$store.getters.getToken())
-      }, 3000)
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表
@@ -86,20 +83,17 @@ export default {
           this[types.ADD_MEMBER_DETAILS](res.data)
         }
       })
+      // 401
+      this.$socket.on('accounts', res => {
+        if (res.code === 200) {
+          this[types.ADD_ACCOUNT](res.data)
+        }
+      })
 
       if (this.$route.params.tjId) {
         console.log('首次进入', this.$route.params.tjId)
         this.pullData(this.$route.params.tjId)
       }
-
-      /* setTimeout(() => {
-        const msg = {
-          fromId: 1112,
-          toID: 1113,
-          msgType: 'text'
-        }
-        this[types.SEND_MSG](msg)
-      }, 5000) */
     },
     // 切换企微号，拉取会话列表、通讯录、历史消息
     pullData(tjId) {
