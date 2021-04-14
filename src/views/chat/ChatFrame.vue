@@ -35,6 +35,7 @@ export default {
   },
   methods: {
     initSocket() {
+      console.log(`%c ${this.$store.state.token}`, 'color:#02f;')
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表

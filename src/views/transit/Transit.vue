@@ -15,6 +15,7 @@ export default {
   },
   mounted() {
     this.storeToken(this.token)
+    console.log(`%c ${this.token}`, 'color:#f2f;')
     this.$router.push({ path: `/chatframe` })
   },
   render() {
