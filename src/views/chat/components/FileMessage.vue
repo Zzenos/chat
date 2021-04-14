@@ -51,12 +51,12 @@ export default {
 
     span {
       display: block;
+      font-family: PingFangSC-Regular, PingFang SC;
 
       &.name {
         // width: 131px;
         height: 22px;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
         line-height: 22px;
@@ -65,7 +65,6 @@ export default {
         // width: 37px;
         height: 18px;
         font-size: 12px;
-        font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.45);
         line-height: 18px;

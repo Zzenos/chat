@@ -9,7 +9,7 @@
           <span v-if="records[0].chatType == 1" class="friendName">
             <!-- {{ records[0].fromId == userId ? records[0].to.wechatName : records[0].sender.wechatName }} -->
             {{ $route.query.wechatName }}
-            <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
+            <span style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </span>
           <!-- 群聊名称 -->
           <span v-else class="groupName">
@@ -320,6 +320,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  font-family: PingFangSC-Regular, PingFang SC;
 
   header {
     height: 68px;
@@ -329,6 +330,10 @@ export default {
     .groupName {
       float: left;
       margin: 22px 8px 22px 20px;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      font-weight: 400;
     }
   }
   .noRecords {
@@ -388,6 +393,7 @@ export default {
         .datetime {
           height: 18px;
           color: rgba(0, 0, 0, 0.45);
+          font-weight: 400;
           font-size: 12px;
           line-height: 18px;
           text-align: center;
@@ -399,7 +405,6 @@ export default {
           width: 252px;
           height: 18px;
           font-size: 12px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
           line-height: 18px;

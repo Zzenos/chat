@@ -33,26 +33,22 @@ export default {
 <style lang="scss" scoped>
 .text-message {
   position: relative;
-  // min-width: 30px;
-  // min-height: 30px;
   max-width: 480px;
   border-radius: 8px;
   padding: 12px;
-  font-size: 14px;
   line-height: 22px;
   color: #000;
   text-align: left;
-  // overflow: hidden;
   word-break: break-word;
   word-wrap: break-word;
+  font-size: 14px;
+  font-weight: 400;
 
   &.left {
-    // color: #000;
     background: #f0f1f2;
   }
 
   &.right {
-    // color: #000;
     background: #d2f0fa;
   }
 }

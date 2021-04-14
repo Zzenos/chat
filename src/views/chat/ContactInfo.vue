@@ -12,7 +12,7 @@
             <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
           </span>
         </div>
-        <div style="color: #FF8000; font-size: 14px; margin-top: 8px; line-height:22px">{{ company }}</div>
+        <div style="color: #FF8000; font-size: 14px; margin-top: 8px; line-height:22px; font-weight: 400;">{{ company }}</div>
         <!-- <div style="color: #0ead63; font-size: 14px; margin-top: 8px; line-height:22px" v-else>@微信</div> -->
       </div>
       <div class="bottom">
@@ -176,6 +176,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .default {
+  font-family: PingFangSC-Regular, PingFang SC;
   .contact-info {
     display: flex;
     flex-direction: column;
@@ -186,11 +187,11 @@ export default {
       padding-top: 80px;
       font-size: 28px;
       color: rgba(0, 0, 0, 0.85);
-      font-family: PingFangSC-Regular, PingFang SC;
       .name {
         margin-top: 16px;
-        // width: 192px;
-        // height: 42px;
+        height: 42px;
+        line-height: 42px;
+        font-weight: 400;
       }
       /deep/ .ant-avatar > img {
         display: block;
@@ -220,7 +221,6 @@ export default {
             text-align: justify;
             height: 22px;
             font-size: 14px;
-            font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: rgba(0, 0, 0, 0.45);
             line-height: 22px;
@@ -235,7 +235,6 @@ export default {
             display: block;
             // margin-top: 21px;
             line-height: 22px;
-            font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: rgba(0, 0, 0, 0.85);
           }
@@ -252,7 +251,6 @@ export default {
         background: #1d61ef;
         margin: 60px auto;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #ffffff;
         line-height: 40px;
@@ -271,7 +269,6 @@ export default {
         margin-left: 40px;
         .name {
           font-size: 28px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
           line-height: 42px;
@@ -282,7 +279,6 @@ export default {
           margin-top: 14px;
           text-align: left;
           font-size: 14px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
           line-height: 22px;
@@ -301,10 +297,10 @@ export default {
       background: #1d61ef;
       margin: 80px auto;
       font-size: 14px;
-      font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #ffffff;
-      line-height: 40px;
+      line-height: 22px;
+      padding-top: 9px;
       cursor: pointer;
     }
   }
