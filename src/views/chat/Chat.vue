@@ -141,12 +141,17 @@
     <header></header>
     <div class="noRecords">
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)" style="position:relative">
+          <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
+            <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+          </div>
         </div>
       </div>
-      <div class="talk-record">
-        <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+      <div class="talk-record" style="position:relative">
+        <!-- <div style="width:100%;height:64px;position:absolute"></div> -->
+        <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+        </div>
       </div>
     </div>
   </div>
