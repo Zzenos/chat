@@ -43,21 +43,24 @@ export default {
     }
   },
   watch: {
-    tjId: {
+    $route: {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
+        console.log('chatList $route ==>', n)
         this.chatList = this.$store.getters.chatsByChatId(this.tjId)
         console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
 
         // 切换账号或者刷新后进入，会话的默认选中状态
-        const { contactId } = this.$route.params
+        const { contactId } = n.params
         if (contactId === '0') {
           this.curChat = { chatId: null }
           return
         }
         this.chatList.forEach(ele => {
-          if (ele.chatId === contactId) this.curChat = ele
+          if (ele.chatId === contactId) {
+            this.curChat = ele
+          }
         })
       }
     },
@@ -65,16 +68,19 @@ export default {
       const chatList = cloneDeep(this.$store.getters.chatsByChatId(this.tjId))
       this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
     },
-    selected(n, o) {
-      if (n === o) return
-      this.chatList = this.$store.getters.chatsByChatId(this.tjId)
+    selected(n) {
+      if (n) {
+        if (this.curChat.chatId && this.curChat.chatId !== this.$route.params.contactId) {
+          this.handleItem(this.curChat, true)
+        }
+      }
     }
   },
   methods: {
-    handleItem(val) {
+    handleItem(val, canJump = false) {
       console.log(val)
       const { chatId } = val
-      if (this.curChat.chatId === chatId) {
+      if (this.curChat.chatId === chatId && !canJump) {
         return
       }
       this.curChat = val
@@ -83,8 +89,7 @@ export default {
         query: { ...this.curChat }
       })
     }
-  },
-  mounted() {}
+  }
 }
 </script>
 

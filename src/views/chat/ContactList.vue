@@ -3,11 +3,11 @@
     <a-row type="flex">
       <a-col flex="300px" class="contact-list">
         <div class="tab-container">
-          <div class="tab" :class="{ active: curTab === 1 }" @click="handleTab(1)">
+          <div class="tab" :class="{ active: curTab === 'Chat' }" @click="handleTab('Chat')">
             <icon-font type="icontab_chat" class="icon" />
             <span>会话</span>
           </div>
-          <div class="tab" :class="{ active: curTab === 2 }" @click="handleTab(2)">
+          <div class="tab" :class="{ active: curTab === 'ContactInfo' }" @click="handleTab('ContactInfo')">
             <icon-font type="icontab_addresslist_pre" class="icon" />
             <span>通讯录</span>
           </div>
@@ -16,8 +16,8 @@
           <a-input-search v-model="searchText" placeholder="搜索" />
         </div>
         <div>
-          <chat-list :selected="curTab === 1" :searchText="searchText" v-show="curTab === 1" :tjId="tjId" />
-          <address-book :searchText="searchText" v-show="curTab === 2" :tjId="tjId" />
+          <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
+          <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-show="curTab === 'ContactInfo'" :tjId="tjId" />
         </div>
       </a-col>
       <a-col flex="auto">
@@ -42,11 +42,12 @@ export default {
     }
   },
   watch: {
-    tjId: {
+    $route: {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        this.curTab = 1
+        console.log('contactList $route ==>', n)
+        this.curTab = n.name
         this.searchText = ''
       }
     }
@@ -54,7 +55,7 @@ export default {
   data() {
     return {
       tabOptions: [],
-      curTab: 1,
+      curTab: 'Chat',
       searchText: ''
     }
   },

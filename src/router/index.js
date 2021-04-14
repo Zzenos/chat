@@ -32,7 +32,7 @@ let routes = [
           {
             // 联系人信息
             path: 'contactInfo/:contactId',
-            name: 'contactInfo',
+            name: 'ContactInfo',
             component: () => import(/* webpackChunkName: "contactinfo" */ '../views/chat/ContactInfo'),
             props: true
           }

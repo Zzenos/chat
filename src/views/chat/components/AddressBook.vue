@@ -70,14 +70,18 @@ export default {
     },
     searchText: {
       type: String
+    },
+    selected: {
+      type: Boolean
     }
   },
   watch: {
     tjId: {
       immediate: true,
       handler: function(n) {
-        this.activeKey = 'customer'
         console.log(8888888, n, this.contactData)
+        this.activeKey = 'customer'
+        this.curAddress = {}
         this.handleData(n)
       }
     },
@@ -88,13 +92,29 @@ export default {
     activeKey(n) {
       const list = `${n}List`
       this[list] = this.searchText ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactData[list]
+    },
+    selected(n) {
+      if (n) {
+        // const type = ADDRESS_BOOK_CONFIG[this.activeKey]
+        if (this.curAddress.wechatId && this.curAddress.wechatId !== this.$route.params.contactId) {
+          this.handleItem(this.curAddress, true)
+        } else {
+          // if (this.$route.params.contactId == 0) return
+          // this.curAddress.wechatId && this.$router.push({
+          //   path: `/chatframe/${this.tjId}/contactInfo/0?type=${type}`,
+          //   query: {
+          //     type
+          //   }
+          // })
+        }
+      }
     }
   },
   methods: {
-    handleItem(val) {
+    handleItem(val, canJump = false) {
       console.log(val)
       const { wechatId, tjId } = val
-      if (this.curAddress.tjId === tjId) {
+      if (this.curAddress.tjId === tjId && !canJump) {
         return
       }
       const type = ADDRESS_BOOK_CONFIG[this.activeKey]

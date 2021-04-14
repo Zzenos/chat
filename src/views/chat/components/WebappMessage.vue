@@ -1,13 +1,13 @@
 <template>
   <div class="webapp-message">
     <div class="top">
-      <div class="logo">logo</div>
-      <div class="appname">appname{{ desc }}</div>
+      <div class="logo"></div>
+      <div class="appname">{{ des }}</div>
     </div>
     <div class="middle">
       <img :src="url" alt="" />
     </div>
-    <div class="bottom">icon 小程序<a :href="href"></a></div>
+    <div class="bottom">{{ des }}小程序<a :href="url"></a></div>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
       type: String,
       default: ''
     },
-    desc: {
+    des: {
       type: String,
       default: ''
     }
@@ -41,7 +41,7 @@ export default {
   width: 200px;
   height: 230px;
   padding: 5px;
-  background: lightblue;
+  // background: lightblue;
   display: flex;
   flex-direction: column;
   .top {
@@ -52,7 +52,7 @@ export default {
     .logo {
       width: 30px;
       height: 30px;
-      background: #000;
+      // background: #000;
       margin-right: 10px;
     }
   }

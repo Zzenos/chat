@@ -125,7 +125,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 .chat-frame_con {
-  min-width: 1440px;
+  min-width: 1280px;
 }
 .side-bar {
   width: 88px;
