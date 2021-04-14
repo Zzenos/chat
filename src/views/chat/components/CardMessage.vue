@@ -35,7 +35,9 @@
       </template>
       <template slot="title">
         <a-avatar :src="src" />
-        <span class="bigname">{{ name }}</span> <i>icon</i>
+        <span class="bigname">{{ name }}</span>
+        <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
+        <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
         <br />
         <span class="green">@微信</span>
       </template>
@@ -63,6 +65,10 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    content: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -70,7 +76,10 @@ export default {
       // visible:false
     }
   },
-  methods: {}
+  methods: {},
+  created() {
+    console.log(this.content, 'Card')
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -128,66 +137,97 @@ export default {
     height: 400px;
     position: relative;
     padding: 40px;
-    // left: 452px;
-    .modal {
-      & > div {
-        display: flex;
-        .left {
-          margin-top: 16px;
-          margin-right: 20px;
-          width: 80px;
-          text-align: justify;
-          height: 22px;
+  }
+
+  /deep/ .ant-popover.ant-popover-placement-right,
+  /deep/ .ant-popover.ant-popover-placement-left {
+    position: absolute;
+    top: -60px !important;
+    left: 80px !important;
+    width: 360px;
+    height: 400px;
+
+    .ant-popover-content {
+      width: 360px;
+      height: 400px;
+      background: #ffffff;
+      box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      .ant-popover-arrow {
+        display: none;
+      }
+      .ant-popover-title {
+        height: 88px;
+        position: relative;
+        padding: 0;
+        .ant-avatar.ant-avatar-circle.ant-avatar-image {
+          width: 66px;
+          height: 66px;
+        }
+
+        .bigname {
+          margin-left: 20px;
+          margin-right: 12px;
+          font-size: 24px;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.85);
+          line-height: 36px;
+          position: absolute;
+        }
+        .green {
+          margin-left: 86px;
           font-size: 14px;
+          font-weight: 400;
+          color: #0ead63;
+          line-height: 22px;
           font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
-          color: rgba(0, 0, 0, 0.45);
-          line-height: 22px;
+          position: absolute;
+          bottom: 22px;
+        }
+      }
+      .ant-popover-inner-content {
+        padding: 0;
+        .modal {
+          padding-top: 28px;
+          & > div {
+            display: flex;
+            height: 22px;
+            line-height: 22px;
+            margin-bottom: 16px;
+            .left {
+              margin-right: 20px;
+              width: 56px;
+              text-align: justify;
+              height: 22px;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: rgba(0, 0, 0, 0.45);
+              line-height: 22px;
 
-          // 用来两端对齐文字
-          i {
-            display: inline-block;
-            padding-left: 100%;
+              // 用来两端对齐文字
+              i {
+                display: inline-block;
+                padding-left: 100%;
+              }
+            }
+            span {
+              height: 22px;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: rgba(0, 0, 0, 0.85);
+              line-height: 22px;
+            }
           }
         }
-        span {
-          display: block;
-          margin-top: 16px;
-        }
       }
     }
   }
 
-  /deep/ .ant-popover-title {
-    width: 360px;
-    height: 88px;
-
-    .ant-avatar {
-      overflow: visible;
-      img {
-        width: 66px;
-        height: 66px;
-      }
-    }
-    .bigname {
-      margin-left: 55px;
-      margin-right: 12px;
-      font-size: 24px;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.85);
-      line-height: 36px;
-    }
-    .green {
-      margin-left: 87px;
-      font-size: 14px;
-      font-weight: 400;
-      color: #0ead63;
-      line-height: 22px;
-    }
-  }
-
-  /deep/ .ant-popover-placement-left > .ant-popover-content > .ant-popover-arrow {
-    display: none;
+  /deep/ .ant-popover.ant-popover-placement-left {
+    top: -32px !important;
   }
 }
 </style>

@@ -96,16 +96,16 @@
                   <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.msgType == 'card'" :src="item.sender.wechatAvatar" :name="item.sender.wechatName" />
+                  <card-message v-else-if="item.msgType == 'card'" :src="item.sender.wechatAvatar" :name="item.sender.wechatName" :content="item.content" />
 
                   <!-- 语音消息 -->
                   <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
                   <!-- 链接消息 -->
-                  <link-message v-else-if="item.msgType == 'link'" :url="item.url" :desc="item.desc" />
+                  <link-message v-else-if="item.msgType == 'link'" :url="item.url" :desc="item.desc" :title="item.title" />
 
                   <!-- 小程序消息 -->
-                  <webapp-message v-else-if="item.msgType == 'weapp'" :href="item.href" :url="item.url" />
+                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :url="item.content.weappiconurl" />
                 </div>
               </div>
             </div>

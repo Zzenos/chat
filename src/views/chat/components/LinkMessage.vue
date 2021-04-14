@@ -1,5 +1,6 @@
 <template>
   <div class="link-message">
+    <span>{{ title }}</span>
     <a :href="url" target="_blank">{{ desc }}</a>
   </div>
 </template>
