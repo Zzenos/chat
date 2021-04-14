@@ -68,7 +68,7 @@
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sysInfo" v-if="item.msgType == 10000" v-text="item.content"></div>
+            <div class="sysInfo" v-if="item.msgType == 'system'" v-text="item.content"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
@@ -87,25 +87,25 @@
                   <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
                   <!-- 图片消息 -->
-                  <image-message v-else-if="item.msgType == 2002" :src="item.href" />
+                  <image-message v-else-if="item.msgType == 'image'" :src="item.href" />
 
                   <!-- 文件消息 -->
-                  <file-message v-else-if="item.msgType == 2010" :href="item.href" :desc="item.desc" />
+                  <file-message v-else-if="item.msgType == 'file'" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.msgType == 2004" :vid="item.id" :url="item.url" />
+                  <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.msgType == 2006" :src="item.sender.avatar" :name="item.sender.nickname" />
+                  <card-message v-else-if="item.msgType == 'card'" :src="item.sender.wechatAvatar" :name="item.sender.wechatName" />
 
                   <!-- 语音消息 -->
-                  <audio-message v-else-if="item.msgType == 2003" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
+                  <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
                   <!-- 链接消息 -->
-                  <link-message v-else-if="item.msgType == 2005" :url="item.url" :desc="item.desc" />
+                  <link-message v-else-if="item.msgType == 'link'" :url="item.url" :desc="item.desc" />
 
                   <!-- 小程序消息 -->
-                  <webapp-message v-else-if="item.msgType == 2013" :href="item.href" :url="item.url" />
+                  <webapp-message v-else-if="item.msgType == 'weapp'" :href="item.href" :url="item.url" />
                 </div>
               </div>
             </div>
@@ -141,12 +141,17 @@
     <header></header>
     <div class="noRecords">
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)" style="position:relative">
+          <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
+            <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+          </div>
         </div>
       </div>
-      <div class="talk-record">
-        <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+      <div class="talk-record" style="position:relative">
+        <!-- <div style="width:100%;height:64px;position:absolute"></div> -->
+        <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
+        </div>
       </div>
     </div>
   </div>
@@ -360,9 +365,6 @@ export default {
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
-        // padding-top: 40px;
-        // padding-left: 10px;
-        // padding-right: 10px;
         padding: 40px 10px 10px;
         overflow-y: auto;
         &::-webkit-scrollbar {
@@ -454,10 +456,7 @@ export default {
       }
 
       .foot {
-        // height: 160px;
-        // background: pink;
-        position: relative;
-        border-top: 1px solid #e4e5e7;
+        height: 160px;
       }
     }
 
@@ -470,7 +469,6 @@ export default {
         font-size: 14px;
         color: #000;
         line-height: 22px;
-        // background: lightblue;
         padding-top: 26px;
         padding-left: 21px;
         border-bottom: 1px solid #e4e5e7;

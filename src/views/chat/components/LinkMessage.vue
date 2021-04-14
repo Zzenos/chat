@@ -1,6 +1,6 @@
 <template>
   <div class="link-message">
-    <a :href="url">{{ desc }}</a>
+    <a :href="url" target="_blank">{{ desc }}</a>
   </div>
 </template>
 

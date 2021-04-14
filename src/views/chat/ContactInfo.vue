@@ -3,29 +3,35 @@
     <div class="contact-info" v-if="type == 1 || type == 3">
       <div class="top">
         <!-- 头像  -->
-        <a-avatar shape="square" :size="112" :src="info.wechatAvatar" />
+        <a-avatar shape="square" :size="112" :src="allInfo.wechatAvatar" />
         <!-- 名字 -->
-        <div class="name">{{ info.wechatName }}</div>
-        <div style="color: #FF8000; font-size: 12px; margin-top: 8px" v-if="allInfo && allInfo.company">@{{ allInfo.company }}</div>
-        <div style="color: #0ead63; font-size: 12px; margin-top: 8px" v-else>@微信</div>
+        <div class="name">
+          <span>{{ allInfo.wechatName }}</span>
+          <span style="margin-left:8px">
+            <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
+            <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
+          </span>
+        </div>
+        <div style="color: #FF8000; font-size: 14px; margin-top: 8px; line-height:22px">{{ company }}</div>
+        <!-- <div style="color: #0ead63; font-size: 14px; margin-top: 8px; line-height:22px" v-else>@微信</div> -->
       </div>
       <div class="bottom">
         <div class="info">
           <!-- 备注 -->
           <div>
             <div class="left">备注<i></i></div>
-            <span v-if="allInfo && allInfo.remarkAlias">{{ allInfo.remarkAlias }}</span>
+            <span>{{ allInfo.remarkAlias }}</span>
             <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 电话 -->
           <div v-if="type == 1">
             <div class="left">电话<i></i></div>
-            <span v-if="allInfo && allInfo.mobilephones">{{ allInfo.mobilephones }}</span>
+            <span>{{ allInfo.mobilephones }}</span>
           </div>
           <!-- 添加时间 -->
           <div v-if="type == 1">
             <div class="left">添加时间<i></i></div>
-            <span v-if="allInfo && allInfo.addTime">{{ allInfo.addTime }}</span>
+            <span>{{ addTime }}</span>
           </div>
           <!-- 标签 -->
           <div v-if="type == 1">
@@ -36,12 +42,12 @@
           <!-- 部门 -->
           <div v-if="type == 3">
             <div class="left">部门<i></i></div>
-            <span v-if="allInfo && allInfo.department">{{ allInfo.department }}</span>
+            <span>{{ allInfo.department }}</span>
           </div>
           <!-- 描述 -->
           <div v-if="type == 3">
             <div class="left">描述<i></i></div>
-            <span v-if="allInfo && allInfo.description">{{ allInfo.description }}</span>
+            <span>{{ allInfo.description }}</span>
             <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
         </div>
@@ -52,20 +58,20 @@
     </div>
     <div class="groupBox" v-else>
       <div class="group">
-        <a-avatar shape="square" :size="112" icon="user" :src="info.wechatAvatar" />
+        <a-avatar shape="square" :size="112" icon="user" :src="allInfo.wechatAvatar" />
         <div class="nameNum">
-          <div class="name">{{ info.wechatName }}</div>
+          <div class="name">{{ allInfo.wechatName }}</div>
           <div class="num">
             <span>成员</span>
-            <span style="color:rgba(0, 0, 0, 0.85)" v-if="allInfo && allInfo.memberCount"> {{ allInfo.memberCount }}人</span>
+            <span style="color:rgba(0, 0, 0, 0.85)"> {{ memberCount }}</span>
           </div>
           <div class="owner">
             <span>群主</span>
-            <span style="color:rgba(0, 0, 0, 0.85)" v-if="allInfo && allInfo.ownerName"> {{ allInfo.ownerName }}</span>
+            <span style="color:rgba(0, 0, 0, 0.85)"> {{ allInfo.ownerName }}</span>
           </div>
         </div>
       </div>
-      <div class="sendmsg" @click="tochat">发消息</div>
+      <div class="sendmsg" style="margin:80px auto" @click="tochat">发消息</div>
     </div>
   </div>
   <no-data v-else />
@@ -85,35 +91,61 @@ export default {
       wechatId: this.$route.params.contactId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type,
-      info: [],
-      allInfo: {}
+      // info: [],
+      allInfo: {
+        wechatAvatar: '',
+        wechatName: '',
+        company: ''
+      }
     }
   },
   computed: {
     ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById']),
     ainfo() {
-      return this.type == 1 ? this.customerDetailsById(this.wechatId) : this.type == 2 ? this.groupDetailsById(this.wechatId) : this.memberDetailsById(this.wechatId)
+      const type = Number(this.type)
+      let data = {}
+      if (!this.wechatId) return data
+      if (type === 1) {
+        data = this.customerDetailsById(this.wechatId)
+      }
+      if (type === 2) {
+        data = this.groupDetailsById(this.wechatId)
+      }
+      if (type === 3) {
+        data = this.memberDetailsById(this.wechatId)
+      }
+      return data
+    },
+    company() {
+      return this.allInfo.company ? '@' + this.allInfo.company : ''
+    },
+    memberCount() {
+      return this.allInfo.memberCount ? this.allInfo.company + '人' : ''
+    },
+    addTime() {
+      return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
     }
   },
-  created() {
-    // 解决第一次点击头像 显示不出来
-    this.wechatId = this.$route.params.contactId
-    this.type = this.$route.query.type
-    this.info.wechatAvatar = this.$route.query.wechatAvatar
-    this.info.wechatName = this.$route.query.wechatName
-    this.allInfo = this.ainfo || {}
-  },
   watch: {
-    $route() {
-      this.wechatId = this.$route.params.contactId
-      this.type = this.$route.query.type
-      this.info.wechatAvatar = this.$route.query.wechatAvatar
-      this.info.wechatName = this.$route.query.wechatName
-      this.allInfo = this.ainfo || {}
-
-      console.log(this.$route.params, this.$route.query)
-      console.log(this.allInfo, this.allInfo.remarkAlias, 777)
-      // console.log(this.info)
+    ainfo(newVal) {
+      console.log(typeof newVal)
+      if (typeof newVal == 'object' && Object.keys(newVal).length) {
+        for (const key in newVal) {
+          this.$set(this.allInfo, key, newVal[key])
+        }
+      }
+    },
+    $route: {
+      immediate: true,
+      handler(newVal) {
+        const { type, wechatAvatar, wechatName, company } = newVal.query
+        this.wechatId = newVal.params.contactId
+        this.type = type
+        this.allInfo.wechatAvatar = wechatAvatar
+        this.allInfo.wechatName = wechatName
+        this.allInfo.company = company
+        console.log(this.allInfo, 'allinfo')
+      }
     }
   },
   methods: {
@@ -129,8 +161,8 @@ export default {
           {
             chatId,
             chatType: Number(this.type),
-            wechatAvatar: this.info.wechatAvatar,
-            wechatName: this.info.wechatName,
+            wechatAvatar: this.allInfo.wechatAvatar,
+            wechatName: this.allInfo.wechatName,
             lastActiveTime: new Date().getTime()
           }
         ]
@@ -160,6 +192,14 @@ export default {
         // width: 192px;
         // height: 42px;
       }
+      /deep/ .ant-avatar > img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        -o-object-fit: cover;
+        object-fit: cover;
+        border-radius: 16px;
+      }
     }
     .bottom {
       flex: 1 1 0;
@@ -171,10 +211,12 @@ export default {
         & > div {
           display: flex;
           position: relative;
+          height: 22px;
+          margin-bottom: 20px;
           .left {
-            margin-top: 20px;
+            // margin-top: 20px;
             margin-right: 40px;
-            width: 80px;
+            width: 56px;
             text-align: justify;
             height: 22px;
             font-size: 14px;
@@ -191,7 +233,11 @@ export default {
           }
           span {
             display: block;
-            margin-top: 21px;
+            // margin-top: 21px;
+            line-height: 22px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.85);
           }
           .edit {
             //  align-items: flex-end;
@@ -217,9 +263,10 @@ export default {
   .groupBox {
     height: 100%;
     padding-top: 200px;
-    padding-left: 160px;
+    // padding-left: 160px;
     .group {
       display: flex;
+      padding-left: 160px;
       .nameNum {
         margin-left: 40px;
         .name {
@@ -228,6 +275,7 @@ export default {
           font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
           line-height: 42px;
+          text-align: left;
         }
         .num,
         .owner {
