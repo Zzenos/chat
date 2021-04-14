@@ -98,7 +98,7 @@ export default {
         return
       }
       const type = ADDRESS_BOOK_CONFIG[this.activeKey]
-      this.$socket.emit(`${this.activeKey}_info`, { tjId }, ack => {
+      this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, curtomerId: tjId }, ack => {
         console.log(ack)
       })
       this.curAddress = val
