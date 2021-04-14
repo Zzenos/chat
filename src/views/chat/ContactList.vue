@@ -16,7 +16,7 @@
           <a-input-search v-model="searchText" placeholder="搜索" />
         </div>
         <div>
-          <chat-list :searchText="searchText" v-show="curTab === 1" :tjId="tjId" />
+          <chat-list :selected="curTab === 1" :searchText="searchText" v-show="curTab === 1" :tjId="tjId" />
           <address-book :searchText="searchText" v-show="curTab === 2" :tjId="tjId" />
         </div>
       </a-col>
