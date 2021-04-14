@@ -98,7 +98,13 @@ export default {
         return
       }
       const type = ADDRESS_BOOK_CONFIG[this.activeKey]
-      this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, curtomerId: tjId }, ack => {
+      const params = {}
+      if (this.activeKey === 'member') {
+        params.memberId = tjId
+      } else if (this.activeKey === 'customer') {
+        params.customerId = tjId
+      }
+      this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, ...params }, ack => {
         console.log(ack)
       })
       this.curAddress = val
