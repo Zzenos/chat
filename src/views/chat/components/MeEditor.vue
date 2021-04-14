@@ -87,13 +87,18 @@ export default {
 <style lang="scss" scoped>
 .meEditor {
   width: 100%;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
   .emoj {
-    height: 51px;
+    height: 52px;
+    box-sizing: border-box;
     border-top: 1px solid #e4e5e7;
     ul {
       display: flex;
       padding-left: 24px;
       list-style: none;
+      margin: 0;
       li {
         margin-right: 20px;
         height: 52px;
@@ -103,15 +108,15 @@ export default {
   }
   textarea {
     width: 100%;
-    height: 108px;
+    flex: 1 1 0;
     border: 0 none;
     outline: none;
     resize: none;
     font-size: 12px;
     overflow-y: auto;
     color: #000;
-    padding-left: 24px;
-    position: relative;
+    box-sizing: border-box;
+    padding: 0 24px;
   }
   textarea::-webkit-input-placeholder {
     color: rgba(0, 0, 0, 0.25);
