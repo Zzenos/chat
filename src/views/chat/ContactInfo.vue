@@ -31,7 +31,7 @@
           <!-- 添加时间 -->
           <div v-if="type == 1">
             <div class="left">添加时间<i></i></div>
-            <span>{{ allInfo.addTime.replace('T', ' ') }}</span>
+            <span>{{ addTime }}</span>
           </div>
           <!-- 标签 -->
           <div v-if="type == 1">
@@ -121,6 +121,9 @@ export default {
     },
     memberCount() {
       return this.allInfo.memberCount ? this.allInfo.company + '人' : ''
+    },
+    addTime() {
+      return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
     }
   },
   watch: {
