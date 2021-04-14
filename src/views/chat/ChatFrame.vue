@@ -35,9 +35,6 @@ export default {
   },
   methods: {
     initSocket() {
-      setTimeout(() => {
-        console.log(33333334, this.$store.getters.getToken())
-      }, 3000)
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表
@@ -84,6 +81,12 @@ export default {
       this.$socket.on('member_info', res => {
         if (res.code === 200) {
           this[types.ADD_MEMBER_DETAILS](res.data)
+        }
+      })
+      // 401
+      this.$socket.on('accounts', res => {
+        if (res.code === 200) {
+          this[types.ADD_ACCOUNT](res.data)
         }
       })
 
