@@ -94,15 +94,6 @@ export default {
         console.log('首次进入', this.$route.params.tjId)
         this.pullData(this.$route.params.tjId)
       }
-
-      /* setTimeout(() => {
-        const msg = {
-          fromId: 1112,
-          toID: 1113,
-          msgType: 'text'
-        }
-        this[types.SEND_MSG](msg)
-      }, 5000) */
     },
     // 切换企微号，拉取会话列表、通讯录、历史消息
     pullData(tjId) {

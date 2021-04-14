@@ -33,6 +33,7 @@ export default {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {
           this.curAct = this.accounts[0]
+          this.$socket.emit('init', { tjId: this.curAct.info.tjId })
           if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
         }
       }
