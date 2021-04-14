@@ -44,7 +44,6 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        console.log(n, o)
         this.chatList = this.$store.getters.chatsByChatId(this.tjId)
         console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
 
