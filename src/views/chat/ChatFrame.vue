@@ -35,6 +35,9 @@ export default {
   },
   methods: {
     initSocket() {
+      setTimeout(() => {
+        console.log(33333334, this.$store.getters.getToken())
+      }, 3000)
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表
