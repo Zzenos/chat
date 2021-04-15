@@ -93,7 +93,7 @@
                   <file-message v-else-if="item.msgType == 'file'" :href="item.href" :desc="item.desc" />
 
                   <!-- 视频消息 -->
-                  <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" />
+                  <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
 
                   <!-- 个人名片 -->
                   <card-message v-else-if="item.msgType == 'card'" :src="item.sender.wechatAvatar" :name="item.sender.wechatName" :content="item.content" />

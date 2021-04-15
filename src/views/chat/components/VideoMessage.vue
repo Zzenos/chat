@@ -1,7 +1,8 @@
 <template>
   <div class="video-message">
     <div class="preimg" @click="toshow">
-      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
+      <!-- <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" /> -->
+      <img class="video-cover" :src="coverurl" alt="" />
     </div>
   </div>
 </template>
@@ -19,6 +20,10 @@ export default {
     url: {
       type: String,
       require: true,
+      default: ''
+    },
+    coverurl: {
+      type: String,
       default: ''
     }
   },
@@ -55,6 +60,9 @@ export default {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+  }
+  .video-cover {
+    width: 100%;
   }
 }
 </style>
