@@ -35,7 +35,7 @@ export default {
 <style lang="scss">
 .image-message {
   width: 240px;
-  height: 240px;
+  // height: 240px;
   .receive-image {
     width: 100%;
   }
