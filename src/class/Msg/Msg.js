@@ -1,15 +1,10 @@
-import { Base64, getUuid } from '@/util/util'
+import { getUuid } from '@/util/util'
 const MSG_SEND_STATUS = {
   SUCCESS: 0,
   PENDING: 1,
   FAILED: 2
 }
 
-// const MSG_TYPE = {
-//   SENDING: 0,
-//   HISTORY: 1,
-//   PUSH: 2
-// }
 /**
  * 消息类
  * @param {Bool} isSendMsg
@@ -132,7 +127,7 @@ export class contactMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
     let { content } = options
-    this.content = JSON.parse(Base64.parse(content))
+    this.content = JSON.parse(content)
   }
 }
 /**
@@ -155,6 +150,6 @@ export class mpMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
     let { content } = options
-    this.content = JSON.parse(Base64.parse(content)) // 解码后为小程序的配置json,需要parse一次
+    this.content = JSON.parse(content) // 解码后为小程序的配置json,需要parse一次
   }
 }

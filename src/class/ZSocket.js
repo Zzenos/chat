@@ -58,7 +58,6 @@ class ZSocket {
     })
     // 连接错误，服务端接受链接时的中间件发生错误，比如认证错误等
     this.socket.on('connect_error', error => {
-      console.log('', error)
       // 对于连接认证未成功
       if (error && error.code === 401) {
         this.cs(`连接认证未成功，错误：${error.message}`)
