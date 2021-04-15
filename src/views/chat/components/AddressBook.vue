@@ -57,11 +57,11 @@ export default {
   data() {
     return {
       activeKey: 'customer', // 1 客户 2 群聊 3 成员 查询详情的时候使用
-      curAddress: {},
-      contactData: {},
-      customerList: [],
-      groupList: [],
-      memberList: []
+      curAddress: {}
+      // contactData: {},
+      // customerList: [],
+      // groupList: [],
+      // memberList: []
     }
   },
   props: {
@@ -75,11 +75,29 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    // contactData() {
+    //   console.log(99999, this.$store.state.contact[this.tjId])
+    //   this.handleData(this.tjId)
+    //   return this.$store.state.contact[this.tjId]
+    // },
+    groupList() {
+      let groupList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].groupList : []
+      return this.searchText ? groupList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : groupList
+    },
+    customerList() {
+      let customerList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].customerList : []
+      return this.searchText ? customerList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : customerList
+    },
+    memberList() {
+      let memberList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].memberList : []
+      return this.searchText ? memberList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : memberList
+    }
+  },
   watch: {
     tjId: {
       immediate: true,
       handler: function(n) {
-        console.log(8888888, n, this.contactData)
         this.activeKey = 'customer'
         this.curAddress = {}
         this.handleData(n)
@@ -89,10 +107,10 @@ export default {
       const list = `${this.activeKey}List`
       this[list] = n ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactData[list]
     },
-    activeKey(n) {
-      const list = `${n}List`
-      this[list] = this.searchText ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactData[list]
-    },
+    // activeKey(n) {
+    //   const list = `${n}List`
+    //   this[list] = this.searchText ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactData[list]
+    // },
     selected(n) {
       if (n) {
         // const type = ADDRESS_BOOK_CONFIG[this.activeKey]
@@ -138,7 +156,7 @@ export default {
     },
     handleData(n) {
       const contactData = cloneDeep(this.$store.getters.contactByTjId(n))
-      this.contactData = contactData
+      // this.contactData = contactData
       if (contactData) {
         for (const key in contactData) {
           if (Object.prototype.hasOwnProperty.call(contactData, key)) {
