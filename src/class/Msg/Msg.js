@@ -105,9 +105,10 @@ export class voiceMsg extends Msg {
 export class videoMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { voiceTime, url } = options
+    let { voiceTime, url, coverUrl } = options
     this.voiceTime = voiceTime // 时长
     this.url = url
+    this.coverUrl = coverUrl
   }
 }
 
