@@ -52,7 +52,7 @@ export default {
 <style lang="scss">
 .preimg {
   width: 240px;
-  height: 240px;
+  // height: 240px;
   background: rgba(0, 0, 0, 0.85);
   position: relative;
   .video_icon_play {
