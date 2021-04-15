@@ -106,8 +106,9 @@ export default {
         padding: 0;
 
         .ant-avatar.ant-avatar-circle.ant-avatar-image {
-          width: 66px;
-          height: 66px;
+          width: 60px;
+          height: 60px;
+          border-radius: 4px;
         }
 
         .bigname {
