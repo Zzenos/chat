@@ -194,6 +194,8 @@ export default {
 
       .ant-avatar {
         overflow: visible;
+        width: 44px;
+        height: 44px;
       }
 
       /deep/ .ant-avatar > img {
@@ -209,7 +211,7 @@ export default {
         color: rgba(0, 0, 0, 0.85);
         line-height: 22px;
         display: block;
-        margin-top: -21px;
+        margin-top: -32px;
         margin-left: 56px;
       }
     }
