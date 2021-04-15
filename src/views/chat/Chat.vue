@@ -105,7 +105,7 @@
                   <link-message v-else-if="item.msgType == 'link'" :url="item.url" :desc="item.desc" :title="item.title" />
 
                   <!-- 小程序消息 -->
-                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :url="item.content.weappiconurl" />
+                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :iconurl="item.content.weappiconurl" :url="item.content.pagepath" />
                 </div>
               </div>
             </div>

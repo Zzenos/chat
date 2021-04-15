@@ -1,7 +1,7 @@
 <template>
   <div class="webapp-message">
     <div class="top">
-      <div class="logo"></div>
+      <div class="logo"><img :src="iconurl" alt="" /></div>
       <div class="appname">{{ des }}</div>
     </div>
     <div class="middle">
@@ -15,7 +15,7 @@
 export default {
   name: 'WebappMessage',
   props: {
-    href: {
+    iconurl: {
       type: String,
       default: ''
     },

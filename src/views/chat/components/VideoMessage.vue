@@ -1,14 +1,16 @@
 <template>
   <div class="video-message">
-    <Xgplayer :config="videoConfig" @player="Player = $event" />
+    <div class="preimg" @click="toshow">
+      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
+    </div>
   </div>
 </template>
 
 <script>
-import Xgplayer from 'xgplayer-vue'
+import useVideosModal from '@/util/video-modal'
+const { state: videoState } = useVideosModal()
 export default {
   name: 'VideoMessage',
-  components: { Xgplayer },
   props: {
     vid: {
       type: String,
@@ -21,22 +23,37 @@ export default {
   },
   data() {
     return {
-      Player: null,
-      videoConfig: {
+      Player: null
+    }
+  },
+  methods: {
+    toshow() {
+      videoState.show = true
+      videoState.config = {
         id: 'vs' + this.vid,
-        // url:this.url,
-        // url: ' http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
         url: this.url,
         // height: 330,
-        width: 250,
+        // width: 250,
         fitVideoSize: 'auto',
         autoplay: false,
         download: true
       }
     }
   },
-  methods: {},
   created() {}
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss">
+.preimg {
+  width: 240px;
+  height: 240px;
+  background: rgba(0, 0, 0, 0.85);
+  position: relative;
+  .video_icon_play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+</style>

@@ -1,8 +1,19 @@
 <template>
   <div id="app">
     <router-view />
+    <video-modal />
   </div>
 </template>
+<script>
+import VideoModal from '@/views/chat/components/VideoModal'
+
+export default {
+  name: 'App',
+  components: {
+    VideoModal
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
