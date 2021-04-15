@@ -87,7 +87,7 @@
                   <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
                   <!-- 图片消息 -->
-                  <image-message v-else-if="item.msgType == 'image'" :src="item.href" />
+                  <image-message v-else-if="item.msgType == 'image'" :src="item.url" />
 
                   <!-- 文件消息 -->
                   <file-message v-else-if="item.msgType == 'file'" :href="item.href" :desc="item.desc" />
