@@ -1,7 +1,7 @@
 <template>
   <div class="video-message">
     <div class="preimg" @click="toshow">
-      <!-- <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" /> -->
+      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
       <img class="video-cover" :src="coverurl" alt="" />
     </div>
   </div>
