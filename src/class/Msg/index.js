@@ -15,18 +15,19 @@ const MsgType = {
 
 // 数据返回消息
 export const MsgGen = function(data) {
-  if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
-    throw new Error(`${data.msgType} is Not Support Msg Type`)
-  } else if (data.msgId && !Object.keys(MsgType).includes(data.msgType)) {
-    return new MsgType[MsgType.text](
+  if (data && data.msgType && data.msgId && !Object.keys(MsgType).includes(data.msgType)) {
+    const msg = new MsgType.text(
       {
         ...data,
+        msgType: 'text',
         content: '[此消息类型暂不支持]'
       },
       false
     )
-  }
-  return new MsgType[data.msgType](data, false)
+    return msg
+  } else if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
+    throw new Error(`${data.msgType} is Not Support Msg Type`)
+  } else return new MsgType[data.msgType](data, false)
 }
 
 export const getSendMsg = function(data) {

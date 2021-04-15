@@ -1,18 +1,20 @@
 <template>
   <div class="chat-frame_con">
-    <a-row type="flex">
-      <a-col flex="88px" class="side-bar">
-        <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
-        <account-list @pullData="pullData" />
-        <div class="bot-logo">
-          <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
-          <div>ZMENG</div>
-        </div>
-      </a-col>
-      <a-col flex="auto">
-        <router-view />
-      </a-col>
-    </a-row>
+    <a-spin size="large" tip="正在初始化..." :spinning="spinning">
+      <a-row type="flex">
+        <a-col flex="88px" class="side-bar">
+          <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
+          <account-list />
+          <div class="bot-logo">
+            <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
+            <div>ZMENG</div>
+          </div>
+        </a-col>
+        <a-col flex="auto">
+          <router-view />
+        </a-col>
+      </a-row>
+    </a-spin>
   </div>
 </template>
 
@@ -25,7 +27,9 @@ export default {
   name: 'chatFrame',
   components: { AccountList },
   data() {
-    return {}
+    return {
+      spinning: true
+    }
   },
   props: {
     // 企微saas账号
@@ -39,15 +43,10 @@ export default {
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表
-      // this.$socket.on('accounts', res => {
-      //   if (res.code === 200) {
-      //     this[types.ADD_ACCOUNT](res.data)
-      //   }
-      // })
-      // 初始化探鲸账号列表
       this.$socket.emit('accounts', ack => {
         if (ack.code === 200) {
           this[types.ADD_ACCOUNT](ack.data)
+          this.spinning = false
         }
       })
       // 历史消息
@@ -62,9 +61,9 @@ export default {
       })
       // 通讯录
       this.$socket.on('contacts', res => {
-        if (res.code === 200) {
-          this[types.ADD_CONTACT](res.data)
-        }
+        // if (res.code === 200) {
+        this[types.ADD_CONTACT](res.data)
+        // }
       })
       // 添加会话列表
       this.$socket.on('chat_list', res => {
@@ -99,18 +98,18 @@ export default {
         // }
       })
 
-      if (this.$route.params.tjId) {
-        console.log('首次进入', this.$route.params.tjId)
-        this.pullData(this.$route.params.tjId)
-      }
+      // if (this.$route.params.tjId) {
+      //   console.log('首次进入', this.$route.params.tjId)
+      //   this.pullData(this.$route.params.tjId)
+      // }
     },
     // 切换企微号，拉取会话列表、通讯录、历史消息
-    pullData(tjId) {
-      console.log('tjId:', tjId)
-      this.$socket.emit('init', { tjId }, ack => {
-        console.log(ack)
-      })
-    },
+    // pullData(tjId) {
+    //   console.log('tjId:', tjId)
+    //   this.$socket.emit('init', { tjId }, ack => {
+    //     console.log(ack)
+    //   })
+    // },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
   },
@@ -127,6 +126,15 @@ export default {
 <style lang="scss" scoped>
 .chat-frame_con {
   min-width: 1280px;
+}
+.loading-mask {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  height: 100vh;
 }
 .side-bar {
   width: 88px;

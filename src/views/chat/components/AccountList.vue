@@ -33,13 +33,15 @@ export default {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {
           this.curAct = this.accounts[0]
+          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
+        }
+        if (this.curAct) {
           const tjId = this.curAct.info.tjId
           this.$socket.emit('init', { tjId }, ack => {
             if (ack.code === 200) {
               this.$socket.emit('init_ack', { tjId })
             }
           })
-          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
         }
       }
     }
@@ -52,7 +54,11 @@ export default {
       }
       this.curAct = account
       // 拉取数据
-      this.$emit('pullData', tjId)
+      this.$socket.emit('init', { tjId }, ack => {
+        if (ack.code === 200) {
+          this.$socket.emit('init_ack', { tjId })
+        }
+      })
       this.$router.push({ path: `/chatframe/${tjId}/recent/0` })
     }
   }
