@@ -151,7 +151,7 @@ export default {
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
-            dispatch(types.DISTRIBUTE_MSG, ack)
+            dispatch(types.DISTRIBUTE_MSG, ack.data)
           }
         })
       }

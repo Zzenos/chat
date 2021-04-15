@@ -39,9 +39,15 @@ export default {
       this.$socket.init(`?token=${this.$store.state.token}`)
 
       // 初始化探鲸账号列表
-      this.$socket.on('accounts', res => {
-        if (res.code === 200) {
-          this[types.ADD_ACCOUNT](res.data)
+      // this.$socket.on('accounts', res => {
+      //   if (res.code === 200) {
+      //     this[types.ADD_ACCOUNT](res.data)
+      //   }
+      // })
+      // 初始化探鲸账号列表
+      this.$socket.emit('accounts', ack => {
+        if (ack.code === 200) {
+          this[types.ADD_ACCOUNT](ack.data)
         }
       })
       // 历史消息
@@ -84,11 +90,13 @@ export default {
           this[types.ADD_MEMBER_DETAILS](res.data)
         }
       })
+
       // 401
-      this.$socket.on('accounts', res => {
-        if (res.code === 200) {
-          this[types.ADD_ACCOUNT](res.data)
-        }
+      this.$socket.on('connect_error', () => {
+        // if (res.code === 401) {
+        // this[types.ADD_ACCOUNT](res.data)
+        console.log('获取401')
+        // }
       })
 
       if (this.$route.params.tjId) {
