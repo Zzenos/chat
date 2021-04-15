@@ -93,7 +93,7 @@ export default {
       })
 
       // 401
-      this.$socket.on('connect_error', ack => {
+      this.$socket.on('no_auth', ack => {
         console.log('收到401')
         if (ack.code === 401) {
           window.location.href = LGOIN_URL
