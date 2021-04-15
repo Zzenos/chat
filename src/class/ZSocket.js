@@ -45,7 +45,7 @@ class ZSocket {
     options.query = options.query || {}
     options.query.id = getUuid()
     this.options = options
-
+    console.log(url, options)
     this.socket = io(url, {
       ...options
     })

@@ -13,7 +13,8 @@ export default {
   methods: {
     ...mapMutations(['storeToken'])
   },
-  mounted() {
+  created() {
+    console.log(`%c ${this.token}`, 'color:#f2f;')
     this.storeToken(this.token)
     this.$router.push({ path: `/chatframe` })
   },
