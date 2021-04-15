@@ -18,6 +18,7 @@ export default {
     },
     url: {
       type: String,
+      require: true,
       default: ''
     }
   },

@@ -14,6 +14,7 @@ export default {
   props: {
     src: {
       type: String,
+      require: true,
       default: ''
     }
   },

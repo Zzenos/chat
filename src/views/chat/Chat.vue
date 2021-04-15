@@ -261,7 +261,7 @@ export default {
     },
     talkScroll(e) {
       if (e.target.scrollTop == 0 && this.loadRecord == 1) {
-        console.log('到达顶部需要请求更多消息')
+        // console.log('到达顶部需要请求更多消息')
         return
       }
     },
