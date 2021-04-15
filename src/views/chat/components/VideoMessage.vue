@@ -51,8 +51,8 @@ export default {
 </script>
 <style lang="scss">
 .preimg {
-  width: 240px;
-  // height: 240px;
+  // width: 240px;
+  height: 240px;
   background: rgba(0, 0, 0, 0.85);
   position: relative;
   .video_icon_play {
@@ -62,7 +62,7 @@ export default {
     transform: translate(-50%, -50%);
   }
   .video-cover {
-    width: 100%;
+    height: 100%;
   }
 }
 </style>

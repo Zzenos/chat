@@ -34,10 +34,10 @@ export default {
 </script>
 <style lang="scss">
 .image-message {
-  width: 240px;
-  // height: 240px;
+  // width: 240px;
+  height: 240px;
   .receive-image {
-    width: 100%;
+    height: 100%;
   }
 }
 .viewer-canvas {
