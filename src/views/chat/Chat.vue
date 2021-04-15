@@ -264,6 +264,7 @@ export default {
   },
   computed: {
     records() {
+      this.sendToBottom()
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
