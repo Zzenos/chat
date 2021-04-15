@@ -57,10 +57,6 @@ export default {
     name: {
       type: String,
       default: ''
-    },
-    content: {
-      type: String,
-      default: ''
     }
   },
   data() {
