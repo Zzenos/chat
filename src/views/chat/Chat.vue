@@ -96,7 +96,7 @@
                   <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.msgType == 'card'" :src="item.content.profilePhoto" :name="item.content.wechatName" :content="item.content" />
+                  <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" :content="item.content" />
 
                   <!-- 语音消息 -->
                   <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />

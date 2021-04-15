@@ -1,14 +1,6 @@
 <template>
   <div class="card-message ">
-    <a-popover
-      placement="right"
-      trigger="click"
-      :getPopupContainer="
-        triggerNode => {
-          return triggerNode.parentNode
-        }
-      "
-    >
+    <a-popover placement="right" trigger="click" overlayClassName="card-message-popover">
       <template slot="content">
         <div class="modal">
           <div>
@@ -82,68 +74,19 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.card-message {
-  position: relative;
-
-  .card {
-    width: 240px;
-    height: 100px;
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #e4e5e7;
-    padding: 12px;
-
-    .avatar {
-      border-bottom: 1px solid #e4e5e7;
-      height: 57px;
-      text-align: left;
-
-      .ant-avatar {
-        overflow: visible;
-      }
-
-      /deep/ .ant-avatar > img {
-        width: 44px;
-        height: 44px;
-      }
-      .nickname {
-        width: 42px;
-        height: 22px;
-        font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        font-weight: 400;
-        color: rgba(0, 0, 0, 0.85);
-        line-height: 22px;
-        display: block;
-        margin-top: -21px;
-        margin-left: 56px;
-      }
-    }
-
-    .person {
-      width: 48px;
-      height: 18px;
-      font-size: 12px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.45);
-      line-height: 18px;
-      margin-top: 4px;
-    }
-  }
-
-  /deep/ .ant-popover-inner {
+<style lang="scss">
+.card-message-popover {
+  .ant-popover-inner {
     height: 400px;
     position: relative;
     padding: 40px;
   }
 
-  /deep/ .ant-popover.ant-popover-placement-right,
-  /deep/ .ant-popover.ant-popover-placement-left {
-    position: absolute;
-    top: -60px !important;
-    left: 80px !important;
+  &.ant-popover.ant-popover-placement-right,
+  &.ant-popover.ant-popover-placement-left {
+    // position: absolute;
+    // top: -60px !important;
+    // left: 80px !important;
     width: 360px;
     height: 400px;
 
@@ -153,6 +96,7 @@ export default {
       background: #ffffff;
       box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
       border-radius: 8px;
+
       .ant-popover-arrow {
         display: none;
       }
@@ -160,6 +104,7 @@ export default {
         height: 88px;
         position: relative;
         padding: 0;
+
         .ant-avatar.ant-avatar-circle.ant-avatar-image {
           width: 66px;
           height: 66px;
@@ -226,8 +171,58 @@ export default {
     }
   }
 
-  /deep/ .ant-popover.ant-popover-placement-left {
+  .ant-popover.ant-popover-placement-left {
     top: -32px !important;
+  }
+}
+.card-message {
+  position: relative;
+
+  .card {
+    width: 240px;
+    height: 100px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e4e5e7;
+    padding: 12px;
+
+    .avatar {
+      border-bottom: 1px solid #e4e5e7;
+      height: 57px;
+      text-align: left;
+
+      .ant-avatar {
+        overflow: visible;
+      }
+
+      /deep/ .ant-avatar > img {
+        width: 44px;
+        height: 44px;
+      }
+      .nickname {
+        width: 42px;
+        height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 22px;
+        display: block;
+        margin-top: -21px;
+        margin-left: 56px;
+      }
+    }
+
+    .person {
+      width: 48px;
+      height: 18px;
+      font-size: 12px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 18px;
+      margin-top: 4px;
+    }
   }
 }
 </style>
