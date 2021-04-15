@@ -121,11 +121,11 @@ export default {
               seq: state.chatMsgs[chatId] && state.chatMsgs[chatId][0] && state.chatMsgs[chatId][0].seq, // 不能保证初始每个会话都有消息
               pageSize: 20
             },
-            msgList => {
-              if (Object.prototype.toString.call(msgList) !== '[object Array]') {
-                msgList = [msgList]
+            ack => {
+              if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
+                ack.data = [ack.data]
               }
-              const hisoryMsgs = msgList.map(i => {
+              const hisoryMsgs = ack.data.map(i => {
                 return MsgGen(i)
               })
               commit(types.ADD_HISTORY_MSG, { chatId, msgs: hisoryMsgs })
