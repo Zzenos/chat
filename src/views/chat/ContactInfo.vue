@@ -89,13 +89,15 @@ export default {
   data() {
     return {
       wechatId: this.$route.params.contactId,
+      groupId: this.$route.query.tjId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type,
       // info: [],
       allInfo: {
         wechatAvatar: '',
         wechatName: '',
-        company: ''
+        company: '',
+        memberCount: ''
       }
     }
   },
@@ -109,7 +111,7 @@ export default {
         data = this.customerDetailsById(this.wechatId)
       }
       if (type === 2) {
-        data = this.groupDetailsById(this.wechatId)
+        data = this.groupDetailsById(this.groupId)
       }
       if (type === 3) {
         data = this.memberDetailsById(this.wechatId)
@@ -120,7 +122,7 @@ export default {
       return this.allInfo.company ? '@' + this.allInfo.company : ''
     },
     memberCount() {
-      return this.allInfo.memberCount ? this.allInfo.company + '人' : ''
+      return this.allInfo.memberCount ? this.allInfo.memberCount + '人' : ''
     },
     addTime() {
       return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
@@ -128,7 +130,7 @@ export default {
   },
   watch: {
     ainfo(newVal) {
-      console.log(typeof newVal)
+      // console.log(typeof newVal)
       if (typeof newVal == 'object' && Object.keys(newVal).length) {
         for (const key in newVal) {
           this.$set(this.allInfo, key, newVal[key])
@@ -138,13 +140,16 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { type, wechatAvatar, wechatName, company } = newVal.query
+        const { type, wechatAvatar, wechatName, company, memberCount, tjId } = newVal.query
         this.wechatId = newVal.params.contactId
         this.type = type
+        this.groupId = tjId
         this.allInfo.wechatAvatar = wechatAvatar
         this.allInfo.wechatName = wechatName
         this.allInfo.company = company
+        this.allInfo.memberCount = memberCount
         console.log(this.allInfo, 'allinfo')
+        // console.log(this.$route, 'route')
       }
     }
   },

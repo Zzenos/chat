@@ -96,7 +96,7 @@
                   <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
 
                   <!-- 个人名片 -->
-                  <card-message v-else-if="item.msgType == 'card'" :src="item.sender.wechatAvatar" :name="item.sender.wechatName" :content="item.content" />
+                  <card-message v-else-if="item.msgType == 'card'" :src="item.content.profilePhoto" :name="item.content.wechatName" :content="item.content" />
 
                   <!-- 语音消息 -->
                   <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
@@ -186,39 +186,6 @@ export default {
   },
   data() {
     return {
-      // records: [
-      //   {
-      //     id: '535',
-      //     msgType: 2001,
-      //     fromId: '1',
-      //     toId: 'dsadafqfdwqdwdq',
-      //     chatType: '2',
-      //     atLocation: '',
-      //     time: '2021-03-20 11:13:05.000',
-      //     at: '',
-      //     atIds: 'id1,id2,id3,id4...',
-      //     sender: {
-      //       id: '334',
-      //       avatar: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0',
-      //       city: '',
-      //       country: '',
-      //       customDescription: '',
-      //       customId: 'LiuDongXia',
-      //       favorite: false,
-      //       gender: 1,
-      //       isVirtual: 0,
-      //       mobilephones: null,
-      //       nickname: '刘东霞'
-      //     },
-      //     unread: false,
-      //     content: '你好1',
-      //     url: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0', //h5
-      //     title: '文件/链接标题',
-      //     voice_time: 72,
-      //     desc: '链接描述',
-      //     href: 'https://wework.qpic.cn/bizmail/Wx8ic87cXIKmgFMicR0HQO6ByfBkPWBS2B7Yv0sUjBWYicZ6MpywvK07Q/0'
-      //   }
-      // ],
       loadRecord: 1,
       userId: this.$route.params.tjId,
       chatId: this.$route.params.contactId,
@@ -272,32 +239,27 @@ export default {
       this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType)
     }
   },
-  created() {
-    this.chatId = this.$route.params.contactId //获取传来的参数
-    console.log(this.chatId, 272)
-    this.wechatId = this.$route.query.wechatId
-    this.wechatName = this.$route.query.wechatName
-    this.sendToBottom()
-  },
   watch: {
-    $route() {
-      this.userId = this.$route.params.tjId
-      this.chatId = this.$route.params.contactId //获取传来的参数
-      this.wechatId = this.$route.query.wechatId
-      this.wechatName = this.$route.query.wechatName
-      // this.toBottom()
-      this.sendToBottom()
-      // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
-      console.log(this.records)
-      console.log(this.$route.query, this.$route.params)
-      // console.log(this.$route.params,this.$route.query.wechatName);
-      // if (this.records.length > 0) {
-      //   this.loadRecord = 1
-      // } else {
-      //   this.loadRecord = 2
-      // }
-      // this.$refs.editor.clear()
-      // this.$refs.editor.getDraftText(this.chatId)
+    $route: {
+      immediate: true,
+      handler(newVal) {
+        const { wechatId, wechatName } = newVal.query
+        const { tjId, contactId } = newVal.params
+        this.userId = tjId
+        this.chatId = contactId //获取传来的参数
+        this.wechatId = wechatId
+        this.wechatName = wechatName
+        this.sendToBottom()
+        // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
+        // console.log(this.$route.params,this.$route.query.wechatName);
+        // if (this.records.length > 0) {
+        //   this.loadRecord = 1
+        // } else {
+        //   this.loadRecord = 2
+        // }
+        // this.$refs.editor.clear()
+        // this.$refs.editor.getDraftText(this.chatId)
+      }
     }
   },
   computed: {
