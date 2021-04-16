@@ -95,7 +95,10 @@ export default {
       // 401
       this.$socket.on('no_auth', ack => {
         if (ack.code === 401) {
-          window.location.href = LGOIN_URL
+          this.$socket.close()
+          setTimeout(() => {
+            window.location.href = LGOIN_URL
+          }, 500)
         }
       })
 
