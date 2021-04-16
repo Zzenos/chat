@@ -41,6 +41,8 @@ export default {
   height: 240px;
   .receive-image {
     height: 100%;
+    max-width: 500px;
+    object-fit: contain;
   }
 }
 .viewer-canvas {
