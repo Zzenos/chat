@@ -215,7 +215,7 @@ export default {
       // let time = Math.floor(Date.parse(datetime) / 1000)
       let time = Math.floor(datetime / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)
-      if (currTime - time < 60) return false
+      if (currTime - time < 300) return false
       if (index == this.records.length - 1) return false
       // let nextDate = this.records[index + 1].time.replace(/-/g, '/')
       let nextDate = this.records[index + 1].time
