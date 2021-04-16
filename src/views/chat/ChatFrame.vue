@@ -23,7 +23,7 @@ import { mapActions, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import AccountList from './components/AccountList'
 
-// const LGOIN_URL = process.env.VUE_APP_LOGIN_URL
+const LGOIN_URL = process.env.VUE_APP_LOGIN_URL
 
 export default {
   name: 'chatFrame',
@@ -95,7 +95,8 @@ export default {
       // 401
       this.$socket.on('no_auth', ack => {
         if (ack.code === 401) {
-          // window.location.href = LGOIN_URL
+          console.log('no_auth')
+          window.location.href = LGOIN_URL
         }
       })
 
