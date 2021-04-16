@@ -2,8 +2,8 @@
   <div class="file-message">
     <!-- 文件描述  大小 -->
     <div class="file-box">
-      <span class="name">{{ desc }}</span>
-      <span class="size"><a :href="href">查看</a></span>
+      <span class="name">{{ title }}</span>
+      <span class="size"><a :href="url">查看</a></span>
     </div>
     <!-- 文件图片 -->
     <div class="ext">
@@ -16,11 +16,11 @@
 export default {
   name: 'FileMessage',
   props: {
-    href: {
+    url: {
       type: String,
       default: ''
     },
-    desc: {
+    title: {
       type: String,
       default: ''
     }

@@ -113,11 +113,12 @@ export class videoMsg extends Msg {
 export class hyperLinkMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { url, href, title, desc } = options
+    let { url, href, title, desc, coverUrl } = options
     this.url = url
     this.href = href
     this.title = title // h5标题
     this.desc = desc //文字描述
+    this.coverUrl = coverUrl
   }
 }
 /**
@@ -137,8 +138,9 @@ export class contactMsg extends Msg {
 export class fileMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { href } = options
-    this.href = href
+    let { url, title } = options
+    this.url = url
+    this.title = title
   }
 }
 
@@ -149,7 +151,8 @@ export class fileMsg extends Msg {
 export class mpMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content } = options
+    let { content, coverUrl } = options
     this.content = JSON.parse(content) // 解码后为小程序的配置json,需要parse一次
+    this.coverUrl = coverUrl
   }
 }

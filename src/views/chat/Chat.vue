@@ -91,7 +91,7 @@
                   <image-message v-else-if="item.msgType == 'image'" :src="item.url" />
 
                   <!-- 文件消息 -->
-                  <file-message v-else-if="item.msgType == 'file'" :href="item.href" :desc="item.desc" />
+                  <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
 
                   <!-- 视频消息 -->
                   <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
@@ -103,10 +103,17 @@
                   <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
                   <!-- 链接消息 -->
-                  <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" />
+                  <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
 
                   <!-- 小程序消息 -->
-                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :iconurl="item.content.weappiconurl" :title="item.content.title" :url="item.content.pagepath" />
+                  <webapp-message
+                    v-else-if="item.msgType == 'weapp'"
+                    :des="item.content.des"
+                    :iconurl="item.content.weappiconurl"
+                    :title="item.content.title"
+                    :url="item.content.pagepath"
+                    :coverurl="item.coverUrl"
+                  />
                 </div>
               </div>
             </div>

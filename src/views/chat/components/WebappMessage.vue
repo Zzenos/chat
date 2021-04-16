@@ -9,7 +9,7 @@
         {{ title }}
       </div>
       <div class="big-img">
-        <img :src="url" alt="" />
+        <img :src="coverurl" alt="" />
       </div>
     </div>
     <div class="bottom"><img class="webappIcon" src="@/assets/webappIcon.png" alt="" /> 小程序<a :href="url"></a></div>
@@ -33,6 +33,10 @@ export default {
       default: ''
     },
     title: {
+      type: String,
+      default: ''
+    },
+    coverurl: {
       type: String,
       default: ''
     }
