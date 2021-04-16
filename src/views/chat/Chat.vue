@@ -377,7 +377,7 @@ export default {
           color: rgba(0, 0, 0, 0.45);
           line-height: 18px;
           text-align: center;
-          margin: 0 auto;
+          margin: 20px auto;
         }
 
         .message-box {
