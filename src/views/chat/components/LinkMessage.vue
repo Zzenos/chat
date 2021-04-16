@@ -15,6 +15,9 @@
         <img :src="coverurl" alt="" />
       </div>
     </div>
+    <div class="h-foot">
+      <!-- dianshang -->
+    </div>
   </div>
 </template>
 
@@ -50,33 +53,44 @@ export default {
 </script>
 <style lang="scss" scoped>
 .link-message {
-  // height: 150px;
-  // width: 250px;
+  height: 105px;
+  width: 235px;
   padding: 10px;
   background: #f0f1f2;
 
   .h-title {
-    height: 60px;
-    line-height: 60px;
+    height: 20px;
+    line-height: 20px;
     width: 100%;
+    text-align: left;
+    font-size: 14px;
   }
 
   .h-main {
-    height: 90px;
+    height: 50px;
     width: 100%;
     display: flex;
+    font-size: 10px;
     .text-main {
       width: 160px;
-      height: 100%;
+      height: 44px;
     }
     .img-main {
-      width: 90px;
-      height: 90px;
+      width: 44px;
+      height: 44px;
       img {
         width: 100%;
         height: 100%;
       }
     }
+  }
+  .h-foot {
+    height: 15px;
+    width: 100%;
+    border-top: 1px solid #e4e5e7;
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.45);
+    text-align: left;
   }
 }
 </style>
