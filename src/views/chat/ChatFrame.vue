@@ -98,6 +98,10 @@ export default {
           window.location.href = LGOIN_URL
         }
       })
+
+      this.$socket.on('connect_error', () => {
+        this.spinning = true
+      })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
