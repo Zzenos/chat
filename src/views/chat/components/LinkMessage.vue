@@ -1,7 +1,17 @@
 <template>
   <div class="link-message">
-    <span>{{ title }}</span>
-    <a :href="url" target="_blank">{{ desc }}</a>
+    <div class="h-title">
+      <span>{{ title }}</span>
+    </div>
+    <div class="h-main">
+      <!-- <a :href="href" target="_blank">{{ desc }}</a> -->
+      <div class="text-main">
+        {{ desc }}
+      </div>
+      <div class="img-main">
+        <img src="" alt="" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -13,9 +23,10 @@ export default {
       type: String,
       default: ''
     },
-    url: {
+    href: {
       type: String,
-      default: ''
+      default: '',
+      required: true
     },
     desc: {
       type: String,
@@ -30,4 +41,31 @@ export default {
   created() {}
 }
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.link-message {
+  height: 150px;
+  width: 250px;
+
+  .h-title {
+    height: 60px;
+    width: 100%;
+  }
+
+  .h-main {
+    height: 90px;
+    width: 100%;
+    .text-main {
+      width: 160px;
+      height: 100%;
+    }
+    .img-main {
+      width: 90px;
+      height: 90px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+</style>

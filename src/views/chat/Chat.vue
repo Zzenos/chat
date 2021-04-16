@@ -103,10 +103,10 @@
                   <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
                   <!-- 链接消息 -->
-                  <link-message v-else-if="item.msgType == 'link'" :url="item.url" :desc="item.desc" :title="item.title" />
+                  <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" />
 
                   <!-- 小程序消息 -->
-                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :iconurl="item.content.weappiconurl" :url="item.content.pagepath" />
+                  <webapp-message v-else-if="item.msgType == 'weapp'" :des="item.content.des" :iconurl="item.content.weappiconurl" :title="item.content.title" :url="item.content.pagepath" />
                 </div>
               </div>
             </div>
@@ -253,6 +253,7 @@ export default {
         this.wechatName = wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.sendToBottom()
+        console.log(this.records, 'chat-records')
         // console.log(this.$route, 'chat-route')
         // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
         // console.log(this.$route.params,this.$route.query.wechatName);
