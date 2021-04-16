@@ -1,6 +1,9 @@
 <template>
-  <div class="image-message no-select" v-viewer="options">
+  <div class="image-message no-select" v-viewer="options" v-if="src">
     <img :src="src" :data-src="src" class="receive-image" />
+  </div>
+  <div v-else>
+    <span style="height:46px;line-height:46px;font-size:14px">暂不支持显示动态表情</span>
   </div>
 </template>
 <script>
