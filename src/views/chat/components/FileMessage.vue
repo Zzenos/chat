@@ -60,6 +60,9 @@ export default {
         font-weight: 400;
         color: rgba(0, 0, 0, 0.85);
         line-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       &.size {
         // width: 37px;
