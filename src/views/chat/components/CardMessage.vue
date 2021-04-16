@@ -7,7 +7,7 @@
             <div class="left">备注<i></i></div>
             <span>{{ name }}</span>
           </div>
-          <div>
+          <!-- <div>
             <div class="left">电话<i></i></div>
             <span>18866668888</span>
           </div>
@@ -22,7 +22,7 @@
           <div>
             <div class="left">标签<i></i></div>
             <span>一般用户</span>
-          </div>
+          </div> -->
         </div>
       </template>
       <template slot="title">

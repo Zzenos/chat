@@ -16,6 +16,7 @@
             <!-- {{ groupInfo[0].groupName }}
             <span class="num">{{ memberCount }}</span> -->
             {{ $route.query.wechatName }}
+            <span class="num">{{ memberCount }}</span>
           </span>
         </div>
 
@@ -190,7 +191,8 @@ export default {
       userId: this.$route.params.tjId,
       chatId: this.$route.params.contactId,
       wechatId: this.$route.query.wechatId,
-      wechatName: this.$route.query.wechatName
+      wechatName: this.$route.query.wechatName,
+      memberCount: ''
     }
   },
   mounted() {
@@ -243,13 +245,15 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { wechatId, wechatName } = newVal.query
+        const { wechatId, wechatName, memberCount = '' } = newVal.query
         const { tjId, contactId } = newVal.params
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
         this.wechatName = wechatName
+        this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.sendToBottom()
+        // console.log(this.$route, 'chat-route')
         // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
         // console.log(this.$route.params,this.$route.query.wechatName);
         // if (this.records.length > 0) {
