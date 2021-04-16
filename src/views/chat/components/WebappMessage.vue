@@ -108,7 +108,7 @@ export default {
     border-top: 1px solid #e4e5e7;
     // padding: 5px;
     margin-top: 5px;
-    padding-top: 2px;
+    padding-top: 5px;
     text-align-last: left;
     .webappIcon {
       width: 15px;
