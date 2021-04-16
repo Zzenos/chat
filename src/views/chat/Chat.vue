@@ -210,15 +210,22 @@ export default {
     sendTime: formateTime,
     compareTime(index, datetime) {
       if (datetime == undefined) return false
-      datetime = datetime + ''
-      datetime = datetime.replace(/-/g, '/')
+      // datetime = datetime + ''
+      // datetime = datetime.replace(/-/g, '/')
       // let time = Math.floor(Date.parse(datetime) / 1000)
       let time = Math.floor(datetime / 1000)
       let currTime = Math.floor(new Date().getTime() / 1000)
-      if (currTime - time < 60) return false
-      // if (index == this.records.length - 1) return true
+      //距离当前时间五分钟以内不显示消息时间
+      // if (currTime - time < 300) return false
+      if (index == this.records.length - 1 && currTime - time > 300) return true
+      if (index == this.records.length - 1) return false
       // let nextDate = this.records[index + 1].time.replace(/-/g, '/')
+      let nextDate = Math.floor(this.records[index + 1].time / 1000)
+      //两条消息相近五分钟以内 不显示
+      if (nextDate - time < 300) return false
+      return true
       // return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
+      // return !(parseTime(datetime, '{y}-{m}-{d} {h}:{i}') == parseTime(nextDate, '{y}-{m}-{d} {h}:{i}'))
     },
     toBottom() {
       let scrollHeight = document.getElementById('chatScrollbar').offsetHeight

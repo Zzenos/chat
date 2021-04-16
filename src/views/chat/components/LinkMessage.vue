@@ -78,9 +78,16 @@ export default {
     .img-main {
       width: 44px;
       height: 44px;
+      overflow: hidden;
+      position: relative;
       img {
-        width: 100%;
-        height: 100%;
+        // width: 100%;
+        // height: 100%;
+        height: 44px;
+        object-fit: contain;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
       }
     }
   }
