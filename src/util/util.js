@@ -18,15 +18,16 @@ export const getUuid = function() {
 }
 export function formateTime(datetime) {
   if (datetime == null) return ''
-  datetime = '' + datetime
-  datetime = datetime.replace(/-/g, '/')
+  // datetime = '' + datetime
+  // datetime = datetime.replace(/-/g, '/')
 
   //当前时间戳
   let time = new Date()
   let outTime = new Date(datetime)
-  if (/^[1-9]\d*$/.test(datetime)) {
-    outTime = new Date(parseInt(datetime) * 1000)
-  }
+  // let outTime = new Date(datetime)
+  // if (/^[1-9]\d*$/.test(datetime)) {
+  //   outTime = new Date(parseInt(datetime) * 1000)
+  // }
 
   if (time.getTime() < outTime.getTime() || time.getFullYear() != outTime.getFullYear()) {
     return parseTime(outTime, '{y}-{m}-{d} {h}:{i}')
@@ -68,18 +69,20 @@ export function parseTime(time, cFormat) {
   }
   const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
   let date
-  if (typeof time === 'object') {
-    date = time
-  } else {
-    if (typeof time === 'string' && /^[0-9]+$/.test(time)) {
-      time = parseInt(time)
-    }
-    if (typeof time === 'number' && time.toString().length === 10) {
-      time = time * 1000
-    }
+  // if (typeof time === 'object') {
+  //   date = time
+  // } else {
+  //   if (typeof time === 'string' && /^[0-9]+$/.test(time)) {
+  //     time = parseInt(time)
+  //   }
+  //   if (typeof time === 'number' && time.toString().length === 10) {
+  //     time = time * 1000
+  //   }
 
-    date = new Date(time.replace(/-/g, '/'))
-  }
+  //   date = new Date(time.replace(/-/g, '/'))
+  // }
+
+  date = new Date(time)
   const formatObj = {
     y: date.getFullYear(),
     m: date.getMonth() + 1,
