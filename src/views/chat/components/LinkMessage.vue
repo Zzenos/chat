@@ -12,7 +12,7 @@
         {{ desc }}
       </div>
       <div class="img-main">
-        <img src="" alt="" />
+        <img :src="coverurl" alt="" />
       </div>
     </div>
   </div>
@@ -34,6 +34,10 @@ export default {
     desc: {
       type: String,
       default: ''
+    },
+    coverurl: {
+      type: String,
+      default: ''
     }
   },
   components: {},
@@ -46,8 +50,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .link-message {
-  height: 150px;
-  width: 250px;
+  // height: 150px;
+  // width: 250px;
+  padding: 10px;
   background: #f0f1f2;
 
   .h-title {
