@@ -20,7 +20,7 @@ export const MsgGen = function(data) {
       {
         ...data,
         msgType: 'text',
-        content: '[此消息类型暂不支持]'
+        content: '[当前版本暂不支持查看此消息]'
       },
       false
     )

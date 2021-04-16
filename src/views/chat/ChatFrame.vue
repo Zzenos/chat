@@ -94,24 +94,11 @@ export default {
 
       // 401
       this.$socket.on('no_auth', ack => {
-        console.log('收到401')
         if (ack.code === 401) {
           window.location.href = LGOIN_URL
         }
       })
-
-      // if (this.$route.params.tjId) {
-      //   console.log('首次进入', this.$route.params.tjId)
-      //   this.pullData(this.$route.params.tjId)
-      // }
     },
-    // 切换企微号，拉取会话列表、通讯录、历史消息
-    // pullData(tjId) {
-    //   console.log('tjId:', tjId)
-    //   this.$socket.emit('init', { tjId }, ack => {
-    //     console.log(ack)
-    //   })
-    // },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
   },

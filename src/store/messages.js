@@ -122,10 +122,10 @@ export default {
               pageSize: 20
             },
             ack => {
-              if (Object.prototype.toString.call(ack.data) !== '[object Array]') {
-                ack.data = [ack.data]
+              if (Object.prototype.toString.call(ack.data.data) !== '[object Array]') {
+                ack.data.data = [ack.data.data]
               }
-              const hisoryMsgs = ack.data.map(i => {
+              const hisoryMsgs = ack.data.data.map(i => {
                 return MsgGen(i)
               })
               commit(types.ADD_HISTORY_MSG, { chatId, msgs: hisoryMsgs })
