@@ -218,6 +218,7 @@ export default {
       //距离当前时间五分钟以内不显示消息时间
       // if (currTime - time < 300) return false
       if (index == this.records.length - 1 && currTime - time > 300) return true
+      if (index == this.records.length - 1) return false
       // let nextDate = this.records[index + 1].time.replace(/-/g, '/')
       let nextDate = Math.floor(this.records[index + 1].time / 1000)
       //两条消息相近五分钟以内 不显示
