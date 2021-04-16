@@ -25,7 +25,7 @@ class Msg {
     this.toId = toId
     this.msgType = msgType //消息类型
     this.atLocation = atLocation // @人的位置 0 头 1 尾
-    this.time = msgTime || 0 // 发出的消息time为0， 时间戳
+    this.time = msgTime || new Date().getTime() // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
