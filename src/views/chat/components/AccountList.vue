@@ -69,7 +69,8 @@ export default {
 .act-list_container {
   height: calc(100vh - 176px);
   overflow-y: scroll;
-  width: 100px;
+  overflow-x: hidden;
+  width: 110px;
   .act-item {
     position: relative;
     width: 88px;

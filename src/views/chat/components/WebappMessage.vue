@@ -9,7 +9,7 @@
         {{ title }}
       </div>
       <div class="big-img">
-        <img :src="url" alt="" />
+        <img :src="coverurl" alt="" />
       </div>
     </div>
     <div class="bottom"><img class="webappIcon" src="@/assets/webappIcon.png" alt="" /> 小程序<a :href="url"></a></div>
@@ -35,6 +35,10 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    coverurl: {
+      type: String,
+      default: ''
     }
   },
   components: {},
@@ -47,29 +51,30 @@ export default {
 </script>
 <style lang="scss" scoped>
 .webapp-message {
-  width: 200px;
-  height: 230px;
-  padding: 5px;
+  width: 230px;
+  height: 265px;
+  padding: 10px;
   background: #f0f1f2;
   display: flex;
   flex-direction: column;
   .top {
     display: flex;
     // padding: 5px;
-    height: 40px;
+    height: 25px;
     width: 100%;
     .logo {
-      width: 30px;
-      height: 30px;
+      width: 25px;
+      height: 25px;
       // background: #000;
       margin-right: 10px;
       img {
         width: 100%;
         height: 100%;
+        border-radius: 50%;
       }
     }
     .appname {
-      line-height: 40px;
+      line-height: 25px;
       font-size: 10px;
       color: rgba(0, 0, 0, 0.45);
     }
@@ -81,11 +86,12 @@ export default {
     .app-title {
       color: rgba(0, 0, 0, 0.85);
       font-size: 14px;
-      height: 40px;
+      height: 30px;
       line-height: 40px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      text-align: left;
     }
     .big-img {
       flex: 1 1 0;
@@ -96,11 +102,13 @@ export default {
     }
   }
   .bottom {
-    height: 32px;
+    height: 25px;
     width: 100%;
     font-size: 12px;
     border-top: 1px solid #e4e5e7;
-    padding: 5px;
+    // padding: 5px;
+    margin-top: 5px;
+    padding-top: 5px;
     text-align-last: left;
     .webappIcon {
       width: 15px;
