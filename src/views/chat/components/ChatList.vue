@@ -8,7 +8,7 @@
       <div class="info">
         <div class="nickname ellipsis">
           <span v-html="item.wechatName"></span>
-          <span v-if="[1, 3].includes(item.chatType)" class="label">@微信</span>
+          <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
           <span v-else>（{{ item.memberCount }}）</span>
         </div>
         <div class="time">{{ item.lastActiveTime | timeFilter }}</div>
