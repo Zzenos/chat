@@ -103,7 +103,7 @@ export default {
       })
 
       this.$socket.on('connect_error', () => {
-        this.spinning = true
+        // this.spinning = true
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
