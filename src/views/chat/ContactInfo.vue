@@ -165,6 +165,7 @@ export default {
         chatList: [
           {
             chatId,
+            ...this.$route.query,
             company: this.allInfo.company, // 解决通讯录成员新建会话@未显示公司问题
             chatType: Number(this.type),
             wechatAvatar: this.allInfo.wechatAvatar,
