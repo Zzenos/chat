@@ -212,20 +212,17 @@ export default {
       if (datetime == undefined) return false
       let time = Math.floor(datetime / 1000)
       if (index == 0) return true
-      // let currTime = Math.floor(new Date().getTime() / 1000)
-      //先对最后一条消息进行判断 若与倒数第二条消息差距五分钟 则显示
-      if (index == this.records.length - 1) {
-        let frontDate = Math.floor(this.records[index - 1].time / 1000)
-        if (frontDate - time < 300) return false
-        // if (currTime - time > 300) return true
-        return true
-      }
+      // if (index == this.records.length - 1) {
+      let frontDate = Math.floor(this.records[index - 1].time / 1000)
+      if (frontDate - time < 300) return false
+      return true
+      // }
       //对不是最后一条消息的处理
-      if (index != this.records.length - 1) {
-        let nextDate = Math.floor(this.records[index + 1].time / 1000)
-        if (nextDate - time < 300) return false
-        return true
-      }
+      // if (index != this.records.length - 1) {
+      //   let nextDate = Math.floor(this.records[index + 1].time / 1000)
+      //   if (nextDate - time < 300) return false
+      //   return true
+      // }
       //对最后一条消息的处理
       // if (currTime - time > 300) return true
       // return false
