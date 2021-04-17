@@ -300,10 +300,12 @@ export default {
     },
     records(newVal) {
       console.log(newVal, 'new-add-record')
+      this.records = newVal
     }
   },
   computed: {
     records() {
+      console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
         this.sendToBottom()
       } else {
