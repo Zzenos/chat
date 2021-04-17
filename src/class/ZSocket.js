@@ -1,4 +1,4 @@
-import io from 'weapp.socket.io'
+import io from 'socket.io-client'
 import { getUuid } from '@/util/util.js'
 import { socketBaseUrl } from '@/apis'
 
