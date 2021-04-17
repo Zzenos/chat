@@ -108,7 +108,7 @@
                   <!-- 小程序消息 -->
                   <webapp-message
                     v-else-if="item.msgType == 'weapp'"
-                    :des="item.content.des"
+                    :des="item.content.des_1"
                     :iconurl="item.content.weappiconurl"
                     :title="item.content.title"
                     :url="item.content.pagepath"
