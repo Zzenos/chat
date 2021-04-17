@@ -11,6 +11,9 @@ export default {
   name: 'App',
   components: {
     VideoModal
+  },
+  metaInfo: {
+    meta: [{ name: 'referrer', content: 'never' }]
   }
 }
 </script>

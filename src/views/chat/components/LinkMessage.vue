@@ -1,23 +1,25 @@
 <template>
   <div class="link-message">
-    <div class="h-title">
-      <!-- <span>{{ title }}</span> -->
-      <a :href="href">
+    <a :href="href">
+      <div class="h-title">
+        <!-- <span>{{ title }}</span> -->
+        <!-- <a :href="href"> -->
         <span style="color:rgba(0,0,0,0.45)">{{ title }}</span>
-      </a>
-    </div>
-    <div class="h-main">
-      <!-- <a :href="href" target="_blank">{{ desc }}</a> -->
-      <div class="text-main">
-        {{ desc }}
+        <!-- </a> -->
       </div>
-      <div class="img-main">
-        <img :src="coverurl" alt="" />
+      <div class="h-main">
+        <!-- <a :href="href" target="_blank">{{ desc }}</a> -->
+        <div class="text-main" style="color:rgba(0,0,0,0.85)">
+          {{ desc }}
+        </div>
+        <div class="img-main">
+          <img :src="coverurl" alt="" />
+        </div>
       </div>
-    </div>
-    <div class="h-foot">
-      <!-- dianshang -->
-    </div>
+      <div class="h-foot">
+        <!-- dianshang -->
+      </div>
+    </a>
   </div>
 </template>
 
