@@ -4,12 +4,12 @@
       <div class="h-title">
         <!-- <span>{{ title }}</span> -->
         <!-- <a :href="href"> -->
-        <span style="color:rgba(0,0,0,0.45)">{{ title }}</span>
+        <span style="color:rgba(0,0,0,0.85);padding-left:5px">{{ title }}</span>
         <!-- </a> -->
       </div>
       <div class="h-main">
         <!-- <a :href="href" target="_blank">{{ desc }}</a> -->
-        <div class="text-main" style="color:rgba(0,0,0,0.85)">
+        <div class="text-main" style="color:rgba(0,0,0,0.45)">
           {{ desc }}
         </div>
         <div class="img-main">
