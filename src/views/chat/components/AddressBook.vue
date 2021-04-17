@@ -141,6 +141,8 @@ export default {
         params.memberId = tjId
       } else if (this.activeKey === 'customer') {
         params.customerId = tjId
+      } else if (this.activeKey === 'group') {
+        params.tjId = tjId
       }
       this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, ...params }, ack => {
         console.log(ack)
