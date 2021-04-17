@@ -211,9 +211,10 @@ export default {
     compareTime(index, datetime) {
       if (datetime == undefined) return false
       let time = Math.floor(datetime / 1000)
-      // let currTime = Math.floor(new Date().getTime() / 1000)
+      let currTime = Math.floor(new Date().getTime() / 1000)
       //先对最后一条消息进行判断 若与倒数第二条消息差距五分钟 则显示
       if (index == this.records.length - 1) {
+        if (currTime - time > 300) return true
         let frontDate = Math.floor(this.records[index - 1].time / 1000)
         if (frontDate - time < 300) return false
         return true
