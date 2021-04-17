@@ -4,29 +4,34 @@
     <header>
       <!-- title -->
       <div class="title" style="height: 100%">
-        <div v-if="records.length">
+        <div>
           <!-- 好友名字 -->
-          <span v-if="records[0].chatType == 1" class="friendName">
+          <span v-if="$route.query.chatType == 1" class="friendName">
             <!-- {{ records[0].fromId == userId ? records[0].to.wechatName : records[0].sender.wechatName }} -->
             {{ $route.query.wechatName }}
-            <span style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
+            <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
+            <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </span>
           <!-- 群聊名称 -->
-          <span v-else class="groupName">
+          <span v-if="$route.query.chatType == 2" class="groupName">
             <!-- {{ groupInfo[0].groupName }}
             <span class="num">{{ memberCount }}</span> -->
             {{ $route.query.wechatName }}
             <span class="num">{{ memberCount }}</span>
           </span>
+          <span v-if="$route.query.chatType == 3" class="memberName">
+            {{ $route.query.wechatName }}
+            <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
+          </span>
         </div>
 
-        <div v-else>
-          <!-- 暂无消息时的头部显示 好友名字 或 群聊名称 -->
-          <span class="friendName">
+        <!-- <div v-else> -->
+        <!-- 暂无消息时的头部显示 好友名字 或 群聊名称 -->
+        <!-- <span class="friendName">
             <span>{{ wechatName }}</span>
             <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
           </span>
-        </div>
+        </div> -->
       </div>
     </header>
     <!-- main -->
@@ -283,7 +288,7 @@ export default {
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        // console.log(this.$route, 'chat-route')
+        console.log(this.$route, 'chat-route')
         // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
         // console.log(this.$route.params,this.$route.query.wechatName);
         // if (this.records.length > 0) {
@@ -298,7 +303,7 @@ export default {
   },
   computed: {
     records() {
-      console.log(this.loadRecord, 307)
+      // console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
@@ -327,7 +332,8 @@ export default {
     border-bottom: 1px solid #e4e5e7;
 
     .friendName,
-    .groupName {
+    .groupName,
+    .memberName {
       float: left;
       margin: 22px 8px 22px 20px;
       font-size: 16px;

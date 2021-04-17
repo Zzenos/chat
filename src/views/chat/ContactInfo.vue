@@ -36,7 +36,7 @@
           <!-- 标签 -->
           <div v-if="type == 1">
             <div class="left">标签<i></i></div>
-            <!-- <span>一般用户</span> -->
+            <span v-for="(item, index) in allInfo.tags" v-text="item" :key="index" class="tags"></span>
             <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 部门 -->
@@ -112,9 +112,11 @@ export default {
       }
       if (type === 2) {
         data = this.groupDetailsById(this.groupId)
+        // console.log(data, 'group-Info')
       }
       if (type === 3) {
         data = this.memberDetailsById(this.wechatId)
+        // console.log(data, 'member-Info')
       }
       return data
     },
@@ -244,6 +246,12 @@ export default {
             line-height: 22px;
             font-weight: 400;
             color: rgba(0, 0, 0, 0.85);
+            &.tags {
+              background: #e6f4ff;
+              border-radius: 2px;
+              padding: 0 10px;
+              // width: 64px
+            }
           }
           .edit {
             //  align-items: flex-end;
