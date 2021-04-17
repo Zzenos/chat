@@ -211,6 +211,7 @@ export default {
     compareTime(index, datetime) {
       if (datetime == undefined) return false
       let time = Math.floor(datetime / 1000)
+      if (index == 0) return true
       // let currTime = Math.floor(new Date().getTime() / 1000)
       //先对最后一条消息进行判断 若与倒数第二条消息差距五分钟 则显示
       if (index == this.records.length - 1) {
