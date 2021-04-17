@@ -1,6 +1,6 @@
 <template>
   <div class="link-message">
-    <a :href="href">
+    <a :href="href" target="_blank">
       <div class="h-title">
         <!-- <span>{{ title }}</span> -->
         <!-- <a :href="href"> -->

@@ -54,13 +54,14 @@ export function formateTime(datetime) {
     return parseTime(outTime, '{h}:{i}')
   }
 
-  let minutes = outTime.getMinutes() - time.getMinutes()
-  if (minutes == 0) {
-    return '刚刚'
-  }
+  return parseTime(outTime, '{h}:{i}')
+  // let minutes = outTime.getMinutes() - time.getMinutes()
+  // if (minutes == 0) {
+  //   return '刚刚'
+  // }
 
-  minutes = Math.abs(minutes)
-  return `${minutes}分钟前`
+  // minutes = Math.abs(minutes)
+  // return `${minutes}分钟前`
 }
 
 export function parseTime(time, cFormat) {
