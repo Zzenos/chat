@@ -77,6 +77,9 @@ export default {
       line-height: 25px;
       font-size: 10px;
       color: rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .middle {
@@ -87,7 +90,7 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       font-size: 14px;
       height: 30px;
-      line-height: 40px;
+      line-height: 30px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
