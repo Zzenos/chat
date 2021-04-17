@@ -214,8 +214,8 @@ export default {
       if (index == 0) return true
       // if (index == this.records.length - 1) {
       let frontDate = Math.floor(this.records[index - 1].time / 1000)
-      if (frontDate - time < 300) return false
-      return true
+      if (time - frontDate > 300) return true
+
       // }
       //对不是最后一条消息的处理
       // if (index != this.records.length - 1) {
