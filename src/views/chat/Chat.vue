@@ -266,7 +266,11 @@ export default {
     loadChatRecords() {
       // ('去请求更多聊天记录')
       // this.records.unshift(this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType))
+      this.loadRecord = 2
       this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType)
+    },
+    changeloadRocrd() {
+      this.loadRecord = 1
     }
   },
   watch: {
@@ -293,11 +297,18 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
+    },
+    records(newVal) {
+      console.log(newVal, 'new-add-record')
     }
   },
   computed: {
     records() {
-      // this.sendToBottom()
+      if (this.loadRecord == 1) {
+        this.sendToBottom()
+      } else {
+        this.changeloadRocrd()
+      }
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
