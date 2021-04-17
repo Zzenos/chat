@@ -251,7 +251,7 @@ export default {
       // this.records.push(txt)
       // console.log(this.records)
       // this.send()
-      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
+      setTimeout(() => ((this.$refs.list.scrollTop = this.$refs.list.scrollHeight), this.changeloadRocrd()), 0)
     },
     talkScroll(e) {
       if (e.target.scrollTop == 0 && this.loadRecord == 1) {
@@ -294,10 +294,6 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
-    },
-    records(newVal) {
-      console.log(newVal, 'new-add-record')
-      this.records = newVal
     }
   },
   computed: {
@@ -305,8 +301,6 @@ export default {
       console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
         this.sendToBottom()
-      } else {
-        this.changeloadRocrd()
       }
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
