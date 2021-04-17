@@ -88,12 +88,13 @@ export default {
      */
     [types.DISTRIBUTE_MSG]: {
       // root: true,
-      handler: ({ commit }, data) => {
+      handler: ({ commit, state }, data) => {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
         }
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
+          if (state.chatMsgHash[msg.msgId]) return
           commit(types.ADD_CHAT, msg.chatId)
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
