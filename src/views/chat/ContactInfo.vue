@@ -249,7 +249,8 @@ export default {
             &.tags {
               background: #e6f4ff;
               border-radius: 2px;
-              padding: 0 10px;
+              padding: 0 8px;
+              margin-right: 8px;
               // width: 64px
             }
           }
