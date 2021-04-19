@@ -2,7 +2,8 @@
   <div class="video-message">
     <div class="preimg" @click="toshow">
       <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
-      <img class="video-cover" :src="coverurl" alt="" />
+      <img class="video-cover" v-if="coverurl" :src="coverurl" alt="" />
+      <img class="no-cover" v-else alt="" />
     </div>
   </div>
 </template>
@@ -62,6 +63,10 @@ export default {
     transform: translate(-50%, -50%);
   }
   .video-cover {
+    height: 100%;
+  }
+  .no-cover {
+    width: 200px;
     height: 100%;
   }
 }

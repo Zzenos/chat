@@ -311,7 +311,13 @@ export default {
         console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           // console.log(this.wechatId, 'groupid')
-          if (!this.wechatId) return
+          if (!this.wechatId) {
+            this.groupInfo = {
+              memberCount: '',
+              members: []
+            }
+            return
+          }
           this.$socket.emit(`group_info`, { tjId: this.wechatId }, ack => {
             this.groupInfo = ack.data || {}
             console.log(this.groupInfo, 'ack-data-groupinfo')
