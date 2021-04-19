@@ -128,7 +128,7 @@
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
-      <div class="talk-record" v-if="records[0].chatType == 2">
+      <div class="talk-record" v-if="$route.query.chatType == 2">
         <div class="top">
           <span class="groupInfo">群资料</span>
           <span>快捷回复</span>
@@ -306,6 +306,9 @@ export default {
       // console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
         this.sendToBottom()
+      }
+      if (this.loadRecord == 2) {
+        this.changeloadRocrd()
       }
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
