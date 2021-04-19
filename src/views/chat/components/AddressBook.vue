@@ -57,11 +57,11 @@ export default {
   data() {
     return {
       activeKey: 'customer', // 1 客户 2 群聊 3 成员 查询详情的时候使用
-      curAddress: {}
-      // contactData: {},
-      // customerList: [],
-      // groupList: [],
-      // memberList: []
+      curAddress: {},
+      contactInfo: {},
+      customerList: [],
+      groupList: [],
+      memberList: []
     }
   },
   props: {
@@ -76,55 +76,49 @@ export default {
     }
   },
   computed: {
-    // contactData() {
-    //   console.log(99999, this.$store.state.contact[this.tjId])
-    //   this.handleData(this.tjId)
-    //   return this.$store.state.contact[this.tjId]
-    // },
-    groupList() {
-      let groupList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].groupList : []
-      return this.searchText ? groupList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : groupList
-    },
-    customerList() {
-      let customerList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].customerList : []
-      return this.searchText ? customerList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : customerList
-    },
-    memberList() {
-      let memberList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].memberList : []
-      return this.searchText ? memberList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : memberList
+    contactData() {
+      return this.$store.getters.contactByTjId(this.tjId)
     }
+    // groupList() {
+    //   let groupList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].groupList : []
+    //   return this.searchText ? groupList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : groupList
+    // },
+    // customerList() {
+    //   let customerList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].customerList : []
+    //   return this.searchText ? customerList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : customerList
+    // },
+    // memberList() {
+    //   let memberList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].memberList : []
+    //   return this.searchText ? memberList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : memberList
+    // }
   },
   watch: {
     tjId: {
       immediate: true,
       handler: function(n) {
+        console.log('AddressBook tjId:', n)
         this.activeKey = 'customer'
         this.curAddress = {}
-        this.handleData(n)
+      }
+    },
+    contactData: {
+      immediate: true,
+      handler: function(n) {
+        console.log('contactData:', n)
+        n && this.handleData(n)
       }
     },
     searchText(n) {
       const list = `${this.activeKey}List`
-      this[list] = n ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactData[list]
+      this[list] = n ? this.contactInfo[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactInfo[list]
     },
-    // activeKey(n) {
-    //   const list = `${n}List`
-    //   this[list] = this.searchText ? this.contactData[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactData[list]
-    // },
+    activeKey(n) {
+      const list = `${n}List`
+      this[list] = this.searchText ? this.contactInfo[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactInfo[list]
+    },
     selected(n) {
-      if (n) {
-        // const type = ADDRESS_BOOK_CONFIG[this.activeKey]
-        if (this.curAddress.wechatId && this.curAddress.wechatId !== this.$route.params.contactId) {
-          this.handleItem(this.curAddress, true)
-        } else {
-          // if (this.$route.params.contactId == 0) return
-          // this.curAddress.wechatId && this.$router.push({
-          //   path: `/chatframe/${this.tjId}/contactInfo/0?type=${type}`,
-          //   query: {
-          //     type
-          //   }
-          // })
-        }
+      if (n && this.curAddress.wechatId && this.curAddress.wechatId !== this.$route.params.contactId) {
+        this.handleItem(this.curAddress, true)
       }
     }
   },
@@ -146,24 +140,22 @@ export default {
       }
       this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, ...params }, ack => {
         console.log(ack)
-      })
-      this.curAddress = val
-      this.$router.push({
-        path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${type}`,
-        query: {
-          ...val,
-          type
-        }
+        this.curAddress = val
+        this.$router.push({
+          path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${type}`,
+          query: {
+            ...val,
+            type
+          }
+        })
       })
     },
     handleData(n) {
-      const contactData = cloneDeep(this.$store.getters.contactByTjId(n))
-      // this.contactData = contactData
-      if (contactData) {
-        for (const key in contactData) {
-          if (Object.prototype.hasOwnProperty.call(contactData, key)) {
-            this[key] = contactData[key]
-          }
+      const contactData = cloneDeep(n)
+      this.contactInfo = contactData
+      for (const key in contactData) {
+        if (Object.prototype.hasOwnProperty.call(contactData, key) && key.indexOf('List')) {
+          this[key] = contactData[key]
         }
       }
     }
