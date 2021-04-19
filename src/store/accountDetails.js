@@ -29,10 +29,10 @@ export default {
     // 群详细信息
     [types.ADD_GROUP_DETAILS](state, groupDetailsData) {
       const data = groupDetailsData
-      if (!state.group[data.wechatId]) {
-        Vue.set(state.group, `${data.wechatId}`, data)
+      if (!state.group[data.groupId]) {
+        Vue.set(state.group, `${data.groupId}`, data)
       } else {
-        state.group[data.wechatId] = data
+        state.group[data.groupId] = data
       }
     }
   },
