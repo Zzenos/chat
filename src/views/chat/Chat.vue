@@ -395,6 +395,9 @@ export default {
 
     .talk-record {
       width: 300px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
 
       .top {
         width: 300px;
@@ -419,6 +422,8 @@ export default {
       // }
 
       .memberList {
+        overflow-y: auto;
+        flex: 1 1 0;
         padding-left: 20px;
         text-align: left;
         .memberInfo {
@@ -577,6 +582,8 @@ export default {
 
     .talk-record {
       width: 300px;
+      display: flex;
+      flex-direction: column;
 
       .top {
         width: 300px;
@@ -603,6 +610,8 @@ export default {
       .memberList {
         padding-left: 20px;
         text-align: left;
+        flex: 1 1 0;
+        overflow-y: auto;
         .memberInfo {
           margin-top: 20px;
           margin-bottom: 20px;
