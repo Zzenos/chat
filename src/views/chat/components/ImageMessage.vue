@@ -3,7 +3,7 @@
     <img :src="src" :data-src="src" class="receive-image" />
   </div>
   <div v-else>
-    <span style="height:46px;line-height:46px;font-size:14px">暂不支持显示动态表情</span>
+    <span style="height:46px;line-height:46px;font-size:14px">[当前版本暂不支持查看此消息]</span>
   </div>
 </template>
 <script>
