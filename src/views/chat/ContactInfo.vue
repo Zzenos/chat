@@ -112,11 +112,14 @@ export default {
       }
       if (type === 2) {
         data = this.groupDetailsById(this.groupId)
-        // console.log(data, 'group-Info')
       }
       if (type === 3) {
         data = this.memberDetailsById(this.wechatId)
-        // console.log(data, 'member-Info')
+      }
+      if (typeof data == 'object' && Object.keys(data).length) {
+        for (const key in data) {
+          this.$set(this.allInfo, key, data[key])
+        }
       }
       return data
     },
@@ -132,7 +135,6 @@ export default {
   },
   watch: {
     ainfo(newVal) {
-      // console.log(typeof newVal)
       if (typeof newVal == 'object' && Object.keys(newVal).length) {
         for (const key in newVal) {
           this.$set(this.allInfo, key, newVal[key])
@@ -214,17 +216,22 @@ export default {
     .bottom {
       flex: 1 1 0;
       padding-top: 60px;
-      padding-left: 226px;
-      padding-right: 226px;
+      // padding-left: 226px;
+      // padding-right: 226px;
 
       .info {
+        max-width: 600px;
+        margin: 0 auto;
         & > div {
-          display: flex;
+          // display: flex;
           position: relative;
           height: 22px;
           margin-bottom: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
           .left {
             // margin-top: 20px;
+            float: left;
             margin-right: 40px;
             width: 56px;
             text-align: justify;
@@ -241,7 +248,8 @@ export default {
             }
           }
           span {
-            display: block;
+            // display: block;
+            float: left;
             // margin-top: 21px;
             line-height: 22px;
             font-weight: 400;

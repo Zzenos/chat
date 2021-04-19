@@ -7,15 +7,12 @@
         <div>
           <!-- 好友名字 -->
           <span v-if="$route.query.chatType == 1" class="friendName">
-            <!-- {{ records[0].fromId == userId ? records[0].to.wechatName : records[0].sender.wechatName }} -->
             {{ $route.query.wechatName }}
             <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
             <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </span>
           <!-- 群聊名称 -->
           <span v-if="$route.query.chatType == 2" class="groupName">
-            <!-- {{ groupInfo[0].groupName }}
-            <span class="num">{{ memberCount }}</span> -->
             {{ $route.query.wechatName }}
             <span class="num">{{ memberCount }}</span>
           </span>
@@ -24,18 +21,10 @@
             <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
           </span>
         </div>
-
-        <!-- <div v-else> -->
-        <!-- 暂无消息时的头部显示 好友名字 或 群聊名称 -->
-        <!-- <span class="friendName">
-            <span>{{ wechatName }}</span>
-            <span style="color: #0ead63; font-size: 12px; line-height: 18px"> @微信</span>
-          </span>
-        </div> -->
       </div>
     </header>
     <!-- main -->
-    <div class="noRecords" v-if="!records.length">
+    <!-- <div class="noRecords" v-if="!records.length">
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)"></div>
 
@@ -43,18 +32,36 @@
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
-      <div class="talk-record">
+      <div class="talk-record" v-if="$route.query.chatType == 2">
+        <div class="top">
+          <span class="groupInfo">群资料</span>
+          <span>快捷回复</span>
+        </div>
+        <div class="search">
+          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+        </div>
+        <div class="memberList" v-if="groupInfo.memberCount">
+          群成员({{ groupInfo.memberCount }})
+          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+            <a-avatar shape="square" :size="36" icon="user" :src="item.wechatAvatar" />
+
+            <span class="name"> {{ item.wechatName }} </span>
+            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+          </div>
+        </div>
+      </div>
+      <div class="talk-record" v-else>
         <div class="top" style="padding:20px;text-align:left">聊天记录</div>
         <div class="search">
           <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
         </div>
         <div class="foot">
-          <!-- <span>全部</span> -->
           <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
         </div>
       </div>
-    </div>
-    <main class="mainContainer" v-else>
+    </div> -->
+    <main class="mainContainer">
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
           <!-- 数据加载状态栏 -->
@@ -147,7 +154,16 @@
           </div>
         </div>
       </div>
-      <div class="talk-record" v-else></div>
+      <div class="talk-record" v-else>
+        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
+        <div class="search">
+          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
+        </div>
+        <div class="foot">
+          <!-- <span>全部</span> -->
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
+        </div>
+      </div>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -181,7 +197,7 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
 export default {
   name: 'chat',
@@ -205,7 +221,10 @@ export default {
       wechatName: this.$route.query.wechatName,
       memberCount: '',
       chatType: this.$route.query.chatType,
-      groupInfo: {}
+      groupInfo: {
+        memberCount: '',
+        members: []
+      }
     }
   },
   mounted() {
@@ -268,9 +287,8 @@ export default {
     ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
       // ('去请求更多聊天记录')
-      // this.records.unshift(this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType))
       this.loadRecord = 2
-      this[types.PULL_HISTORY_MSG](this.chatId, this.records[0].chatType)
+      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType)
     },
     changeloadRocrd() {
       this.loadRecord = 1
@@ -291,6 +309,15 @@ export default {
         this.sendToBottom()
         console.log(this.records, 'chat-records')
         console.log(this.$route, 'chat-route')
+        if (chatType == 2) {
+          // console.log(this.wechatId, 'groupid')
+          if (!this.wechatId) return
+          this.$socket.emit(`group_info`, { tjId: this.wechatId }, ack => {
+            this.groupInfo = ack.data || {}
+            console.log(this.groupInfo, 'ack-data-groupinfo')
+          })
+        }
+        // console.log(this.chatType, 'chattype')
         // console.log(this.groupInfo, 'chat-watch-groupInfo')
         // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
         // console.log(this.$route.params,this.$route.query.wechatName);
@@ -302,19 +329,9 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
-    },
-    groupInfoA(newVal) {
-      if (typeof newVal == 'object' && Object.keys(newVal).length) {
-        console.log(newVal, 'chat-groupInfoA')
-        for (const key in newVal) {
-          this.$set(this.groupInfo, key, newVal[key])
-        }
-        console.log(this.groupInfo, 'group - already')
-      }
     }
   },
   computed: {
-    ...mapGetters(['groupDetailsById']),
     records() {
       // console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
@@ -327,15 +344,6 @@ export default {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
       })
-    },
-    groupInfoA() {
-      const chatType = Number(this.chatType)
-      let data = {}
-      if (!this.wechatId) return data
-      if (chatType == 2) {
-        data = this.groupDetailsById(this.wechatId)
-      }
-      return data
     }
   }
 }
@@ -371,6 +379,7 @@ export default {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
+      border-right: 1px solid #e4e5e7;
       .talk-container {
         flex: 1 1 0;
       }
@@ -378,7 +387,72 @@ export default {
 
     .talk-record {
       width: 300px;
-      border-left: 1px solid #e4e5e7;
+
+      .top {
+        width: 300px;
+        height: 60px;
+        font-size: 14px;
+        color: #000;
+        line-height: 22px;
+        padding-top: 26px;
+        padding-left: 21px;
+        border-bottom: 1px solid #e4e5e7;
+
+        .groupInfo {
+          margin-right: 34px;
+          padding-bottom: 12px;
+          color: #1d61ef;
+          border-bottom: 1px solid #1d61ef;
+        }
+      }
+
+      // .search {
+      //     padding:16px 20px;
+      // }
+
+      .memberList {
+        padding-left: 20px;
+        text-align: left;
+        .memberInfo {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          display: flex;
+          .name {
+            font-size: 14px;
+            margin-left: 12px;
+            // margin-right: 8x;
+            max-width: 110px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-department {
+            color: #ff8000;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 400;
+            margin-left: 8px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            max-width: 95px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-wechat {
+            color: #0ead63;
+            font-size: 12px;
+            margin-left: 8px;
+            line-height: 18px;
+            font-weight: 400;
+            font-family: PingFangSC-Regular, PingFang SC;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
     }
     .none {
       width: 96px;
