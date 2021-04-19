@@ -136,16 +136,16 @@
         <div class="search">
           <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
-        <!-- <div class="memberList" v-for="item in groupInfo" :key="item.groupId">
-          群成员({{ item.memberCount }})
-          <div class="memberInfo" v-for="itm in item.members" :key="itm.wechatId">
+        <div class="memberList" v-if="groupInfo.memberCount">
+          群成员({{ groupInfo.memberCount }})
+          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+            <a-avatar shape="square" :size="36" icon="user" :src="item.wechatAvatar" />
 
-            <a-avatar shape="square" :size="36" icon="user" :src="itm.wechatAvatar" />
-
-            <span class="name"> itm.wechatName </span>
-            <span style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            <span class="name"> {{ item.wechatName }} </span>
+            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
           </div>
-        </div> -->
+        </div>
       </div>
       <div class="talk-record" v-else></div>
     </main>
@@ -181,9 +181,8 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
-
 export default {
   name: 'chat',
   components: {
@@ -204,7 +203,9 @@ export default {
       chatId: this.$route.params.contactId,
       wechatId: this.$route.query.wechatId,
       wechatName: this.$route.query.wechatName,
-      memberCount: ''
+      memberCount: '',
+      chatType: this.$route.query.chatType,
+      groupInfo: {}
     }
   },
   mounted() {
@@ -279,16 +280,18 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { wechatId, wechatName, memberCount = '' } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType } = newVal.query
         const { tjId, contactId } = newVal.params
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
         this.wechatName = wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
+        this.chatType = chatType
         this.sendToBottom()
         console.log(this.records, 'chat-records')
         console.log(this.$route, 'chat-route')
+        // console.log(this.groupInfo, 'chat-watch-groupInfo')
         // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
         // console.log(this.$route.params,this.$route.query.wechatName);
         // if (this.records.length > 0) {
@@ -299,9 +302,19 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
+    },
+    groupInfoA(newVal) {
+      if (typeof newVal == 'object' && Object.keys(newVal).length) {
+        console.log(newVal, 'chat-groupInfoA')
+        for (const key in newVal) {
+          this.$set(this.groupInfo, key, newVal[key])
+        }
+        console.log(this.groupInfo, 'group - already')
+      }
     }
   },
   computed: {
+    ...mapGetters(['groupDetailsById']),
     records() {
       // console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
@@ -315,8 +328,14 @@ export default {
         return item
       })
     },
-    groupInfo() {
-      return this.$store.getters.groupDetailsById(this.wechatId)
+    groupInfoA() {
+      const chatType = Number(this.chatType)
+      let data = {}
+      if (!this.wechatId) return data
+      if (chatType == 2) {
+        data = this.groupDetailsById(this.wechatId)
+      }
+      return data
     }
   }
 }
@@ -505,10 +524,40 @@ export default {
         .memberInfo {
           margin-top: 20px;
           margin-bottom: 20px;
+          display: flex;
           .name {
             font-size: 14px;
             margin-left: 12px;
-            margin-right: 8x;
+            // margin-right: 8x;
+            max-width: 110px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-department {
+            color: #ff8000;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 400;
+            margin-left: 8px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            max-width: 95px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-wechat {
+            color: #0ead63;
+            font-size: 12px;
+            margin-left: 8px;
+            line-height: 18px;
+            font-weight: 400;
+            font-family: PingFangSC-Regular, PingFang SC;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
       }
