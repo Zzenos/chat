@@ -138,12 +138,13 @@
       <div class="talk-record" v-if="$route.query.chatType == 2">
         <div class="top">
           <span class="groupInfo">群资料</span>
-          <span>快捷回复</span>
+          <!-- <span>快捷回复</span> -->
         </div>
         <div class="search">
-          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
         </div>
-        <div class="memberList" v-if="groupInfo.memberCount">
+        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
+          <!-- style="padding-top:50px"要删 -->
           群成员({{ groupInfo.memberCount }})
           <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
             <a-avatar shape="square" :size="36" icon="user" :src="item.wechatAvatar" />
@@ -155,11 +156,12 @@
         </div>
       </div>
       <div class="talk-record" v-else>
-        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
+        <!-- <div class="top" style="padding:20px;text-align:left">聊天记录</div> -->
         <div class="search">
-          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
+          <!-- <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" /> -->
         </div>
-        <div class="foot">
+        <div class="foot" style="margin-top:200px">
+          <!-- style="margin-top:200px要删 -->
           <!-- <span>全部</span> -->
           <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
         </div>
@@ -633,6 +635,7 @@ export default {
             font-size: 12px;
             margin-left: 8px;
             line-height: 18px;
+            margin-top: 9px;
             font-weight: 400;
             font-family: PingFangSC-Regular, PingFang SC;
             overflow: hidden;

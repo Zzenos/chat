@@ -36,7 +36,9 @@
           <!-- 标签 -->
           <div v-if="type == 1">
             <div class="left">标签<i></i></div>
-            <span v-for="(item, index) in allInfo.tags" v-text="item" :key="index" class="tags"></span>
+            <div class="tag-box">
+              <span v-for="(item, index) in allInfo.tags" v-text="item" :key="index" class="tags"></span>
+            </div>
             <!-- <span class="edit"><a-icon type="edit"/></span> -->
           </div>
           <!-- 部门 -->
@@ -227,7 +229,7 @@ export default {
           position: relative;
           height: 22px;
           margin-bottom: 20px;
-          overflow: hidden;
+          // overflow: hidden;
           text-overflow: ellipsis;
           .left {
             // margin-top: 20px;
@@ -259,6 +261,7 @@ export default {
               border-radius: 2px;
               padding: 0 8px;
               margin-right: 8px;
+              margin-bottom: 15px;
               // width: 64px
             }
           }
