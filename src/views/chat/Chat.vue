@@ -96,36 +96,61 @@
                 </div>
                 <!-- 内容 -->
                 <div class="talk-content">
-                  <!-- 文本消息 -->
-                  <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
+                  <div class="talk-content-msg">
+                    <!-- 文本消息 -->
+                    <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
-                  <!-- 图片消息 -->
-                  <image-message v-else-if="item.msgType == 'image'" :src="item.url" />
+                    <!-- 图片消息 -->
+                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" />
 
-                  <!-- 文件消息 -->
-                  <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
+                    <!-- 文件消息 -->
+                    <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
 
-                  <!-- 视频消息 -->
-                  <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
+                    <!-- 视频消息 -->
+                    <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
 
-                  <!-- 个人名片 -->
-                  <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
+                    <!-- 个人名片 -->
+                    <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
 
-                  <!-- 语音消息 -->
-                  <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
+                    <!-- 语音消息 -->
+                    <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
 
-                  <!-- 链接消息 -->
-                  <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
+                    <!-- 链接消息 -->
+                    <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
 
-                  <!-- 小程序消息 -->
-                  <webapp-message
-                    v-else-if="item.msgType == 'weapp'"
-                    :des="item.content.des_1"
-                    :iconurl="item.content.weappiconurl"
-                    :title="item.content.title"
-                    :url="item.content.pagepath"
-                    :coverurl="item.coverUrl"
-                  />
+                    <!-- 小程序消息 -->
+                    <webapp-message
+                      v-else-if="item.msgType == 'weapp'"
+                      :des="item.content.des_1"
+                      :iconurl="item.content.weappiconurl"
+                      :title="item.content.title"
+                      :url="item.content.pagepath"
+                      :coverurl="item.coverUrl"
+                    />
+                    <!-- !消息发送状态 -->
+                    <!-- <div class="status" @click="showConfirm">
+                      <div class="center-fail">!</div>
+                    </div> -->
+                    <div class="status" v-if="sendStatus" @click="() => (modal2Visible = true)">
+                      <div class="center-fail">!</div>
+                    </div>
+                    <a-modal
+                      v-model="modal2Visible"
+                      wrapClassName="send-status-modal"
+                      getPopupContainer="triggerNode => {
+                        return triggerNode.parentNode
+                      }"
+                      title="您确定要重新发送消息吗？"
+                      centered
+                      @ok="toResendMsg"
+                      ok-text="确认"
+                      cancel-text="取消"
+                    >
+                      <!-- <p>some contents...</p>
+                      <p>some contents...</p>
+                      <p>some contents...</p> -->
+                    </a-modal>
+                  </div>
                 </div>
               </div>
             </div>
@@ -147,7 +172,7 @@
           <!-- style="padding-top:50px"要删 -->
           群成员({{ groupInfo.memberCount }})
           <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-            <a-avatar shape="square" :size="36" icon="user" :src="item.wechatAvatar" />
+            <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
 
             <span class="name"> {{ item.wechatName }} </span>
             <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
@@ -226,7 +251,9 @@ export default {
       groupInfo: {
         memberCount: '',
         members: []
-      }
+      },
+      sendStatus: false,
+      modal2Visible: false
     }
   },
   mounted() {
@@ -294,6 +321,25 @@ export default {
     },
     changeloadRocrd() {
       this.loadRecord = 1
+    },
+    showConfirm() {
+      this.$confirm({
+        title: '您确定要重新发送消息吗？',
+        content: '',
+        okText: '确定',
+        cancelText: '取消',
+        onOk() {
+          console.log('OK')
+        },
+        onCancel() {
+          console.log('Cancel')
+        },
+        class: 'test'
+      })
+    },
+    toResendMsg() {
+      console.log('to-resend')
+      this.modal2Visible = false
     }
   },
   watch: {
@@ -554,21 +600,39 @@ export default {
               display: flex;
               align-items: flex-start;
               flex-direction: column;
+              .talk-content-msg {
+                display: flex;
+                .status {
+                  order: 2;
+                  width: 36px;
+                  position: relative;
+                  .center-fail {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                  }
+                }
+              }
             }
           }
 
           &.direction-rt {
             .avatar-column {
-              order: 3;
+              order: 4;
               margin-right: 0;
               margin-left: 10px;
             }
 
             .main-column {
-              order: 2;
+              order: 3;
 
               .talk-content {
                 align-items: flex-end;
+                .talk-content-msg {
+                  display: flex;
+                  flex-direction: row-reverse;
+                }
               }
             }
           }
@@ -654,6 +718,28 @@ export default {
         }
       }
     }
+  }
+}
+// /deep/ .ant-modal {
+//   top: 40%;
+// }
+/deep/ .ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+/deep/ .ant-modal-close-x {
+  display: none;
+}
+/deep/ .ant-modal-content {
+  .ant-modal-header {
+    border-bottom: none;
+    text-align: center;
+    padding-top: 50px;
+  }
+  .ant-modal-body {
+    display: none;
+  }
+  .ant-modal-footer {
+    border-top: none;
   }
 }
 </style>
