@@ -20,8 +20,6 @@
 <script>
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
-// import {getSendMsg} from '@/class/Msg'
-// function findTalk(index_name){return wechat_account.find(item=>item.wechat_id==index_name)}
 export default {
   name: 'MeEditor',
   props: ['sendToBottom'],
@@ -39,7 +37,6 @@ export default {
   methods: {
     ...mapActions([types.SEND_MSG]),
     inputEvent() {
-      // this.$emit('keyboard-event', e.target.value)
       // console.log('send', e)
     },
     keydownEvent(e) {

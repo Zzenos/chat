@@ -25,7 +25,6 @@ export default {
         username: this.username
       }
     })
-    // console.log(this.$route.params, 'transit-parama')
   },
   render() {
     return <div>正在进行跳转...</div>

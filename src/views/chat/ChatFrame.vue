@@ -116,7 +116,6 @@ export default {
   },
   created() {
     this.initSocket()
-    console.log(this.$route, 'chatFrame-route', this.$route.query.username, this.username)
   },
   beforeDestory() {
     this.$socket.close()

@@ -23,44 +23,6 @@
         </div>
       </div>
     </header>
-    <!-- main -->
-    <!-- <div class="noRecords" v-if="!records.length">
-      <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)"></div>
-
-        <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" ref="editor" />
-        </div>
-      </div>
-      <div class="talk-record" v-if="$route.query.chatType == 2">
-        <div class="top">
-          <span class="groupInfo">群资料</span>
-          <span>快捷回复</span>
-        </div>
-        <div class="search">
-          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-        </div>
-        <div class="memberList" v-if="groupInfo.memberCount">
-          群成员({{ groupInfo.memberCount }})
-          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-            <a-avatar shape="square" :size="36" icon="user" :src="item.wechatAvatar" />
-
-            <span class="name"> {{ item.wechatName }} </span>
-            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-          </div>
-        </div>
-      </div>
-      <div class="talk-record" v-else>
-        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
-        <div class="search">
-          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
-        </div>
-        <div class="foot">
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
-        </div>
-      </div>
-    </div> -->
     <main class="mainContainer">
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
@@ -269,28 +231,6 @@ export default {
       // if (index == this.records.length - 1) {
       let frontDate = Math.floor(this.records[index - 1].time / 1000)
       if (time - frontDate > 300) return true
-
-      // }
-      //对不是最后一条消息的处理
-      // if (index != this.records.length - 1) {
-      //   let nextDate = Math.floor(this.records[index + 1].time / 1000)
-      //   if (nextDate - time < 300) return false
-      //   return true
-      // }
-      //对最后一条消息的处理
-      // if (currTime - time > 300) return true
-      // return false
-      //距离当前时间五分钟以内不显示消息时间
-      // if (currTime - time < 300) return false
-      // if (index == this.records.length - 1 && currTime - time > 300) return true
-      // if (index == this.records.length - 1) return false
-      // let nextDate = this.records[index + 1].time.replace(/-/g, '/')
-      // let nextDate = Math.floor(this.records[index + 1].time / 1000)
-      //两条消息相近五分钟以内 不显示
-      // if (nextDate - time < 300) return false
-      // return true
-      // return !(parseTime(new Date(datetime), '{y}-{m}-{d} {h}:{i}') == parseTime(new Date(nextDate), '{y}-{m}-{d} {h}:{i}'))
-      // return !(parseTime(datetime, '{y}-{m}-{d} {h}:{i}') == parseTime(nextDate, '{y}-{m}-{d} {h}:{i}'))
     },
     toBottom() {
       let scrollHeight = document.getElementById('chatScrollbar').offsetHeight
@@ -302,9 +242,6 @@ export default {
       }
     },
     sendToBottom() {
-      // this.records.push(txt)
-      // console.log(this.records)
-      // this.send()
       setTimeout(() => ((this.$refs.list.scrollTop = this.$refs.list.scrollHeight), this.changeloadRocrd()), 0)
     },
     talkScroll(e) {
@@ -371,15 +308,6 @@ export default {
             console.log(this.groupInfo, 'ack-data-groupinfo')
           })
         }
-        // console.log(this.chatType, 'chattype')
-        // console.log(this.groupInfo, 'chat-watch-groupInfo')
-        // console.log(this.chatId.split('&')[1],'======',this.userId,'=========',this.wechatId);
-        // console.log(this.$route.params,this.$route.query.wechatName);
-        // if (this.records.length > 0) {
-        //   this.loadRecord = 1
-        // } else {
-        //   this.loadRecord = 2
-        // }
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
@@ -387,7 +315,6 @@ export default {
   },
   computed: {
     records() {
-      // console.log(this.loadRecord, 307)
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
@@ -426,99 +353,7 @@ export default {
       font-weight: 400;
     }
   }
-  .noRecords {
-    flex: 1 1 0;
-    display: flex;
-    .left {
-      flex: 1 1 0;
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid #e4e5e7;
-      .talk-container {
-        flex: 1 1 0;
-      }
-    }
 
-    .talk-record {
-      width: 300px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-
-      .top {
-        width: 300px;
-        height: 60px;
-        font-size: 14px;
-        color: #000;
-        line-height: 22px;
-        padding-top: 26px;
-        padding-left: 21px;
-        border-bottom: 1px solid #e4e5e7;
-
-        .groupInfo {
-          margin-right: 34px;
-          padding-bottom: 12px;
-          color: #1d61ef;
-          border-bottom: 1px solid #1d61ef;
-        }
-      }
-
-      // .search {
-      //     padding:16px 20px;
-      // }
-
-      .memberList {
-        overflow-y: auto;
-        flex: 1 1 0;
-        padding-left: 20px;
-        text-align: left;
-        .memberInfo {
-          margin-top: 20px;
-          margin-bottom: 20px;
-          display: flex;
-          .name {
-            font-size: 14px;
-            margin-left: 12px;
-            // margin-right: 8x;
-            max-width: 110px;
-            line-height: 36px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          .member-department {
-            color: #ff8000;
-            font-size: 12px;
-            line-height: 18px;
-            font-weight: 400;
-            margin-left: 8px;
-            font-family: PingFangSC-Regular, PingFang SC;
-            max-width: 95px;
-            line-height: 36px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          .member-wechat {
-            color: #0ead63;
-            font-size: 12px;
-            margin-left: 8px;
-            line-height: 18px;
-            font-weight: 400;
-            font-family: PingFangSC-Regular, PingFang SC;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
-      }
-    }
-    .none {
-      width: 96px;
-      height: 96px;
-      margin: 300px auto;
-    }
-  }
   .mainContainer {
     flex: 1 1 0;
     display: flex;
