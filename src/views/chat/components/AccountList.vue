@@ -54,11 +54,13 @@ export default {
       }
       this.curAct = account
       // 拉取数据
-      this.$socket.emit('init', { tjId }, ack => {
-        if (ack.code === 200) {
-          this.$socket.emit('init_ack', { tjId })
-        }
-      })
+      if (!this.$store.getters.contactByTjId(tjId)) {
+        this.$socket.emit('init', { tjId }, ack => {
+          if (ack.code === 200) {
+            this.$socket.emit('init_ack', { tjId })
+          }
+        })
+      }
       this.$router.push({ path: `/chatframe/${tjId}/recent/0` })
     }
   }
