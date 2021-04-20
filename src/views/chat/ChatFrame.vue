@@ -7,7 +7,7 @@
           <account-list />
           <div class="bot-logo">
             <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
-            <div>ZMENG</div>
+            <div>{{ username }}</div>
           </div>
         </a-col>
         <a-col flex="auto">
@@ -30,7 +30,8 @@ export default {
   components: { AccountList },
   data() {
     return {
-      spinning: true
+      spinning: true,
+      username: this.$route.query.username
     }
   },
   props: {
@@ -115,6 +116,7 @@ export default {
   },
   created() {
     this.initSocket()
+    console.log(this.$route, 'chatFrame-route', this.$route.query.username, this.username)
   },
   beforeDestory() {
     this.$socket.close()

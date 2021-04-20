@@ -2,9 +2,17 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <li></li>
-        <li></li>
+        <li @click="$refs.restFile.click()">
+          <i>图片</i>
+        </li>
+        <li @click="$refs.restFile2.click()">
+          <i>视频</i>
+        </li>
       </ul>
+      <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
+        <input type="file" ref="restFile" accept="image/*" @change="uploadImageChange" />
+        <input type="file" ref="restFile2" accept="video/*" @change="uploadVideoChange" />
+      </form>
     </div>
     <textarea placeholder="输入内容，shift+enter换行，enter发送" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
   </div>
@@ -37,13 +45,9 @@ export default {
     keydownEvent(e) {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
       if (e.keyCode == 13 && this.editorText !== '' && e.shiftKey == false) {
-        // let currentTime = new Date().getTime()
-        // console.log(currentTime)
-        // console.log(this.userInfo[0].info.wechatName);
         this[types.SEND_MSG]({
           msgType: 'text',
-          // msgId: '222',
-          chatId: this.$route.query.chatId,
+          chatId: this.$route.params.contactId,
           chatType: this.$route.query.chatType,
           fromId: this.$route.params.tjId,
           toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
@@ -52,23 +56,12 @@ export default {
             wechatName: this.userInfo.info.wechatName,
             wechatAvatar: this.userInfo.info.wechatAvatar
           }
-          // msg_time: currentTime
         })
-        // getSendMsg({
-        //     msgType: 'text',
-        //     msgId: '222',
-        //     chatId: this.$route.query.wechatName,
-        //     chatType: this.$route.query.chatType,
-        //     fromId: this.$route.params.tjId,
-        //     toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
-        //     content: this.editorText,
-        //     msg_time: currentTime
-        //   })
         this.sendToBottom()
         this.editorText = ''
         e.preventDefault()
       }
-    }
+    },
     // clear() {
     //   this.draft_text = this.editorText
     //   this.editorText=''
@@ -81,6 +74,58 @@ export default {
     //   console.log(index_name)
     //   this.editorText = ''
     // }
+    // 选择图片文件后回调方法
+    uploadImageChange(e) {
+      console.log(e.target.files[0])
+      // this.openImageViewer(e.target.files[0])
+      this.$refs.restFile.value = null
+      // const { source, receive_id } = this.$store.state.dialogue
+
+      let fileData = new FormData()
+      console.log(fileData)
+      // fileData.append('source', source) //tj-id
+      // fileData.append('receive_id', receive_id) // target-id
+      // fileData.append('img', e.target.files[0])
+      // let ref = this.$refs.imageViewer
+
+      // ServeSendTalkImage(fileData)
+      //   .then(res => {
+      //     ref.loading = false
+      //     if (res.code == 200) {
+      //       ref.closeBox()
+      //     }
+      //   })
+      //   .finally(() => {
+      //     ref.loading = false
+      //   })
+    },
+    // 选择视频文件后回调方法
+    uploadVideoChange(e) {
+      console.log(e.target.files[0])
+      var url = URL.createObjectURL(e.target.files[0])
+      console.log('video url ' + url)
+      // this.openImageViewer(e.target.files[0])
+      this.$refs.restFile.value = null
+      // const { source, receive_id } = this.$store.state.dialogue
+
+      let fileData = new FormData()
+      console.log(fileData)
+      // fileData.append('source', source) //tj-id
+      // fileData.append('receive_id', receive_id) // target-id
+      // fileData.append('img', e.target.files[0])
+      // let ref = this.$refs.imageViewer
+
+      // ServeSendTalkImage(fileData)
+      //   .then(res => {
+      //     ref.loading = false
+      //     if (res.code == 200) {
+      //       ref.closeBox()
+      //     }
+      //   })
+      //   .finally(() => {
+      //     ref.loading = false
+      //   })
+    }
   }
 }
 </script>
