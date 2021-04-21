@@ -28,9 +28,9 @@
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
-            <span v-if="loadRecord == 1" class="pointer color-blue" @click="loadChatRecords"> <i class="el-icon-bottom" /> 查看更多消息... </span>
+            <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
 
-            <span v-else> 没有更多消息了... </span>
+            <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
 
           <!-- 消息主体 -->
@@ -228,7 +228,6 @@ export default {
       if (datetime == undefined) return false
       let time = Math.floor(datetime / 1000)
       if (index == 0) return true
-      // if (index == this.records.length - 1) {
       let frontDate = Math.floor(this.records[index - 1].time / 1000)
       if (time - frontDate > 300) return true
     },
@@ -242,7 +241,7 @@ export default {
       }
     },
     sendToBottom() {
-      setTimeout(() => ((this.$refs.list.scrollTop = this.$refs.list.scrollHeight), this.changeloadRocrd()), 0)
+      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     },
     talkScroll(e) {
       if (e.target.scrollTop == 0 && this.loadRecord == 1) {
@@ -253,8 +252,11 @@ export default {
     ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
       // ('去请求更多聊天记录')
+      if (this.loadRecord == 2) return
       this.loadRecord = 2
-      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType)
+      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
+        this.changeloadRocrd()
+      })
     },
     changeloadRocrd() {
       this.loadRecord = 1
@@ -311,16 +313,15 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
-    }
-  },
-  computed: {
+    },
     records() {
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
-      if (this.loadRecord == 2) {
-        this.changeloadRocrd()
-      }
+    }
+  },
+  computed: {
+    records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
@@ -370,6 +371,9 @@ export default {
         overflow-y: auto;
         &::-webkit-scrollbar {
           display: none;
+        }
+        .pull-history {
+          cursor: pointer;
         }
 
         .talk-title {
