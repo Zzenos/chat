@@ -59,16 +59,16 @@
         <div class="foot">
           <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
         </div>
-      </div>
+      </div>  @click="loadChatRecords" v-debounce="loadChatRecords" 
     </div> -->
     <main class="mainContainer">
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
-            <span v-if="loadRecord == 1" class="pointer color-blue" @click="loadChatRecords"> <i class="el-icon-bottom" /> 查看更多消息... </span>
+            <span class="pointer color-blue pull-history" @click="loadChatRecords"> 查看更多消息... </span>
 
-            <span v-else> 没有更多消息了... </span>
+            <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
 
           <!-- 消息主体 -->
@@ -277,8 +277,8 @@ export default {
     sendToBottom() {
       // this.records.push(txt)
       // console.log(this.records)
-      // this.send()
-      setTimeout(() => ((this.$refs.list.scrollTop = this.$refs.list.scrollHeight), this.changeloadRocrd()), 0)
+      // this.send() , this.changeloadRocrd()
+      setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     },
     talkScroll(e) {
       if (e.target.scrollTop == 0 && this.loadRecord == 1) {
@@ -288,9 +288,11 @@ export default {
     },
     ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
-      // ('去请求更多聊天记录')
+      if (this.loadRecord == 2) return
       this.loadRecord = 2
-      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType)
+      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
+        this.changeloadRocrd()
+      })
     },
     changeloadRocrd() {
       this.loadRecord = 1
@@ -337,17 +339,16 @@ export default {
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
       }
+    },
+    records(newVal) {
+      console.log(this.loadRecord, 'watch-loadRecord', newVal)
+      if (this.loadRecord == 1) {
+        this.sendToBottom()
+      }
     }
   },
   computed: {
     records() {
-      // console.log(this.loadRecord, 307)
-      if (this.loadRecord == 1) {
-        this.sendToBottom()
-      }
-      if (this.loadRecord == 2) {
-        this.changeloadRocrd()
-      }
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
         return item
@@ -491,6 +492,9 @@ export default {
           display: none;
         }
 
+        .pull-history {
+          cursor: pointer;
+        }
         .talk-title {
           display: none;
           height: 15px;
