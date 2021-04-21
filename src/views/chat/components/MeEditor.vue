@@ -3,10 +3,10 @@
     <div class="emoj">
       <ul>
         <li @click="$refs.restFile.click()">
-          <i>图片</i>
+          <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
         <li @click="$refs.restFile2.click()">
-          <i>视频</i>
+          <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
       </ul>
       <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
@@ -138,13 +138,14 @@ export default {
     border-top: 1px solid #e4e5e7;
     ul {
       display: flex;
-      padding-left: 24px;
+      padding-left: 23px;
       list-style: none;
       margin: 0;
       li {
         margin-right: 20px;
         height: 52px;
         line-height: 52px;
+        cursor: pointer;
       }
     }
   }

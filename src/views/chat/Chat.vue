@@ -354,6 +354,22 @@ export default {
       font-weight: 400;
     }
   }
+  .noRecords {
+    flex: 1 1 0;
+    display: flex;
+    .left {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #e4e5e7;
+      .talk-container {
+        flex: 1 1 0;
+      }
+    }
+    .talk-record {
+      width: 300px;
+    }
+  }
 
   .mainContainer {
     flex: 1 1 0;
@@ -563,7 +579,8 @@ export default {
 //   top: 40%;
 // }
 /deep/ .ant-modal-mask {
-  background-color: rgba(0, 0, 0, 0.15);
+  display: none;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 /deep/ .ant-modal-close-x {
   display: none;
