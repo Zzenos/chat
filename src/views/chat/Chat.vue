@@ -94,7 +94,9 @@
                       <div class="center-fail">!</div>
                     </div> -->
                     <div class="status" v-if="sendStatus" @click="() => (modal2Visible = true)">
-                      <div class="center-fail">!</div>
+                      <div class="center-fail">
+                        <img src="@/assets/send_fail.png" alt="" />
+                      </div>
                     </div>
                     <a-modal
                       v-model="modal2Visible"
@@ -117,6 +119,10 @@
               </div>
             </div>
           </div>
+        </div>
+        <!-- 客户流失 -->
+        <div class="lost-customer" v-if="isLost">
+          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
@@ -215,7 +221,8 @@ export default {
         members: []
       },
       sendStatus: false,
-      modal2Visible: false
+      modal2Visible: false,
+      isLost: false
     }
   },
   mounted() {
@@ -385,6 +392,7 @@ export default {
         box-sizing: border-box;
         padding: 40px 10px 10px;
         overflow-y: auto;
+        position: relative;
         &::-webkit-scrollbar {
           display: none;
         }
@@ -459,7 +467,7 @@ export default {
                 display: flex;
                 .status {
                   order: 2;
-                  width: 36px;
+                  width: 44px;
                   position: relative;
                   .center-fail {
                     position: absolute;
@@ -494,6 +502,21 @@ export default {
         }
       }
 
+      .lost-customer {
+        width: 100%;
+        height: 40px;
+        background: #e1eaff;
+        .lost-text {
+          width: 228px;
+          height: 18px;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.85);
+          line-height: 18px;
+          margin: 11px auto;
+        }
+      }
       .foot {
         height: 160px;
       }
@@ -586,6 +609,7 @@ export default {
   display: none;
 }
 /deep/ .ant-modal-content {
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
   .ant-modal-header {
     border-bottom: none;
     text-align: center;

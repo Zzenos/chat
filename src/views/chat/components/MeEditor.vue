@@ -2,6 +2,19 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
+        <li>
+          <img src="@/assets/chat_icon_emoticon.png" alt="" />
+        </li>
+        <li @click="toPlayVoice">
+          <img v-if="readyPlaying" src="@/assets/voice_icon.png" alt="" />
+          <img v-else src="@/assets/playing.png" alt="" />
+        </li>
+        <li>
+          <img src="@/assets/playing.png" alt="" />
+        </li>
+        <li style="background:rgba(0,0,0,.5)">
+          <img src="@/assets/sending.png" alt="" />
+        </li>
         <li @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
@@ -26,7 +39,7 @@ export default {
   data() {
     return {
       editorText: '',
-      sendTime: 0
+      readyPlaying: true
     }
   },
   computed: {
@@ -122,6 +135,9 @@ export default {
       //   .finally(() => {
       //     ref.loading = false
       //   })
+    },
+    toPlayVoice() {
+      this.readyPlaying = !this.readyPlaying
     }
   }
 }
@@ -132,6 +148,7 @@ export default {
   height: 160px;
   display: flex;
   flex-direction: column;
+
   .emoj {
     height: 52px;
     box-sizing: border-box;
