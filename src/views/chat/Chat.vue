@@ -75,7 +75,7 @@
                     <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
 
                     <!-- 语音消息 -->
-                    <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :vtime="item.voiceTime" />
+                    <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :voiceTime="item.voiceTime" />
 
                     <!-- 链接消息 -->
                     <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />

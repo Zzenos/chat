@@ -1,20 +1,22 @@
 <template>
-  <div class="audio-message" :class="{ isleft: float == 'left' }">
-    <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>
-    <div class="self__audio">
-      <div class="audio__duration">{{ vtime }}"</div>
-      <div class="audio__trigger" @click="playAudioHandler">
-        <div
-          :class="{
-            'wifi-symbol': true,
-            'wifi-symbol--avtive': isPlaying
-          }"
-        >
-          <div class="wifi-circle first"></div>
-          <div class="wifi-circle second"></div>
-          <div class="wifi-circle third"></div>
+  <div
+    class="audio-message"
+    :class="{
+      isleft: float == 'left',
+      maxlength: voiceTime > 40,
+      middlelength: voiceTime >= 10 && voiceTime <= 40,
+      minlength: voiceTime < 10
+    }"
+  >
+    <audio controls :src="src" ref="audioPlayer" style="display:none"></audio>
+    <div class="self__audio" @click="playAll">
+      <div class="audio__trigger">
+        <div class="audio-icon">
+          <img v-if="readyPlaying" src="@/assets/voice_icon.png" alt="" />
+          <img v-else src="@/assets/playing.png" alt="" />
         </div>
       </div>
+      <div class="audio__duration">{{ voiceTime }}''</div>
     </div>
   </div>
 </template>
@@ -23,12 +25,12 @@ export default {
   name: 'AudioMessage',
   data() {
     return {
-      isPlaying: false
-      //   duration: 0
+      isPlaying: false,
+      readyPlaying: true
     }
   },
   props: {
-    url: {
+    src: {
       type: String,
       // required: true,
       default: ''
@@ -37,12 +39,15 @@ export default {
       type: String,
       default: ''
     },
-    vtime: {
+    voiceTime: {
       type: Number,
       default: 0
     }
   },
   methods: {
+    toPlayVoice() {
+      this.readyPlaying = !this.readyPlaying
+    },
     playAudioHandler() {
       this.isPlaying = !this.isPlaying
       const player = this.$refs.audioPlayer
@@ -52,104 +57,74 @@ export default {
       } else {
         player.pause()
       }
+    },
+    playAll() {
+      this.toPlayVoice(), this.playAudioHandler()
     }
   },
   mounted() {
     const player = this.$refs.audioPlayer
     player.load()
-    const vm = this
-    player.oncanplay = function() {
-      vm.duration = Math.ceil(player.duration)
-    }
+    // const vm = this;
+    // player.oncanplay = function() {
+    //   vm.duration = Math.ceil(player.duration);
+    // };
   }
 }
 </script>
 <style lang="scss" scoped>
 .audio-message {
+  background: #f0f1f2;
+  height: 46px;
+  width: 360px;
+  border-radius: 8px;
+  box-sizing: border-box;
   .self__audio {
-    .audio__duration {
-      display: inline-block;
-      line-height: 32px;
-      height: 32px;
-      padding-right: 6px;
-      color: #888888;
-    }
+    // height: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+
     .audio__trigger {
       cursor: pointer;
-      vertical-align: top;
-      display: inline-block;
-      line-height: 32px;
-      height: 32px;
-      width: 100px;
-      background-color: #6dff5f;
-      border-radius: 4px;
-      position: relative;
-      .wifi-symbol {
-        position: absolute;
-        right: 4px;
-        top: -8px;
-        width: 50px;
-        height: 50px;
-        box-sizing: border-box;
-        overflow: hidden;
-        transform: rotate(-45deg) scale(0.5);
-        .wifi-circle {
-          border: 5px solid #999999;
-          border-radius: 50%;
-          position: absolute;
-        }
+      margin: 13px 8px 13px 12px;
+      line-height: normal;
+      transform: rotate(-180deg);
+      // order: 2;
+    }
 
-        .first {
-          width: 5px;
-          height: 5px;
-          background: #cccccc;
-          top: 45px;
-          left: 45px;
-        }
-        .second {
-          width: 25px;
-          height: 25px;
-          top: 35px;
-          left: 35px;
-        }
-        .third {
-          width: 40px;
-          height: 40px;
-          top: 25px;
-          left: 25px;
-        }
-      }
-      .wifi-symbol--avtive {
-        .second {
-          animation: bounce 1s infinite 0.2s;
-        }
-        .third {
-          animation: bounce 1s infinite 0.4s;
-        }
-      }
+    .audio__duration {
+      margin-top: 12px;
+      // width: 24px;
+      height: 22px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #000000;
+      line-height: 22px;
     }
   }
 
   &.isleft {
     .self__audio {
       display: flex !important;
+      flex-direction: row;
+      .audio__trigger {
+        order: 1;
+        transform: rotate(0deg);
+      }
       .audio__duration {
         order: 2;
       }
-      .audio__trigger {
-        order: 1;
-        transform: rotate(-180deg);
-      }
     }
   }
-
-  @keyframes bounce {
-    0% {
-      opacity: 0; /*初始状态 透明度为0*/
-    }
-    100% {
-      opacity: 1; /*结尾状态 透明度为1*/
-    }
+  &.maxlength {
+    width: 360px;
+  }
+  &.middlelength {
+    width: 240px;
+  }
+  &.minlength {
+    width: 120px;
   }
 }
 </style>
