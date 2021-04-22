@@ -2,7 +2,7 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <li>
+        <li v-if="!lost">
           <img src="@/assets/chat_icon_emoticon.png" alt="" />
         </li>
         <!-- <li @click="toPlayVoice">
@@ -12,14 +12,21 @@
         <li>
           <img src="@/assets/playing.png" alt="" />
         </li> -->
-        <li style="background:rgba(0,0,0,.5)">
+        <!-- <li style="background:rgba(0,0,0,.5)">
           <img src="@/assets/sending.png" alt="" />
-        </li>
-        <li @click="$refs.restFile.click()">
+        </li> -->
+        <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
-        <li @click="$refs.restFile2.click()">
+        <li v-if="!lost" @click="$refs.restFile2.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
+        </li>
+        <!-- 客户流失显示 -->
+        <li v-if="lost">
+          <img src="@/assets/chat_icon_emoticon_lost.png" alt="" />
+        </li>
+        <li v-if="lost">
+          <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
       </ul>
       <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
@@ -41,7 +48,8 @@ export default {
       placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
       readyPlaying: true,
-      readonly: false
+      readonly: false,
+      lost: false
     }
   },
   computed: {
@@ -149,6 +157,7 @@ export default {
     changePlaceholder() {
       this.placeholder = '客户已流失，不能发送消息'
       this.readonly = true
+      this.lost = true
     }
   }
 }
