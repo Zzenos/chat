@@ -63,7 +63,7 @@
                     <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
                     <!-- 图片消息 -->
-                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" />
+                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="sendingPic" />
 
                     <!-- 文件消息 -->
                     <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
@@ -90,12 +90,9 @@
                       :coverurl="item.coverUrl"
                     />
                     <!-- !消息发送状态 -->
-                    <!-- <div class="status" @click="showConfirm">
-                      <div class="center-fail">!</div>
-                    </div> -->
-                    <div class="status" v-if="sendStatus" @click="() => (modal2Visible = true)">
+                    <div class="status" v-if="!item.sendStatus" @click="clickStatus(index)">
                       <div class="center-fail">
-                        <img src="@/assets/send_fail.png" alt="" />
+                        <img src="@/assets/icon_resend.png" alt="" />
                       </div>
                     </div>
                     <a-modal
@@ -122,10 +119,10 @@
         </div>
         <!-- 客户流失 -->
         <div class="lost-customer" v-if="isLost">
-          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
+          <div class="lost-text" @click="lostText">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" ref="editor" />
+          <me-editor :sendToBottom="sendToBottom" :changeSendStatus="changeSendStatus" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
@@ -220,9 +217,11 @@ export default {
         memberCount: '',
         members: []
       },
-      sendStatus: false,
+      // sendStatus: false,
       modal2Visible: false,
-      isLost: false
+      isLost: false,
+      toRensendIndex: 0,
+      sendingPic: false
     }
   },
   mounted() {
@@ -268,24 +267,41 @@ export default {
     changeloadRocrd() {
       this.loadRecord = 1
     },
-    showConfirm() {
-      this.$confirm({
-        title: '您确定要重新发送消息吗？',
-        content: '',
-        okText: '确定',
-        cancelText: '取消',
-        onOk() {
-          console.log('OK')
-        },
-        onCancel() {
-          console.log('Cancel')
-        },
-        class: 'test'
-      })
-    },
+    // showConfirm() {
+    //   this.$confirm({
+    //     title: '您确定要重新发送消息吗？',
+    //     content: '',
+    //     okText: '确定',
+    //     cancelText: '取消',
+    //     onOk() {
+    //       console.log('OK')
+    //     },
+    //     onCancel() {
+    //       console.log('Cancel')
+    //     },
+    //     class: 'test'
+    //   })
+    // },
     toResendMsg() {
+      //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
       console.log('to-resend')
       this.modal2Visible = false
+      //types.resend.().then(()=>{this.changeSendStatus(this.toRensendIndex)})
+    },
+    changeSendStatus(index) {
+      // this.sendStatus = true
+      //如果不传index 默认是最后一条
+      index = index || this.records.length - 1
+      this.records[index].sendStatus = true
+    },
+    clickStatus(index) {
+      //点击重发消息 展示弹框 存索引
+      this.modal2Visible = true
+      console.log(index)
+      this.toRensendIndex = index
+    },
+    lostText() {
+      this.$refs.editor.changePlaceholder()
     }
   },
   watch: {
@@ -331,6 +347,7 @@ export default {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
+        item.sendStatus = true
         return item
       })
     }

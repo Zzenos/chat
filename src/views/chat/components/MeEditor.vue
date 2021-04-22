@@ -5,13 +5,13 @@
         <li>
           <img src="@/assets/chat_icon_emoticon.png" alt="" />
         </li>
-        <li @click="toPlayVoice">
+        <!-- <li @click="toPlayVoice">
           <img v-if="readyPlaying" src="@/assets/voice_icon.png" alt="" />
           <img v-else src="@/assets/playing.png" alt="" />
         </li>
         <li>
           <img src="@/assets/playing.png" alt="" />
-        </li>
+        </li> -->
         <li style="background:rgba(0,0,0,.5)">
           <img src="@/assets/sending.png" alt="" />
         </li>
@@ -27,7 +27,7 @@
         <input type="file" ref="restFile2" accept="video/*" @change="uploadVideoChange" />
       </form>
     </div>
-    <textarea placeholder="输入内容，shift+enter换行，enter发送" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
+    <textarea :placeholder="placeholder" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
   </div>
 </template>
 <script>
@@ -35,9 +35,10 @@ import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
 export default {
   name: 'MeEditor',
-  props: ['sendToBottom'],
+  props: ['sendToBottom', 'changeSendStatus'],
   data() {
     return {
+      placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
       readyPlaying: true
     }
@@ -55,16 +56,18 @@ export default {
     keydownEvent(e) {
       if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
       if (e.keyCode == 13 && this.editorText !== '' && e.shiftKey == false) {
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
         this[types.SEND_MSG]({
           msgType: 'text',
-          chatId: this.$route.params.contactId,
+          chatId: contactId,
           chatType: this.$route.query.chatType,
-          fromId: this.$route.params.tjId,
-          toId: this.$route.params.tjId == this.$route.params.contactId.split('&')[0] ? this.$route.params.contactId.split('&')[1] : this.$route.params.contactId.split('&')[0],
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
           content: this.editorText,
           sender: {
-            wechatName: this.userInfo.info.wechatName,
-            wechatAvatar: this.userInfo.info.wechatAvatar
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
           }
         })
         this.sendToBottom()
@@ -138,6 +141,12 @@ export default {
     },
     toPlayVoice() {
       this.readyPlaying = !this.readyPlaying
+    },
+    // tochangestatus() {
+    //   this.changeSendStatus()
+    // },
+    changePlaceholder() {
+      this.placeholder = '客户已流失，不能发送消息'
     }
   }
 }
