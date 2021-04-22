@@ -27,7 +27,7 @@
         <input type="file" ref="restFile2" accept="video/*" @change="uploadVideoChange" />
       </form>
     </div>
-    <textarea :placeholder="placeholder" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
+    <textarea :placeholder="placeholder" :readonly="readonly" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
   </div>
 </template>
 <script>
@@ -40,7 +40,8 @@ export default {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
-      readyPlaying: true
+      readyPlaying: true,
+      readonly: false
     }
   },
   computed: {
@@ -147,6 +148,7 @@ export default {
     // },
     changePlaceholder() {
       this.placeholder = '客户已流失，不能发送消息'
+      this.readonly = true
     }
   }
 }
