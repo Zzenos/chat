@@ -30,6 +30,6 @@ export const MsgGen = function(data) {
   } else return new MsgType[data.msgType](data, false)
 }
 
-export const getSendMsg = function(data) {
-  return new MsgType[data.msgType](data, true)
+export const getSendMsg = function(data, notResend) {
+  return new MsgType[data.msgType](data, notResend)
 }

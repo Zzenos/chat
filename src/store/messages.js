@@ -144,11 +144,13 @@ export default {
     [types.SEND_MSG]: {
       // root: true,
       handler: ({ commit, dispatch }, data) => {
-        const newMsg = getSendMsg(data)
+        const newMsg = getSendMsg(data, data.notResend)
         // 发送消息不需要放到hash
         commit(types.CACHE_SENDING_MSG, newMsg)
         commit(types.ADD_CHAT, newMsg.chatId)
-        commit(types.ADD_MSG_LOCAL, newMsg)
+        if (data.notResend) {
+          commit(types.ADD_MSG_LOCAL, newMsg)
+        }
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {

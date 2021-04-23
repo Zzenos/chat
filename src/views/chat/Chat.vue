@@ -90,7 +90,7 @@
                       :coverurl="item.coverUrl"
                     />
                     <!-- !消息发送状态 -->
-                    <div class="status" v-if="item.status" @click="clickStatus(index)">
+                    <div class="status" v-if="item.status != 0" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
@@ -228,6 +228,7 @@ export default {
     this.toBottom()
   },
   methods: {
+    ...mapActions([types.SEND_MSG]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -286,6 +287,8 @@ export default {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
       console.log('to-resend')
       this.modal2Visible = false
+      this.records[this.toRensendIndex].notResend = false
+      this[types.SEND_MSG](this.records[this.toRensendIndex])
       //types.resend.().then(()=>{this.changeSendStatus(this.toRensendIndex)})
     },
     changeSendStatus(index) {
@@ -295,7 +298,7 @@ export default {
       this.records[index].sendStatus = true
     },
     clickStatus(index) {
-      //点击重发消息 展示弹框 存索引
+      //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
       console.log(index)
       this.toRensendIndex = index

@@ -40,6 +40,65 @@
 <script>
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
+import { uploadMaterial } from '@/util/home'
+class FileCell {
+  constructor() {
+    this.statusArr = [
+      {
+        status: 'preupload',
+        text: '准备上传',
+        color: 'cyan',
+        message: ''
+      },
+      {
+        status: 'uploading',
+        text: '正在上传',
+        color: 'blue',
+        message: ''
+      },
+      {
+        status: 'done',
+        text: '已上传',
+        color: 'green',
+        message: ''
+      },
+      {
+        status: 'failed',
+        text: '上传失败',
+        color: 'red',
+        message: ''
+      }
+    ]
+    ;[this.state] = this.statusArr
+    this.complete = false
+    this.id = Math.random()
+      .toString(32)
+      .slice(2)
+    this.init()
+  }
+
+  init() {
+    ;[this.state] = this.statusArr
+  }
+
+  set(status, message) {
+    let inArr = null
+    switch (status) {
+      default:
+        this.statusArr.forEach(i => {
+          if (i.status === status) inArr = i
+        })
+        if (!inArr) {
+          // console.warn(`${status} is not a valid state`)
+          return
+        }
+        this.state = inArr
+        if (message) this.state.message = message
+      // console.log('colorchange:', this.state)
+    }
+  }
+}
+
 export default {
   name: 'MeEditor',
   props: ['sendToBottom', 'changeSendStatus'],
@@ -77,7 +136,8 @@ export default {
           sender: {
             wechatName: wechatName,
             wechatAvatar: wechatAvatar
-          }
+          },
+          notResend: true
         })
         this.sendToBottom()
         this.editorText = ''
@@ -99,12 +159,65 @@ export default {
     // 选择图片文件后回调方法
     uploadImageChange(e) {
       console.log(e.target.files[0])
-      // this.openImageViewer(e.target.files[0])
-      this.$refs.restFile.value = null
-      // const { source, receive_id } = this.$store.state.dialogue
+      console.log(this.$route)
+      const file = e.target.files[0]
+      const fileCell = new FileCell()
+      fileCell.file = file
+      const fd = new FormData()
+      fd.append('file', fileCell.file)
+      fd.append('fileType', this.fileType)
+      const uploadParams = {
+        url: '/weike/file/upload',
+        method: 'POST',
+        headers: {
+          'content-type': 'multipart/form-data',
+          token: this.$store.state.token
+        },
+        data: fd,
+        timeout: 50000
+      }
+      return new Promise((resolve, reject) => {
+        uploadMaterial(uploadParams)
+          .then(res => {
+            // console.log(res)
+            const {
+              code,
+              data: { time, url },
+              message
+            } = res
+            if (code === 0) {
+              fileCell.set('done', '')
+              fileCell.file.url = url
+              fileCell.fileInfo = { url, time }
+              console.log(fileCell.file.url, fileCell.fileInfo)
+              resolve()
+            } else {
+              reject(new Error(message))
+            }
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
 
-      let fileData = new FormData()
-      console.log(fileData)
+      // this.openImageViewer(e.target.files[0])
+      // this.$refs.restFile.value = null
+      // let fileData = new FormData()
+      // console.log(fileData)
+      // let { contactId, tjId } = this.$route.params
+      // let { wechatName, wechatAvatar } = this.userInfo.info
+      // this[types.SEND_MSG]({
+      //   msgType: 'text',
+      //   chatId: contactId,
+      //   chatType: this.$route.query.chatType,
+      //   fromId: tjId,
+      //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+      //   content: this.editorText,
+      //   sender: {
+      //     wechatName: wechatName,
+      //     wechatAvatar: wechatAvatar
+      //   }
+      // })
       // fileData.append('source', source) //tj-id
       // fileData.append('receive_id', receive_id) // target-id
       // fileData.append('img', e.target.files[0])

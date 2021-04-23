@@ -1,59 +1,69 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import store from '@/store'
 import router from '@/router'
 
-const BASE_URL = process.env.VUE_APP_BASE_API
+class Request {
+  constructor() {
+    this.baseURL = process.env.VUE_APP_BASE_API
+    this.timeout = 30000
+  }
 
-const config = {
-  timeout: 30000,
-  baseUrl: BASE_URL
-}
-
-function request(data) {
-  let instance = axios.create({
-    ...config,
-    ...data
-  })
-
-  instance.interceptors.request.use(
-    config => {
-      return config
-    },
-    error => {
-      return Promise.reject(error)
-    }
-  )
-
-  instance.interceptors.response.use(
-    response => {
-      return response
-    },
-    err => {
-      if (err && err.response) {
-        const { status, data } = err.response
-        if (status === 400) {
-          message.error(data)
-        } else if (status === 401 && err.config.url.includes('/authx/signin')) {
-          message.error(data)
-        } else if (status === 401) {
-          message.error('您的登录已超时，请重新登录')
-          if (router.currentRoute.path !== '/login') {
-            window.location.href = '/login'
-          }
-        } else if (status === 403) {
-          message.error('没有足够的权限')
+  setInterceptor = instance => {
+    instance.interceptors.request.use(
+      config => {
+        // console.log('request------', config);
+        return config
+      },
+      err => Promise.reject(err)
+    )
+    // 配置响应拦截
+    instance.interceptors.response.use(
+      res => {
+        const { code } = res.data
+        if (code === 301 || code === 302) {
           router.replace('/login')
-        } else if (status >= 500) {
-          message.error('服务器开小差了，请稍后再试')
-        } else if (!err.config.url.includes('/asset/create' && !err.config.url.includes('/file/upload/form'))) {
+        } else if (code && code !== 0) {
+          message.error(res.data.message)
+          return Promise.reject(res.data)
+        }
+        return res.data
+      },
+      err => {
+        if (err && err.response) {
+          const { data } = err.response
           message.error(data)
         }
+        return Promise.reject(err)
       }
-      return Promise.reject(err)
-    }
-  )
+    )
+  }
 
-  return instance
+  handleHeader = () => {
+    let { token } = store.state
+    token = typeof token === 'undefined' ? '' : token
+
+    const headers = {
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+    if (token) {
+      headers.token = token
+    }
+    return headers
+  }
+
+  request(config) {
+    const instance = axios.create()
+    config = {
+      timeout: this.timeout,
+      headers: this.handleHeader(),
+      baseURL: this.baseURL,
+      withCredentials: true,
+      ...config
+    }
+    this.setInterceptor(instance)
+    return instance(config)
+  }
 }
 
-export default request
+export default new Request()
