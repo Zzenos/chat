@@ -23,8 +23,7 @@ export default {
       default: ''
     },
     sendingPic: {
-      type: Boolean,
-      default: false
+      type: Number
     }
   },
   data() {

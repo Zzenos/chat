@@ -51,6 +51,10 @@ export default {
     playAudioHandler() {
       this.isPlaying = !this.isPlaying
       const player = this.$refs.audioPlayer
+      console.log(player)
+      player.onended = function() {
+        console.log('end')
+      }
       if (this.isPlaying) {
         player.load()
         player.play()

@@ -63,13 +63,13 @@
                     <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
 
                     <!-- 图片消息 -->
-                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="sendingPic" />
+                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" />
 
                     <!-- 文件消息 -->
                     <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
 
                     <!-- 视频消息 -->
-                    <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" />
+                    <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" :sendingPic="item.status" />
 
                     <!-- 个人名片 -->
                     <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
@@ -90,7 +90,7 @@
                       :coverurl="item.coverUrl"
                     />
                     <!-- !消息发送状态 -->
-                    <div class="status" v-if="!item.sendStatus" @click="clickStatus(index)">
+                    <div class="status" v-if="item.status" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
@@ -220,8 +220,8 @@ export default {
       // sendStatus: false,
       modal2Visible: false,
       isLost: false,
-      toRensendIndex: 0,
-      sendingPic: false
+      toRensendIndex: 0
+      // sendingPic: false
     }
   },
   mounted() {
