@@ -20,6 +20,7 @@ class ZSocket {
   constructor(options = {}) {
     this.socket = null
     this.autoPull = options.autoPull || false // 默认关闭自动重发
+    this.autoResend = options.autoResend || false
     this.emitMsgs = []
     this.receiveMsgs = [] // 重新拉取后的消息可能需要重新排序
     this.lastMessageId = null
@@ -53,7 +54,7 @@ class ZSocket {
       // 重置
       this.tryReconnectAttempts = 0
       // 自动重发
-      if (this.emitMsgs.length > 0) this._send()
+      if (this.autoResend && this.emitMsgs.length > 0) this._send()
       this.cs(`SOCKET链接成功,当前SOCKET_ID：${this.socket.id}`)
     })
     // 连接错误，服务端接受链接时的中间件发生错误，比如认证错误等
@@ -127,13 +128,18 @@ class ZSocket {
     if (this.socket) {
       // 超出最大长度则熔断
       if (this.emitMsgs.length > MAX_QUEUE_LENGTH) this.emitMsgs = []
-      this.emitMsgs.push({
+      let newMsg = {
         evtName,
         data: args,
         requestId: getUuid(),
         _status: MSG_STATUS.READY
-      })
-      this._send()
+      }
+      if (this.autoResend) {
+        this.emitMsgs.push(newMsg)
+        this._resend()
+      } else {
+        this._send(newMsg)
+      }
     } else {
       const argsStr = args.length > 0 ? args.join('&') : ''
       this.cs(`emit方法调用失败，SOCKET未连接: 事件${evtName}，数据${argsStr}`)
@@ -144,40 +150,42 @@ class ZSocket {
    * emit和connect事件触发时都会触发，发送失败的情况只有链接断开
    * 发送成功后根据请求ID删除消息
    */
+  _send = function(msg) {
+    // 是否传输中
+    let cb = null
+    if (msg.data.length > 0 && typeof msg.data[msg.data.length - 1] === 'function') {
+      cb = msg.data.pop()
+    }
 
-  _send = function() {
+    msg._status = MSG_STATUS.PENDING
+    this.cs(JSON.stringify(msg))
+    this.socket.emit(
+      msg.evtName,
+      {
+        requestId: msg.requestId,
+        data: msg.data
+      },
+      ack => {
+        const str = msg.data.map(j => JSON.stringify(j))
+        this.cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
+        if (ack && ack.data && ack.data.requestId) {
+          const index = this.emitMsgs.findIndex(item => item.requestId === ack.requestId)
+          if (index >= 0) this.emitMsgs.splice(index, 1)
+        }
+        // 有回调
+        if (cb && typeof cb === 'function' && ack) {
+          cb(ack)
+          this.cs('发送成功回调执行')
+        }
+      }
+    )
+  }
+
+  _resend = function() {
     for (let i = 0; i < this.emitMsgs.length; i++) {
       const msg = this.emitMsgs[i]
-      // 是否传输中
       if (msg._status === MSG_STATUS.PENDING) continue
-
-      let cb = null
-      if (msg.data.length > 0 && typeof msg.data[msg.data.length - 1] === 'function') {
-        cb = msg.data.pop()
-      }
-
-      msg._status = MSG_STATUS.PENDING
-      this.cs(JSON.stringify(msg))
-      this.socket.emit(
-        msg.evtName,
-        {
-          requestId: msg.requestId,
-          data: msg.data
-        },
-        ack => {
-          const str = msg.data.map(j => JSON.stringify(j))
-          this.cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
-          if (ack && ack.data && ack.data.requestId) {
-            const index = this.emitMsgs.findIndex(item => item.requestId === ack.requestId)
-            if (index >= 0) this.emitMsgs.splice(index, 1)
-          }
-          // 有回调
-          if (cb && typeof cb === 'function' && ack) {
-            cb(ack)
-            this.cs('发送成功回调执行')
-          }
-        }
-      )
+      this._send(msg)
     }
   }
 

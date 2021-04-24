@@ -29,7 +29,6 @@
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
-
             <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
 
@@ -180,6 +179,7 @@
 
 <script>
 import { formateTime, parseTime } from '@/util/util'
+import Zsocket from '@/class/ZSocket'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
@@ -288,7 +288,8 @@ export default {
       console.log('to-resend')
       this.modal2Visible = false
       this.records[this.toRensendIndex].notResend = 'false'
-      this[types.SEND_MSG](this.records[this.toRensendIndex])
+      // this[types.SEND_MSG](this.records[this.toRensendIndex])
+      Zsocket.emit('msg_resend')
       //types.resend.().then(()=>{this.changeSendStatus(this.toRensendIndex)})
     },
     changeSendStatus(index) {
@@ -420,6 +421,9 @@ export default {
           cursor: pointer;
         }
 
+        .pull-history {
+          cursor: pointer;
+        }
         .talk-title {
           display: none;
           height: 15px;
