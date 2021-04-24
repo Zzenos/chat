@@ -8,7 +8,8 @@
       minlength: voiceTime < 10
     }"
   >
-    <audio controls :src="src" ref="audioPlayer" style="display:none"></audio>
+    <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>
+    <i :max="voiceTime" style="display:none"></i>
     <div class="self__audio" @click="playAll">
       <div class="audio__trigger">
         <div class="audio-icon">
@@ -21,16 +22,22 @@
   </div>
 </template>
 <script>
+// const BenzAMRRecorder = require('benz-amr-recorder')
+// import BenzAMRRecorder from 'benz-amr-recorder'
+// var BenzAMRRecorder = require('benz-amr-recorder')
 export default {
   name: 'AudioMessage',
   data() {
     return {
-      isPlaying: false,
-      readyPlaying: true
+      isPlaying: false, //是否播放
+      readyPlaying: true,
+      currentTime: 0,
+      amr: null,
+      getCurrentTime: null
     }
   },
   props: {
-    src: {
+    url: {
       type: String,
       // required: true,
       default: ''
@@ -49,30 +56,54 @@ export default {
       this.readyPlaying = !this.readyPlaying
     },
     playAudioHandler() {
-      this.isPlaying = !this.isPlaying
-      const player = this.$refs.audioPlayer
-      console.log(player)
-      player.onended = function() {
-        console.log('end')
-      }
-      if (this.isPlaying) {
-        player.load()
-        player.play()
-      } else {
-        player.pause()
-      }
+      // this.isPlaying = !this.isPlaying
+      // const player = this.$refs.audioPlayer
+      // console.log(player)
+      // player.onended = function() {
+      //   console.log('end')
+      // }
+      // if (this.isPlaying) {
+      //   player.load()
+      //   player.play()
+      // } else {
+      //   player.pause()
+      // }
     },
     playAll() {
-      this.toPlayVoice(), this.playAudioHandler()
+      this.toPlayVoice(), this.playAudioHandler(), this.playUrl()
+    },
+    playUrl() {
+      // this.isPlaying = !this.isPlaying
+      // this.amr.playOrPauseOrResume()
+      // console.log(this.url, 'src')
+      // var amr = new BenzAMRRecorder()
+      // amr.initWithUrl(this.url).then(function() {
+      //   amr.play()
+      // })
+      // amr.onEnded(function() {
+      //   alert('播放完毕')
+      // })
+
+      var BenzAMRRecorder = require('benz-amr-recorder')
+      this.amr = new BenzAMRRecorder()
+      console.log(this.url, this.amr)
+      var blob = this.amr.initWithUrl('http://zm-weike.oss-cn-beijing.aliyuncs.com/app/78865dff7021412eb923272082d084ee.amr')
+      console.log(blob)
+      // this.amr.initWithBlob(blob).then(function() {
+      //   this.amr.play()
+      //   this.amr.onEnded(function() {
+      //     console.log('end')
+      //   })
+      // })
     }
   },
   mounted() {
-    const player = this.$refs.audioPlayer
-    player.load()
+    // const player = this.$refs.audioPlayer
+    // player.load()
     // const vm = this;
     // player.oncanplay = function() {
     //   vm.duration = Math.ceil(player.duration);
-    // };
+    // }
   }
 }
 </script>

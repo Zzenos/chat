@@ -90,7 +90,7 @@
                       :coverurl="item.coverUrl"
                     />
                     <!-- !消息发送状态 -->
-                    <div class="status" v-if="item.status != 0" @click="clickStatus(index)">
+                    <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
@@ -287,7 +287,7 @@ export default {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
       console.log('to-resend')
       this.modal2Visible = false
-      this.records[this.toRensendIndex].notResend = false
+      this.records[this.toRensendIndex].notResend = 'false'
       this[types.SEND_MSG](this.records[this.toRensendIndex])
       //types.resend.().then(()=>{this.changeSendStatus(this.toRensendIndex)})
     },
@@ -629,7 +629,8 @@ export default {
   display: none;
 }
 /deep/ .ant-modal-content {
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.45);
   .ant-modal-header {
     border-bottom: none;
     text-align: center;

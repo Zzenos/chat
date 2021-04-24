@@ -27,7 +27,7 @@ export const MsgGen = function(data) {
     return msg
   } else if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
     throw new Error(`${data.msgType} is Not Support Msg Type`)
-  } else return new MsgType[data.msgType](data, false)
+  } else return new MsgType[data.msgType](data, 'false')
 }
 
 export const getSendMsg = function(data, notResend) {
