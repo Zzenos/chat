@@ -165,8 +165,12 @@ export default {
     isLost: {
       immediate: true,
       handler(newVal) {
-        if (newVal) {
+        if (newVal == 0) {
+          this.$store.commit('changeLost', false)
           console.log('a')
+        }
+        if (newVal == 1) {
+          this.$store.commit('changeLost', true)
         }
       }
     }

@@ -158,6 +158,17 @@ export default {
       //   this.src = reader.result
       //   console.log(this.src)
       // }
+      //----
+      // 获取远程图片
+      // axios({
+      //   method:'get',
+      //   url:'http://bit.ly/2mTM3nY',
+      //   responseType:'stream'
+      // })
+      //   .then(function(response) {
+      //   response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
+      // });
+      //------
       // reader.readAsDataURL(file)
       // console.log(file, fileSize, fileName, this.src, reader.result)
       // const fileCell = new FileCell()

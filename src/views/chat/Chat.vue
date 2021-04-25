@@ -221,6 +221,7 @@ export default {
       },
       // sendStatus: false,
       modal2Visible: false,
+      //isLost: this.$store.state.lost
       isLost: false,
       toRensendIndex: 0
       // sendingPic: false
@@ -343,6 +344,12 @@ export default {
     records() {
       if (this.loadRecord == 1) {
         this.sendToBottom()
+      }
+    },
+    isLost(newVal) {
+      //newVal == true islost
+      if (newVal) {
+        this.lostText()
       }
     }
   },

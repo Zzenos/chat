@@ -78,7 +78,7 @@ export default {
     let vm = this
     amr = new BenzAMRRecorder()
     amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
-      console.log('初始化完毕')
+      // console.log('初始化完毕')
     })
     amr.onEnded(function() {
       amr.stop()
