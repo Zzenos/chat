@@ -19,6 +19,7 @@ export default {
   created() {
     console.log(`%c ${this.token}`, 'color:#f2f;')
     this.storeToken(this.token)
+    sessionStorage.setItem('username', JSON.stringify(this.username))
     this.$router.push({
       path: `/chatframe`,
       query: {
