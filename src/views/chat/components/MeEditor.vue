@@ -5,22 +5,12 @@
         <li v-if="!lost">
           <img src="@/assets/chat_icon_emoticon.png" alt="" />
         </li>
-        <!-- <li @click="toPlayVoice">
-          <img v-if="readyPlaying" src="@/assets/voice_icon.png" alt="" />
-          <img v-else src="@/assets/playing.png" alt="" />
-        </li>
-        <li>
-          <img src="@/assets/playing.png" alt="" />
-        </li> -->
-        <!-- <li style="background:rgba(0,0,0,.5)">
-          <img src="@/assets/sending.png" alt="" />
-        </li> -->
         <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
-        <li v-if="!lost" @click="$refs.restFile2.click()">
+        <!-- <li v-if="!lost" @click="$refs.restFile2.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
-        </li>
+        </li> -->
         <!-- 客户流失显示 -->
         <li v-if="lost">
           <img src="@/assets/chat_icon_emoticon_lost.png" alt="" />
@@ -30,7 +20,7 @@
         </li>
       </ul>
       <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
-        <input type="file" ref="restFile" accept="image/*" @change="uploadImageChange" />
+        <input type="file" ref="restFile" @change="uploadImageChange" />
         <input type="file" ref="restFile2" accept="video/*" @change="uploadVideoChange" />
       </form>
     </div>
@@ -136,7 +126,7 @@ export default {
             wechatName: wechatName,
             wechatAvatar: wechatAvatar
           },
-          notResend: 'true'
+          notResend: true
         })
         this.sendToBottom()
         this.editorText = ''
@@ -157,9 +147,10 @@ export default {
     // }
     // 选择图片文件后回调方法
     uploadImageChange(e) {
-      console.log(1111)
-      // let file = e.target.files[0]
-      console.log(e.target.files[0])
+      let file = e.target.files[0]
+      let type = file.type.split('/')[0]
+      console.log(file, type)
+      if (type !== 'image' && type !== 'video') return
       // let reader = new FileReader()
       // let fileSize = Math.ceil(file.size / 1024)
       // let fileName = file.name
@@ -209,22 +200,20 @@ export default {
       // })
       // let { contactId, tjId } = this.$route.params
       // let { wechatName, wechatAvatar } = this.userInfo.info
-      if (this.src) {
-        // this[types.SEND_MSG]({
-        //   msgType: 'image',
-        //   chatId: contactId,
-        //   chatType: this.$route.query.chatType,
-        //   fromId: tjId,
-        //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-        //   content: '',
-        //   sender: {
-        //     wechatName: wechatName,
-        //     wechatAvatar: wechatAvatar
-        //   },
-        //   url: this.src,
-        //   notResend: true
-        // })
-      }
+      // this[types.SEND_MSG]({
+      //   msgType: type,
+      //   chatId: contactId,
+      //   chatType: this.$route.query.chatType,
+      //   fromId: tjId,
+      //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+      //   content: '',
+      //   sender: {
+      //     wechatName: wechatName,
+      //     wechatAvatar: wechatAvatar
+      //   },
+      //   url: this.src,
+      //   notResend: true
+      // })
     },
     // 选择视频文件后回调方法
     uploadVideoChange() {

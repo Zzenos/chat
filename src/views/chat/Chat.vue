@@ -114,11 +114,14 @@
                 </div>
               </div>
             </div>
+
+            <!-- 网络不可用 -->
+            <!-- <div class="sysInfo" v-if="item.status == 2">消息发送失败,当前网络不可用,请检查网络</div> -->
           </div>
         </div>
         <!-- 客户流失 -->
         <div class="lost-customer" v-if="isLost">
-          <div class="lost-text" @click="lostText">客户已流失，消息无法送达，无法编辑内容</div>
+          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
           <me-editor :sendToBottom="sendToBottom" :changeSendStatus="changeSendStatus" ref="editor" />
@@ -179,7 +182,6 @@
 
 <script>
 import { formateTime, parseTime } from '@/util/util'
-import Zsocket from '@/class/ZSocket'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
@@ -287,10 +289,8 @@ export default {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
       console.log('to-resend')
       this.modal2Visible = false
-      this.records[this.toRensendIndex].notResend = 'false'
-      // this[types.SEND_MSG](this.records[this.toRensendIndex])
-      Zsocket.emit('msg_resend')
-      //types.resend.().then(()=>{this.changeSendStatus(this.toRensendIndex)})
+      this.records[this.toRensendIndex].notResend = false
+      this[types.SEND_MSG](this.records[this.toRensendIndex])
     },
     changeSendStatus(index) {
       // this.sendStatus = true
@@ -324,7 +324,6 @@ export default {
         console.log(this.records, 'chat-records')
         console.log(this.$route, 'chat-route')
         if (chatType == 2) {
-          // console.log(this.wechatId, 'groupid')
           if (!this.wechatId) {
             this.groupInfo = {
               memberCount: '',

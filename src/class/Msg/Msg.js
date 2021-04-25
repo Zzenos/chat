@@ -15,7 +15,7 @@ class Msg {
     this.msgId = msgId // 发出的消息id为uuid
     this.clientMsgId = clientMsgId
     this.sender = sender // 发送人信息
-    if (isSendMsg == 'true') {
+    if (isSendMsg) {
       this.clientMsgId = getUuid() // 发出的消息id为uuid
       this.msgId = this.clientMsgId
     }
@@ -30,9 +30,8 @@ class Msg {
     this.at = at
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.unread = unread || true // 是否已读
-    this.status = isSendMsg == 'fail' ? MSG_SEND_STATUS.FAILED : isSendMsg == 'true' ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
+    this.status = isSendMsg ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
     //消息未成功再执行判断
-    // console.log(this.status, 'this.status ')
     if (this.status !== MSG_SEND_STATUS.FAILED) {
       this.networkOuttime()
     }

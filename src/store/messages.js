@@ -146,35 +146,16 @@ export default {
       handler: ({ commit, dispatch }, data) => {
         const newMsg = getSendMsg(data, data.notResend)
         // // 发送消息不需要放到hash
-        // if (data.notResend) {
-        //   return
-        // }
-
         commit(types.ADD_CHAT, newMsg.chatId)
         commit(types.CACHE_SENDING_MSG, newMsg)
-        commit(types.ADD_MSG_LOCAL, newMsg)
+        if (data.notResend) {
+          commit(types.ADD_MSG_LOCAL, newMsg)
+        }
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
             dispatch(types.DISTRIBUTE_MSG, ack.data)
           }
-          // if (!ack) {
-          //   //后端返回的是发送成功
-          //   console.log('-----------------后端返回成功')
-          //   dispatch(types.DISTRIBUTE_MSG, {
-          //     data: ack.data,
-          //     type: 'false'
-          //   })
-          // } else {
-          //   //后端返回的是发送失败
-          //   console.log('-----------------后端返回失败')
-          //   // dispatch(types.DISTRIBUTE_MSG, {
-          //   //   data: ack.data,
-          //   //   type: 'fail'
-          //   // })
-          //   ack.data.forEach(item => (item.type = 'fail'))
-          //   dispatch(types.DISTRIBUTE_MSG, ack.data)
-          // }
         })
       }
     }

@@ -14,7 +14,7 @@ const MsgType = {
 }
 
 // 数据返回消息
-export const MsgGen = function(data) {
+export const MsgGen = function(data, notResend) {
   if (data && data.msgType && data.msgId && !Object.keys(MsgType).includes(data.msgType)) {
     const msg = new MsgType.text(
       {
@@ -27,7 +27,7 @@ export const MsgGen = function(data) {
     return msg
   } else if (!data || !data.msgType || !Object.keys(MsgType).includes(data.msgType)) {
     throw new Error(`${data.msgType} is Not Support Msg Type`)
-  } else return new MsgType[data.msgType](data, 'false')
+  } else return new MsgType[data.msgType](data, notResend)
 }
 
 export const getSendMsg = function(data, notResend) {

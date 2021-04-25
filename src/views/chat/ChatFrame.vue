@@ -115,8 +115,7 @@ export default {
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
   },
   created() {
-    this.initSocket(),
-    this.username = JSON.parse(sessionStorage.getItem('username'))
+    this.initSocket(), (this.username = JSON.parse(sessionStorage.getItem('username')))
   },
   beforeDestory() {
     this.$socket.close()

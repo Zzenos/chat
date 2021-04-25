@@ -22,18 +22,15 @@
   </div>
 </template>
 <script>
-// const BenzAMRRecorder = require('benz-amr-recorder')
-// import BenzAMRRecorder from 'benz-amr-recorder'
-// var BenzAMRRecorder = require('benz-amr-recorder')
+import BenzAMRRecorder from 'benz-amr-recorder'
+let amr = new BenzAMRRecorder()
 export default {
   name: 'AudioMessage',
   data() {
     return {
-      isPlaying: false, //是否播放
+      // isPlaying: false, //是否播放
       readyPlaying: true,
-      currentTime: 0,
-      amr: null,
-      getCurrentTime: null
+      amr: null
     }
   },
   props: {
@@ -73,36 +70,37 @@ export default {
       this.toPlayVoice(), this.playAudioHandler(), this.playUrl()
     },
     playUrl() {
-      // this.isPlaying = !this.isPlaying
-      // this.amr.playOrPauseOrResume()
+      amr.playOrPauseOrResume()
       // console.log(this.url, 'src')
-      // var amr = new BenzAMRRecorder()
-      // amr.initWithUrl(this.url).then(function() {
-      //   amr.play()
-      // })
-      // amr.onEnded(function() {
-      //   alert('播放完毕')
-      // })
-
-      var BenzAMRRecorder = require('benz-amr-recorder')
-      this.amr = new BenzAMRRecorder()
-      console.log(this.url, this.amr)
-      var blob = this.amr.initWithUrl('http://zm-weike.oss-cn-beijing.aliyuncs.com/app/78865dff7021412eb923272082d084ee.amr')
-      console.log(blob)
-      // this.amr.initWithBlob(blob).then(function() {
-      //   this.amr.play()
-      //   this.amr.onEnded(function() {
-      //     console.log('end')
-      //   })
-      // })
     }
   },
   mounted() {
-    // const player = this.$refs.audioPlayer
-    // player.load()
-    // const vm = this;
-    // player.oncanplay = function() {
-    //   vm.duration = Math.ceil(player.duration);
+    let vm = this
+    amr = new BenzAMRRecorder()
+    amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
+      console.log('初始化完毕')
+    })
+    amr.onEnded(function() {
+      amr.stop()
+      vm.toPlayVoice()
+      console.log('播放完毕')
+    })
+  },
+  watch: {
+    // src: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     let vm = this
+    //     amr = new BenzAMRRecorder()
+    //     amr.initWithUrl(newVal).then(function() {
+    //       console.log('初始化完毕')
+    //     })
+    //     amr.onEnded(function() {
+    //       amr.stop()
+    //       vm.toPlayVoice()
+    //       console.log('播放完毕')
+    //     })
+    //   }
     // }
   }
 }
