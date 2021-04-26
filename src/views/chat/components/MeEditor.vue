@@ -28,66 +28,10 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
-// import { uploadMaterial } from '@/util/home'
-// class FileCell {
-//   constructor() {
-//     this.statusArr = [
-//       {
-//         status: 'preupload',
-//         text: '准备上传',
-//         color: 'cyan',
-//         message: ''
-//       },
-//       {
-//         status: 'uploading',
-//         text: '正在上传',
-//         color: 'blue',
-//         message: ''
-//       },
-//       {
-//         status: 'done',
-//         text: '已上传',
-//         color: 'green',
-//         message: ''
-//       },
-//       {
-//         status: 'failed',
-//         text: '上传失败',
-//         color: 'red',
-//         message: ''
-//       }
-//     ]
-//     ;[this.state] = this.statusArr
-//     this.complete = false
-//     this.id = Math.random()
-//       .toString(32)
-//       .slice(2)
-//     this.init()
-//   }
 
-//   init() {
-//     ;[this.state] = this.statusArr
-//   }
-
-//   set(status, message) {
-//     let inArr = null
-//     switch (status) {
-//       default:
-//         this.statusArr.forEach(i => {
-//           if (i.status === status) inArr = i
-//         })
-//         if (!inArr) {
-//           // console.warn(`${status} is not a valid state`)
-//           return
-//         }
-//         this.state = inArr
-//         if (message) this.state.message = message
-//       // console.log('colorchange:', this.state)
-//     }
-//   }
-// }
 export default {
   name: 'MeEditor',
   props: ['sendToBottom', 'changeSendStatus'],
@@ -149,82 +93,44 @@ export default {
     uploadImageChange(e) {
       let file = e.target.files[0]
       let type = file.type.split('/')[0]
-      console.log(file, type)
       if (type !== 'image' && type !== 'video') return
-      // let reader = new FileReader()
-      // let fileSize = Math.ceil(file.size / 1024)
-      // let fileName = file.name
-      // reader.onload = () => {
-      //   this.src = reader.result
-      //   console.log(this.src)
-      // }
-      //----
-      // 获取远程图片
-      // axios({
-      //   method:'get',
-      //   url:'http://bit.ly/2mTM3nY',
-      //   responseType:'stream'
-      // })
-      //   .then(function(response) {
-      //   response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-      // });
-      //------
-      // reader.readAsDataURL(file)
-      // console.log(file, fileSize, fileName, this.src, reader.result)
-      // const fileCell = new FileCell()
-      // fileCell.file = file
-      // const fd = new FormData()
-      // fd.append('file', fileCell.file)
-      // fd.append('fileType', this.fileType)
-      // const uploadParams = {
-      //   url: '/weike/file/upload',
-      //   method: 'POST',
-      //   headers: {
-      //     'content-type': 'multipart/form-data',
-      //     token: this.$store.state.token
-      //   },
-      //   data: fd,
-      //   timeout: 50000
-      // }
-      // return new Promise((resolve, reject) => {
-      //   uploadMaterial(uploadParams)
-      //     .then(res => {
-      //       // console.log(res)
-      //       const {
-      //         code,
-      //         data: { time, url },
-      //         message
-      //       } = res
-      //       if (code === 0) {
-      //         fileCell.set('done', '')
-      //         fileCell.file.url = url
-      //         fileCell.fileInfo = { url, time }
-      //         console.log(fileCell.file.url, fileCell.fileInfo)
-      //         resolve()
-      //       } else {
-      //         reject(new Error(message))
-      //       }
-      //     })
-      //     .catch(err => {
-      //       reject(err)
-      //     })
-      // })
-      // let { contactId, tjId } = this.$route.params
-      // let { wechatName, wechatAvatar } = this.userInfo.info
-      // this[types.SEND_MSG]({
-      //   msgType: type,
-      //   chatId: contactId,
-      //   chatType: this.$route.query.chatType,
-      //   fromId: tjId,
-      //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-      //   content: '',
-      //   sender: {
-      //     wechatName: wechatName,
-      //     wechatAvatar: wechatAvatar
-      //   },
-      //   url: this.src,
-      //   notResend: true
-      // })
+      let fileType = type == 'image' ? 1 : 2
+      let fileData = new FormData()
+      fileData.append('file', file)
+      fileData.append('fileType', fileType)
+      axios({
+        method: 'post',
+        url: 'http://bizchat-chatroom.zmeng123.cn:9091/file/upload',
+        data: fileData
+      }).then(res => {
+        let { code, data } = res.data
+        console.log(code, data)
+        if (code == 200) {
+          let { url, coverUrl = '' } = data
+          console.log(url, coverUrl)
+          let { contactId, tjId } = this.$route.params
+          let { wechatName, wechatAvatar } = this.userInfo.info
+          this[types.SEND_MSG]({
+            msgType: type,
+            chatId: contactId,
+            chatType: this.$route.query.chatType,
+            fromId: tjId,
+            toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+            content: '',
+            sender: {
+              wechatName: wechatName,
+              wechatAvatar: wechatAvatar
+            },
+            // url: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+            //url: "http://kfpt.oss-cn-hangzhou.aliyuncs.com/pc/pcwork/msgfile/20210426/502ee1258775a1607501078e5c3e089d/bbb4f60860704d27978ab31e205f9c16.jpg"
+            // url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/13fac4f421984182aa871cf13b3dc02b.jpg',
+            // coverUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/13fac4f421984182aa871cf13b3dc02b.jpg',
+            url: url,
+            coverUrl: coverUrl,
+            notResend: true
+          })
+        }
+      })
     },
     // 选择视频文件后回调方法
     uploadVideoChange() {

@@ -23,13 +23,13 @@
 </template>
 <script>
 import BenzAMRRecorder from 'benz-amr-recorder'
-let amr = new BenzAMRRecorder()
+
 export default {
   name: 'AudioMessage',
   data() {
     return {
-      // isPlaying: false, //是否播放
       readyPlaying: true,
+      init: false,
       amr: null
     }
   },
@@ -49,59 +49,51 @@ export default {
     }
   },
   methods: {
-    toPlayVoice() {
+    toPlayAmination() {
       this.readyPlaying = !this.readyPlaying
     },
-    playAudioHandler() {
-      // this.isPlaying = !this.isPlaying
-      // const player = this.$refs.audioPlayer
-      // console.log(player)
-      // player.onended = function() {
-      //   console.log('end')
-      // }
-      // if (this.isPlaying) {
-      //   player.load()
-      //   player.play()
-      // } else {
-      //   player.pause()
-      // }
-    },
     playAll() {
-      this.toPlayVoice(), this.playAudioHandler(), this.playUrl()
+      if (this.amr && this.init) {
+        this.toPlayAmination(), this.playUrl()
+      }
     },
     playUrl() {
-      amr.playOrPauseOrResume()
-      // console.log(this.url, 'src')
+      this.amr.playOrPauseOrResume()
     }
   },
   mounted() {
-    let vm = this
-    amr = new BenzAMRRecorder()
-    amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
-      // console.log('初始化完毕')
-    })
-    amr.onEnded(function() {
-      amr.stop()
-      vm.toPlayVoice()
-      console.log('播放完毕')
-    })
+    // let vm = this
+    // // amr = null
+    // // amr = new BenzAMRRecorder()
+    // amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
+    //   // console.log('初始化完毕') 'https://benzleung.github.io/benz-amr-recorder/res/mario.amr'
+    //   //http://kfpt.oss-cn-hangzhou.aliyuncs.com/pc/pcwork/msgfile/20210425/7120509bd976af2daf43031c4a240d5d/ec38f1fa34414f40a0306f3880bcccea.amr
+    // })
+    // amr.onEnded(function() {
+    //   amr.stop()
+    //   vm.toPlayVoice()
+    //   console.log('播放完毕')
+    // })
   },
   watch: {
-    // src: {
-    //   immediate: true,
-    //   handler(newVal) {
-    //     let vm = this
-    //     amr = new BenzAMRRecorder()
-    //     amr.initWithUrl(newVal).then(function() {
-    //       console.log('初始化完毕')
-    //     })
-    //     amr.onEnded(function() {
-    //       amr.stop()
-    //       vm.toPlayVoice()
-    //       console.log('播放完毕')
-    //     })
-    //   }
-    // }
+    src: {
+      immediate: true,
+      handler(newVal) {
+        let vm = this
+        // if (!newVal) return
+        console.log(newVal)
+        this.amr = new BenzAMRRecorder()
+        this.amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
+          console.log('初始化完毕')
+          vm.init = true
+        })
+        this.amr.onEnded(function() {
+          this.amr.stop()
+          vm.toPlayVoice()
+          console.log('播放完毕')
+        })
+      }
+    }
   }
 }
 </script>
