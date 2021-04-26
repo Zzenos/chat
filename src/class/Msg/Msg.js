@@ -31,6 +31,18 @@ class Msg {
     this.atIds = at_ids // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.unread = unread // 是否已读
     this.status = isSendMsg ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS // 是否已发送成功
+    //消息未成功再执行判断
+    if (this.status !== MSG_SEND_STATUS.FAILED) {
+      this.networkOuttime()
+    }
+  }
+  //20秒内消息没有发送成功判定失败
+  networkOuttime() {
+    setTimeout(() => {
+      if (this.status !== MSG_SEND_STATUS.SUCCESS) {
+        this.mutateFail()
+      }
+    }, 20000)
   }
 
   mutateSuccess() {

@@ -1,9 +1,11 @@
 <template>
   <div class="video-message">
     <div class="preimg" @click="toshow">
-      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
+      <img v-show="!sendingPic" class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
       <img class="video-cover" v-if="coverurl" :src="coverurl" alt="" />
       <img class="no-cover" v-else alt="" />
+      <img v-show="sendingPic" src="@/assets/sending.png" alt="" class="loading" />
+      <div v-show="sendingPic" class="loading-text">发送中</div>
     </div>
   </div>
 </template>
@@ -26,6 +28,9 @@ export default {
     coverurl: {
       type: String,
       default: ''
+    },
+    sendingPic: {
+      type: Number
     }
   },
   data() {
@@ -68,6 +73,27 @@ export default {
   .no-cover {
     width: 200px;
     height: 100%;
+  }
+  .loading {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-14px, -14px);
+  }
+  .loading-text {
+    position: absolute;
+    width: 36px;
+    height: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-18px, 22px);
+    font-size: 12px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 18px;
   }
 }
 </style>

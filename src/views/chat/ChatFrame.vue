@@ -7,7 +7,7 @@
           <account-list v-if="!spinning" />
           <div class="bot-logo">
             <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
-            <div>ZMENG</div>
+            <div>{{ username }}</div>
           </div>
         </a-col>
         <a-col flex="auto">
@@ -30,7 +30,8 @@ export default {
   components: { AccountList },
   data() {
     return {
-      spinning: true
+      spinning: true,
+      username: ''
     }
   },
   props: {
@@ -114,7 +115,7 @@ export default {
     ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
   },
   created() {
-    this.initSocket()
+    this.initSocket(), (this.username = JSON.parse(sessionStorage.getItem('username')))
   },
   beforeDestory() {
     this.$socket.close()

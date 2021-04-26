@@ -41,7 +41,7 @@ let routes = [
     ]
   },
   {
-    path: '/transit/:token',
+    path: '/transit/:token/:username',
     name: 'Transit',
     component: () => import(/* webpackChunkName: "transit" */ '../views/transit/Transit'),
     props: true

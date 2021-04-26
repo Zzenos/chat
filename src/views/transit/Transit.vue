@@ -8,6 +8,9 @@ export default {
   props: {
     token: {
       type: String
+    },
+    username: {
+      type: String
     }
   },
   methods: {
@@ -16,7 +19,13 @@ export default {
   created() {
     console.log(`%c ${this.token}`, 'color:#f2f;')
     this.storeToken(this.token)
-    this.$router.push({ path: `/chatframe` })
+    sessionStorage.setItem('username', JSON.stringify(this.username))
+    this.$router.push({
+      path: `/chatframe`,
+      query: {
+        username: this.username
+      }
+    })
   },
   render() {
     return <div>正在进行跳转...</div>

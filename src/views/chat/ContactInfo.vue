@@ -133,6 +133,10 @@ export default {
     },
     addTime() {
       return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
+    },
+    isLost() {
+      // return this.userDetailsById(this.id)
+      return []
     }
   },
   watch: {
@@ -156,6 +160,18 @@ export default {
         this.allInfo.memberCount = memberCount
         console.log(this.allInfo, 'allinfo')
         // console.log(this.$route, 'route')
+      }
+    },
+    isLost: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal == 0) {
+          this.$store.commit('changeLost', false)
+          console.log('a')
+        }
+        if (newVal == 1) {
+          this.$store.commit('changeLost', true)
+        }
       }
     }
   },
