@@ -36,13 +36,13 @@ class Msg {
       this.networkOuttime()
     }
   }
-  //十秒内消息没有发送成功判定失败
+  //20秒内消息没有发送成功判定失败
   networkOuttime() {
     setTimeout(() => {
       if (this.status !== MSG_SEND_STATUS.SUCCESS) {
         this.mutateFail()
       }
-    }, 10000)
+    }, 20000)
   }
 
   mutateSuccess() {
