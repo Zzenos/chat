@@ -76,20 +76,20 @@ export default {
     // })
   },
   watch: {
-    src: {
+    url: {
       immediate: true,
       handler(newVal) {
         let vm = this
-        // if (!newVal) return
-        console.log(newVal)
+        if (!newVal) return
+        // console.log(newVal)
         this.amr = new BenzAMRRecorder()
-        this.amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
+        this.amr.initWithUrl(newVal).then(function() {
           console.log('初始化完毕')
           vm.init = true
         })
         this.amr.onEnded(function() {
-          this.amr.stop()
-          vm.toPlayVoice()
+          vm.amr.stop()
+          vm.toPlayAmination()
           console.log('播放完毕')
         })
       }
