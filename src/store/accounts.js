@@ -9,14 +9,20 @@ export default {
       state.accounts = accounts.map(i => {
         return {
           info: i
-          // unread: 1 // 服务端拿不到，所以，一期不做
         }
       })
     }
   },
   getters: {
-    accounts: state => {
-      return state.accounts
+    getAccounts: (state, getters, rootState) => {
+      return () => {
+        return state.accounts.map(i => {
+          return {
+            info: i.info,
+            unreadCount: rootState.chat.chatInfo[i.info.tjId] ? rootState.chat.chatInfo[i.info.tjId].unreadCount : 0
+          }
+        })
+      }
     },
     userDetailsById: state => {
       return tjId => {

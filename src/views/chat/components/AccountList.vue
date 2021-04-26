@@ -2,7 +2,7 @@
   <div class="act-list_container">
     <div v-if="accounts.length > 0">
       <div v-for="item in accounts" :key="item.info.tjId" class="act-item" :class="{ active: curAct && curAct.info.tjId === item.info.tjId }" @click="handleAct(item)">
-        <a-badge :count="item.unread" :overflow-count="99">
+        <a-badge :count="item.unreadCount" :overflow-count="99">
           <img :src="item.info.wechatAvatar" alt="" />
         </a-badge>
         <div class="nickname ellipsis" v-html="item.info.wechatName"></div>
@@ -20,19 +20,20 @@ export default {
     }
   },
   computed: {
-    accounts: function() {
-      return this.$store.state.accounts.accounts
+    accounts() {
+      return this.$store.getters.getAccounts()
     }
   },
   watch: {
     accounts: {
       immediate: true,
       deep: true,
-      handler: function() {
+      handler: function(n) {
+        if (!n) return
         if (this.$route.params.tjId) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {
-          this.curAct = this.accounts[0]
+          this.curAct = this.accounts[2]
           if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
         }
         if (this.curAct) {
