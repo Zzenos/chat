@@ -46,7 +46,7 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        console.log('contactList $route ==>', n)
+        // console.log('contactList $route ==>', n)
         this.curTab = n.name
         this.searchText = ''
       }

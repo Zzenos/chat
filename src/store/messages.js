@@ -58,12 +58,13 @@ export default {
         state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
       }
     },
-    //
+    // 消息设为已读
     [types.CLEAR_UNREAD_MSG](state, chatId) {
       if (state.chatMsgs[chatId]) {
         state.chatMsgs[chatId].forEach(i => {
           i.unread = false
         })
+        Vue.set(state.chatMsgs, `${chatId}`, state.chatMsgs[chatId])
       }
     },
     [types.CACHE_SENDING_MSG](state, msg) {
@@ -87,7 +88,6 @@ export default {
      * @param {Array} data 消息数组
      */
     [types.DISTRIBUTE_MSG]: {
-      // root: true,
       handler: ({ commit, state }, data) => {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
@@ -96,6 +96,9 @@ export default {
           const msg = MsgGen(msgItem)
           if (state.chatMsgHash[msg.msgId]) return
           commit(types.ADD_CHAT, msg.chatId)
+          if (msg.unread) {
+            commit(types.SET_CHAT_INFO, msg.chatId)
+          }
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
           // TODO
@@ -109,9 +112,7 @@ export default {
      * @param {String} chatId 会话id
      * @param {chatType} chatType 会话类型
      * */
-
     [types.PULL_HISTORY_MSG]: {
-      // root: true,
       handler: ({ commit, state }, chatId, chatType) => {
         return new Promise(resolve => {
           Zsocket.emit(
@@ -162,6 +163,12 @@ export default {
     getMsgsByChatId: state => {
       return chatId => {
         return state.chatMsgs[chatId] || []
+      }
+    },
+    // 获取未读消息数量
+    getMsgsUnread: state => {
+      return chatId => {
+        return state.chatMsgs[chatId] ? state.chatMsgs[chatId].filter(ele => ele.unread) : []
       }
     }
   }

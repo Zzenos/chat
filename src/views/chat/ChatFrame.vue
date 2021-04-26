@@ -4,7 +4,7 @@
       <a-row type="flex">
         <a-col flex="88px" class="side-bar">
           <svg-icon class-name="logo" icon-class="bizchat_logo"></svg-icon>
-          <account-list />
+          <account-list v-if="!spinning" />
           <div class="bot-logo">
             <svg-icon class-name="icon-user" icon-class="user_icon"></svg-icon>
             <div>ZMENG</div>

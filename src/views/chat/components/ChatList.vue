@@ -1,19 +1,20 @@
 <template>
   <div class="chat-list_container">
     <div v-for="item in chatList" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
-      <!-- <a-badge :offset="[-20, 0]" :count="item.msg_count" :overflow-count="99"> -->
-      <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-      <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
-      <!-- </a-badge> -->
+      <a-badge :offset="[-20, 0]" :count="item.unreadCount" :overflow-count="99">
+        <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
+        <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
+      </a-badge>
       <div class="info">
         <div class="nickname ellipsis">
           <span v-html="item.wechatName"></span>
           <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
-          <span v-else>（{{ item.memberCount }}）</span>
+          <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
+          <span v-if="item.lost" class="tag">流失客户</span>
         </div>
-        <div class="time">{{ item.lastActiveTime | timeFilter }}</div>
+        <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
-        <div class="msg ellipsis">{{ item.content }}</div>
+        <div class="msg ellipsis" v-if="item.lastMsg.msgType === 'text'">{{ item.lastMsg.content }}</div>
       </div>
     </div>
     <no-data v-if="chatList.length === 0" />
@@ -22,13 +23,14 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import { mapMutations } from 'vuex'
+import * as types from '@/store/actionType'
 
 export default {
   name: 'chatList',
   data() {
     return {
-      curChat: { chatId: null },
-      chatList: []
+      curChat: { chatId: null }
     }
   },
   props: {
@@ -42,14 +44,17 @@ export default {
       type: Boolean
     }
   },
+  computed: {
+    chatList() {
+      return this.$store.getters.chatsByTjId(this.tjId)
+    }
+  },
   watch: {
     $route: {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        console.log('chatList $route ==>', n)
-        this.chatList = this.$store.getters.chatsByChatId(this.tjId)
-        console.log(`tjId:${this.tjId}=>chatList`, this.chatList)
+        // console.log('chatList $route ==>', n)
 
         // 切换账号或者刷新后进入，会话的默认选中状态
         const { contactId } = n.params
@@ -65,7 +70,7 @@ export default {
       }
     },
     searchText(n) {
-      const chatList = cloneDeep(this.$store.getters.chatsByChatId(this.tjId))
+      const chatList = cloneDeep(this.$store.getters.chatsByTjId(this.tjId))
       this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
     },
     selected(n) {
@@ -74,9 +79,13 @@ export default {
           this.handleItem(this.curChat, true)
         }
       }
+    },
+    chatList(n) {
+      console.log(`tjId:${this.tjId}=>chatList`, n)
     }
   },
   methods: {
+    ...mapMutations([types.UPDATE_CHAT_INFO]),
     handleItem(val, canJump = false) {
       console.log(val)
       const { chatId } = val
@@ -84,6 +93,7 @@ export default {
         return
       }
       this.curChat = val
+      this[types.UPDATE_CHAT_INFO](this.curChat.chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
         query: { ...this.curChat }
@@ -123,11 +133,23 @@ export default {
       text-align: left;
       height: 44px;
       .nickname {
-        width: 145px;
+        max-width: 160px;
         line-height: 22px;
         margin-bottom: 4px;
         .label {
           color: #0ead63;
+          margin-left: 8px;
+        }
+        .tag {
+          display: inline-block;
+          background: #e1eaff;
+          color: #1d61ef;
+          width: 56px;
+          height: 18px;
+          line-height: 18px;
+          text-align: center;
+          border-radius: 2px;
+          font-size: 12px;
           margin-left: 8px;
         }
       }
