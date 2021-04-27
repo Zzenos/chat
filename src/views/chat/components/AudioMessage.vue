@@ -80,13 +80,13 @@ export default {
         // console.log(newVal)
         this.amr = new BenzAMRRecorder()
         this.amr.initWithUrl(newVal).then(function() {
-          console.log('初始化完毕')
+          // console.log('初始化完毕')
           vm.init = true
         })
         this.amr.onEnded(function() {
           vm.amr.stop()
           vm.toPlayAmination()
-          console.log('播放完毕')
+          // console.log('播放完毕')
         })
       }
     },

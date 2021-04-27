@@ -342,6 +342,19 @@ export default {
         }
         // this.$refs.editor.clear()
         // this.$refs.editor.getDraftText(this.chatId)
+        this.onLine = navigator.onLine
+        // console.log(this.onLine, 'this.onLine')
+        if (!this.onLine) {
+          this.$refs.editor.netLost()
+          // this.$nextTick(() => {
+          //   this.$refs.editor.netLost()
+          // })
+        } else {
+          // this.$refs.editor.netReconnect()
+          this.$nextTick(() => {
+            this.$refs.editor.netReconnect()
+          })
+        }
       }
     },
     records() {
@@ -362,14 +375,20 @@ export default {
         })
       }
     },
-    onLine(newVal) {
-      console.log(newVal)
-      if (!newVal) {
-        this.$refs.editor.netLost()
-        return
-      }
-      if (newVal) {
-        this.$refs.editor.netReconnect()
+    onLine: {
+      immediate: true,
+      handler(newVal) {
+        // console.log(newVal, 'onLine')
+        if (!newVal) {
+          this.$nextTick(() => {
+            this.$refs.editor.netLost()
+          })
+        }
+        if (newVal) {
+          this.$nextTick(() => {
+            this.$refs.editor.netReconnect()
+          })
+        }
       }
     },
     isLost: {

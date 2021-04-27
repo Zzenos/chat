@@ -204,10 +204,14 @@ export default {
       this.lost = false
     },
     netLost() {
-      this.readonly = true
+      // this.placeholder = '当前网络不可用'
+      // this.readonly = true
+      // console.log('当前网络不可用')
     },
     netReconnect() {
-      this.readonly = false
+      // this.placeholder = '输入内容，shift+enter换行，enter发送'
+      // this.readonly = false
+      // console.log('当前网络链接成功')
     }
   }
 }
