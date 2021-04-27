@@ -30,7 +30,7 @@ export default {
     // 需要检查是否为ACK中返回的消息体
     [types.ADD_MSG](state, msg) {
       // 查重
-      console.log(msg)
+      // console.log(msg)
       if (state.chatMsgHash[msg.msgId]) return
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经在会话中，进行msg_id的更改即可
@@ -49,17 +49,17 @@ export default {
           // 计算未读消息数量
           if (msg.unread) {
             const tjId = msg.chatId.split('&')[0]
-            let info = {}
-            if (state.chatInfo[tjId]) {
-              if (state.chatInfo[tjId][msg.chatId]) {
-                state.chatInfo[tjId][msg.chatId].unreadCount++
-                state.chatInfo[tjId].unreadCount++
+            let info = { unreadCount: 1 }
+            info[msg.chatId] = { unreadCount: 1 }
+            let chatCountInfo = state.chatInfo[tjId]
+            if (chatCountInfo) {
+              chatCountInfo.unreadCount++
+              if (chatCountInfo[msg.chatId]) {
+                chatCountInfo[msg.chatId].unreadCount++
               }
-              info = state.chatInfo[tjId]
-            } else {
-              info = { unreadCount: 1 }
-              info[msg.chatId] = { unreadCount: 1 }
+              info = { ...info, ...chatCountInfo }
             }
+            console.log(info)
             Vue.set(state.chatInfo, `${tjId}`, info)
           }
         }
