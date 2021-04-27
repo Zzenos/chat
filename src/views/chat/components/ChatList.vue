@@ -1,6 +1,6 @@
 <template>
   <div class="chat-list_container">
-    <div v-for="item in chatList" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
+    <div v-for="item in chats" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
       <a-badge :offset="[-20, 0]" :count="item.unreadCount" :overflow-count="99">
         <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
         <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
@@ -19,7 +19,7 @@
         <div class="msg ellipsis">{{ item.lastMsg.defaultContent }}</div>
       </div>
     </div>
-    <no-data text="暂无消息内容" v-if="chatList.length === 0" />
+    <no-data text="暂无消息内容" v-if="chats.length === 0" />
   </div>
 </template>
 
@@ -32,7 +32,8 @@ export default {
   name: 'chatList',
   data() {
     return {
-      curChat: { chatId: null }
+      curChat: { chatId: null },
+      chats: []
     }
   },
   props: {
@@ -47,8 +48,13 @@ export default {
     }
   },
   computed: {
-    chatList() {
-      return this.$store.getters.chatsByTjId(this.tjId)
+    chatList: {
+      get: function() {
+        return this.$store.getters.chatsByTjId(this.tjId)
+      },
+      set: function(val) {
+        console.log(val)
+      }
     }
   },
   watch: {
@@ -73,7 +79,7 @@ export default {
     },
     searchText(n) {
       const chatList = cloneDeep(this.$store.getters.chatsByTjId(this.tjId))
-      this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
+      this.chats = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
     },
     selected(n) {
       if (n) {
@@ -84,6 +90,7 @@ export default {
     },
     chatList(n) {
       console.log(`tjId:${this.tjId}=>chatList`, n)
+      this.chats = n
     }
   },
   methods: {
