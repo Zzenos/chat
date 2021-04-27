@@ -20,6 +20,10 @@
             {{ $route.query.wechatName }}
             <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
           </span>
+          <!-- 流失状态显示 -->
+          <span class="lost-customer-title" v-if="isLost">
+            <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
+          </span>
         </div>
       </div>
     </header>
@@ -219,16 +223,16 @@ export default {
         memberCount: '',
         members: []
       },
-      // sendStatus: false,
       modal2Visible: false,
-      //isLost: this.$store.state.lost
-      isLost: false,
-      toRensendIndex: 0
-      // sendingPic: false
+      isLost: this.$store.state.lost,
+      toRensendIndex: 0,
+      onLine: navigator.onLine
     }
   },
   mounted() {
     this.toBottom()
+    window.addEventListener('online', this.updateOnlineStatus)
+    window.addEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
     ...mapActions([types.SEND_MSG]),
@@ -271,21 +275,6 @@ export default {
     changeloadRocrd() {
       this.loadRecord = 1
     },
-    // showConfirm() {
-    //   this.$confirm({
-    //     title: '您确定要重新发送消息吗？',
-    //     content: '',
-    //     okText: '确定',
-    //     cancelText: '取消',
-    //     onOk() {
-    //       console.log('OK')
-    //     },
-    //     onCancel() {
-    //       console.log('Cancel')
-    //     },
-    //     class: 'test'
-    //   })
-    // },
     toResendMsg() {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
       console.log('to-resend')
@@ -307,6 +296,11 @@ export default {
     },
     lostText() {
       this.$refs.editor.changePlaceholder()
+    },
+    updateOnlineStatus(e) {
+      const { type } = e
+      this.onLine = type === 'online'
+      // console.log(this.onLine, 'this.onLine-this.onLine')
     }
   },
   watch: {
@@ -323,7 +317,7 @@ export default {
         this.chatType = chatType
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        console.log(this.$route, 'chat-route')
+        // console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -347,10 +341,13 @@ export default {
       }
     },
     isLost(newVal) {
-      //newVal == true islost
+      // console.log(newVal, 'chat-lost-newVal')
       if (newVal) {
         this.lostText()
       }
+    },
+    onLine(newVal) {
+      console.log(newVal)
     }
   },
   computed: {
@@ -386,6 +383,14 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       line-height: 24px;
       font-weight: 400;
+    }
+    .lost-customer-title {
+      float: left;
+      margin: 25px 0;
+      width: 56px;
+      height: 18px;
+      background: #e1eaff;
+      border-radius: 2px;
     }
   }
   .noRecords {
