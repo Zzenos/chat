@@ -184,6 +184,9 @@
             <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
           </div>
         </div>
+        <div class="foot" style="display:none">
+          <me-editor :sendToBottom="sendToBottom" ref="editor" />
+        </div>
       </div>
       <div class="talk-record" style="position:relative">
         <!-- <div style="width:100%;height:64px;position:absolute"></div> -->
@@ -331,7 +334,7 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        console.log(this.$route, 'chat-route', this.isLost, 'this.isLost')
+        // console.log(this.$route, 'chat-route', this.isLost, 'this.isLost')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -342,7 +345,7 @@ export default {
           }
           this.$socket.emit(`group_info`, { tjId: this.wechatId }, ack => {
             this.groupInfo = ack.data || {}
-            console.log(this.groupInfo, 'ack-data-groupinfo')
+            // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
         }
         // this.$refs.editor.clear()
@@ -356,7 +359,7 @@ export default {
     },
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
-      console.log(newVal, 'chat-lost-newVal', this.isLost)
+      // console.log(newVal, 'chat-lost-newVal', this.isLost)
       if (newVal && newVal.lost == '1') {
         this.$nextTick(() => {
           this.$refs.editor.changePlaceholder()
