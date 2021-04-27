@@ -2,9 +2,9 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <li v-if="!lost">
+        <!-- <li v-if="!lost">
           <img src="@/assets/chat_icon_emoticon.png" alt="" />
-        </li>
+        </li> -->
         <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
@@ -12,9 +12,9 @@
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li> -->
         <!-- 客户流失显示 -->
-        <li v-if="lost">
+        <!-- <li v-if="lost">
           <img src="@/assets/chat_icon_emoticon_lost.png" alt="" />
-        </li>
+        </li> -->
         <li v-if="lost">
           <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
