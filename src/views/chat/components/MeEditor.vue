@@ -151,6 +151,17 @@ export default {
       this.placeholder = '客户已流失，不能发送消息'
       this.readonly = true
       this.lost = true
+    },
+    changePlaceholderT() {
+      this.placeholder = '输入内容，shift+enter换行，enter发送'
+      this.readonly = false
+      this.lost = false
+    },
+    netLost() {
+      this.readonly = true
+    },
+    netReconnect() {
+      this.readonly = false
     }
   }
 }

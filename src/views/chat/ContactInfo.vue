@@ -167,11 +167,14 @@ export default {
       immediate: true,
       handler(newVal) {
         // console.log(newVal.lost, '169-169')
+        if (!newVal) return
         if (newVal.lost == 0) {
           this.$store.commit('changeLost', false)
+          // console.log(this.$store.state.lost, 'this.$store.state.lost')
         }
         if (newVal.lost == 1) {
           this.$store.commit('changeLost', true)
+          // console.log(this.$store.state.lost, 'this.$store.state.lost')
         }
       }
     }

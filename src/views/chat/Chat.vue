@@ -35,6 +35,11 @@
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
             <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
+          <!-- 网络中断 -->
+          <div class="net-lost" v-if="!onLine">
+            <img src="@/assets/icon_warning.png" alt="" />
+            <span>当前网络不可用，请检查你的网络</span>
+          </div>
 
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.msgId">
@@ -78,7 +83,15 @@
                     <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
 
                     <!-- 语音消息 -->
-                    <audio-message v-else-if="item.msgType == 'voice'" :float="item.float" :url="item.url" :voiceTime="item.voiceTime" />
+                    <audio-message
+                      v-else-if="item.msgType == 'voice'"
+                      :float="item.float"
+                      :url="item.url"
+                      :voiceTime="item.voiceTime"
+                      :index="index"
+                      :onlyOnePlay="item.onlyOnePlay"
+                      :changeAudioIndex="changeAudioIndex"
+                    />
 
                     <!-- 链接消息 -->
                     <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
@@ -104,15 +117,12 @@
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
                       }"
-                      title="您确定要重新发送消息吗？"
+                      title="确认要重发这条信息吗？"
                       centered
                       @ok="toResendMsg"
                       ok-text="确认"
                       cancel-text="取消"
                     >
-                      <!-- <p>some contents...</p>
-                      <p>some contents...</p>
-                      <p>some contents...</p> -->
                     </a-modal>
                   </div>
                 </div>
@@ -128,7 +138,7 @@
           <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" :changeSendStatus="changeSendStatus" ref="editor" />
+          <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
@@ -226,7 +236,8 @@ export default {
       modal2Visible: false,
       isLost: this.$store.state.lost,
       toRensendIndex: 0,
-      onLine: navigator.onLine
+      onLine: navigator.onLine,
+      playingAudioIndex: null
     }
   },
   mounted() {
@@ -282,32 +293,36 @@ export default {
       this.records[this.toRensendIndex].notResend = false
       this[types.SEND_MSG](this.records[this.toRensendIndex])
     },
-    changeSendStatus(index) {
-      // this.sendStatus = true
-      //如果不传index 默认是最后一条
-      index = index || this.records.length - 1
-      this.records[index].sendStatus = true
-    },
     clickStatus(index) {
       //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
       console.log(index)
       this.toRensendIndex = index
     },
-    lostText() {
-      this.$refs.editor.changePlaceholder()
-    },
     updateOnlineStatus(e) {
       const { type } = e
       this.onLine = type === 'online'
       // console.log(this.onLine, 'this.onLine-this.onLine')
+    },
+    changeAudioIndex(index) {
+      if (typeof this.playingAudioIndex != 'number') {
+        this.playingAudioIndex = index
+        console.log(this.playingAudioIndex, 'first')
+        return
+      }
+      this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
+      this.playingAudioIndex = index
+      console.log(this.playingAudioIndex, 'last')
+    },
+    txt1() {
+      this.$refs.editor.changePlaceholder()
     }
   },
   watch: {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { wechatId, wechatName, memberCount = '', chatType } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType, lost } = newVal.query
         const { tjId, contactId } = newVal.params
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
@@ -315,9 +330,10 @@ export default {
         this.wechatName = wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.chatType = chatType
+        this.isLost = lost == 1 ? true : false
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        // console.log(this.$route, 'chat-route')
+        console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -341,20 +357,40 @@ export default {
       }
     },
     isLost(newVal) {
-      // console.log(newVal, 'chat-lost-newVal')
+      console.log(newVal, 'chat-lost-newVal')
       if (newVal) {
-        this.lostText()
+        this.$refs.editor.changePlaceholder()
+      } else {
+        this.$refs.editor.changePlaceholderT()
       }
     },
+    // isLost: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     if (newVal) {
+    //       // this.$refs.editor.changePlaceholder()
+    //       this.$refs.editor && this.txt1()
+    //     } else {
+    //       // this.$refs.editor.changePlaceholderT()
+    //     }
+    //   }
+    // },
     onLine(newVal) {
       console.log(newVal)
+      if (!newVal) {
+        this.$refs.editor.netLost()
+        return
+      }
+      if (newVal) {
+        this.$refs.editor.netReconnect()
+      }
     }
   },
   computed: {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.userId ? 'right' : 'left'
-        item.sendStatus = true
+        item.onlyOnePlay = true
         return item
       })
     }
@@ -419,6 +455,7 @@ export default {
       display: flex;
       flex-direction: column;
       border-right: 1px solid #e4e5e7;
+      transform: translateX(0px);
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
@@ -431,10 +468,25 @@ export default {
         .pull-history {
           cursor: pointer;
         }
-
-        .pull-history {
-          cursor: pointer;
+        .net-lost {
+          width: 100%;
+          height: 40px;
+          background: #f7e7e8;
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 999;
+          padding: 10px 0;
+          span {
+            margin-left: 8px;
+            font-size: 12px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.65);
+            line-height: 18px;
+          }
         }
+
         .talk-title {
           display: none;
           height: 15px;
@@ -638,24 +690,51 @@ export default {
 // }
 /deep/ .ant-modal-mask {
   display: none;
-  background-color: rgba(0, 0, 0, 0.05);
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
+  // display: none;
+  background-color: rgba(0, 0, 0, 0.35);
 }
 /deep/ .ant-modal-close-x {
   display: none;
 }
 /deep/ .ant-modal-content {
-  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.45);
+  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  // border: 1px solid rgba(0, 0, 0, 0.45);
+  width: 480px;
+  height: 200px;
+  padding-top: 60px;
+  background: #fff;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
   .ant-modal-header {
     border-bottom: none;
     text-align: center;
-    padding-top: 50px;
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 24px;
+    padding: 0;
   }
   .ant-modal-body {
     display: none;
   }
   .ant-modal-footer {
     border-top: none;
+    margin-top: 44px;
+    text-align: center;
+    .ant-btn {
+      width: 132px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+      &.ant-btn-primary {
+        color: #fff;
+      }
+    }
   }
 }
 </style>

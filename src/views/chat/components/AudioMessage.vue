@@ -46,6 +46,15 @@ export default {
     voiceTime: {
       type: Number,
       default: 0
+    },
+    index: {
+      type: Number
+    },
+    changeAudioIndex: {
+      type: Function
+    },
+    onlyOnePlay: {
+      type: Boolean
     }
   },
   methods: {
@@ -54,26 +63,13 @@ export default {
     },
     playAll() {
       if (this.amr && this.init) {
+        // this.changeAudioIndex(this.index)
         this.toPlayAmination(), this.playUrl()
       }
     },
     playUrl() {
       this.amr.playOrPauseOrResume()
     }
-  },
-  mounted() {
-    // let vm = this
-    // // amr = null
-    // // amr = new BenzAMRRecorder()
-    // amr.initWithUrl('https://benzleung.github.io/benz-amr-recorder/res/mario.amr').then(function() {
-    //   // console.log('初始化完毕') 'https://benzleung.github.io/benz-amr-recorder/res/mario.amr'
-    //   //http://kfpt.oss-cn-hangzhou.aliyuncs.com/pc/pcwork/msgfile/20210425/7120509bd976af2daf43031c4a240d5d/ec38f1fa34414f40a0306f3880bcccea.amr
-    // })
-    // amr.onEnded(function() {
-    //   amr.stop()
-    //   vm.toPlayVoice()
-    //   console.log('播放完毕')
-    // })
   },
   watch: {
     url: {
@@ -93,6 +89,12 @@ export default {
           console.log('播放完毕')
         })
       }
+    },
+    onlyOnePlay(newVal) {
+      console.log(newVal, 'onlyOnePlay-newVal')
+      // if (this.amr && this.init) {
+      //   this.toPlayAmination(), this.playUrl()
+      // }
     }
   }
 }
