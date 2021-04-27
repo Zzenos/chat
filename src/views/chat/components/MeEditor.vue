@@ -128,6 +128,19 @@ export default {
           return
         }
       }
+      //图片格式
+      if (type == 'image') {
+        if (file.type.split('/')[1] != 'jpg' && file.type.split('/')[1] != 'png' && file.type.split('/')[1] != 'jpeg') {
+          this.noValidVisible = true
+          this.noValidTitle = '只支持上传jpg,png,jpeg格式的图片'
+          return
+        }
+        if (size >= 25) {
+          this.noValidVisible = true
+          this.noValidTitle = '只支持25M以内的图片'
+          return
+        }
+      }
       let fileType = type == 'image' ? 1 : 2
       let fileData = new FormData()
       fileData.append('file', file)
