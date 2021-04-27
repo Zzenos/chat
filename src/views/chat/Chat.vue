@@ -21,7 +21,7 @@
             <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
           </span>
           <!-- 流失状态显示 -->
-          <span class="lost-customer-title" v-if="isLost">
+          <span class="lost-customer-title" v-if="isLost == '1'">
             <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
           </span>
         </div>
@@ -105,8 +105,8 @@
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
                     />
-                    <!-- !消息发送状态 -->
-                    <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
+                    <!-- !消息发送状态 v-if="item.status == 2" -->
+                    <div class="status" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
@@ -134,7 +134,7 @@
           </div>
         </div>
         <!-- 客户流失 -->
-        <div class="lost-customer" v-if="isLost">
+        <div class="lost-customer" v-if="isLost == '1'">
           <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
@@ -142,16 +142,17 @@
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
-        <div class="top">
+        <div class="top" style="text-align:left">
+          <!-- style="text-align:left"要删 -->
           <span class="groupInfo">群资料</span>
           <!-- <span>快捷回复</span> -->
         </div>
         <div class="search">
-          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
+          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
         </div>
-        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
+        <div class="memberList" v-if="groupInfo.memberCount">
           <!-- style="padding-top:50px"要删 -->
-          群成员({{ groupInfo.memberCount }})
+          <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
           <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
             <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
 
@@ -205,7 +206,7 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 export default {
   name: 'chat',
@@ -234,10 +235,10 @@ export default {
         members: []
       },
       modal2Visible: false,
-      isLost: this.$store.state.lost,
       toRensendIndex: 0,
       onLine: navigator.onLine,
-      playingAudioIndex: null
+      playingAudioIndex: null,
+      isLost: ''
     }
   },
   mounted() {
@@ -288,7 +289,7 @@ export default {
     },
     toResendMsg() {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
-      console.log('to-resend')
+      // console.log('to-resend')
       this.modal2Visible = false
       this.records[this.toRensendIndex].notResend = false
       this[types.SEND_MSG](this.records[this.toRensendIndex])
@@ -296,7 +297,7 @@ export default {
     clickStatus(index) {
       //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
-      console.log(index)
+      // console.log(index)
       this.toRensendIndex = index
     },
     updateOnlineStatus(e) {
@@ -313,9 +314,6 @@ export default {
       this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
       this.playingAudioIndex = index
       console.log(this.playingAudioIndex, 'last')
-    },
-    txt1() {
-      this.$refs.editor.changePlaceholder()
     }
   },
   watch: {
@@ -330,10 +328,10 @@ export default {
         this.wechatName = wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.chatType = chatType
-        this.isLost = lost == 1 ? true : false
+        this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        console.log(this.$route, 'chat-route')
+        console.log(this.$route, 'chat-route', this.isLost, 'this.isLost')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -356,25 +354,19 @@ export default {
         this.sendToBottom()
       }
     },
-    isLost(newVal) {
-      console.log(newVal, 'chat-lost-newVal')
-      if (newVal) {
-        this.$refs.editor.changePlaceholder()
+    isLostRequest(newVal) {
+      this.isLost = newVal && newVal.lost
+      console.log(newVal, 'chat-lost-newVal', this.isLost)
+      if (newVal && newVal.lost == '1') {
+        this.$nextTick(() => {
+          this.$refs.editor.changePlaceholder()
+        })
       } else {
-        this.$refs.editor.changePlaceholderT()
+        this.$nextTick(() => {
+          this.$refs.editor.changePlaceholderT()
+        })
       }
     },
-    // isLost: {
-    //   immediate: true,
-    //   handler(newVal) {
-    //     if (newVal) {
-    //       // this.$refs.editor.changePlaceholder()
-    //       this.$refs.editor && this.txt1()
-    //     } else {
-    //       // this.$refs.editor.changePlaceholderT()
-    //     }
-    //   }
-    // },
     onLine(newVal) {
       console.log(newVal)
       if (!newVal) {
@@ -393,6 +385,10 @@ export default {
         item.onlyOnePlay = true
         return item
       })
+    },
+    ...mapGetters(['contactInfoByWechatId']),
+    isLostRequest() {
+      return this.contactInfoByWechatId(this.userId, this.wechatId)
     }
   }
 }
