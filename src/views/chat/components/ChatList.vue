@@ -70,7 +70,7 @@ export default {
           this.curChat = { chatId: null }
           return
         }
-        this.chatList.forEach(ele => {
+        this.chats.forEach(ele => {
           if (ele.chatId === contactId) {
             this.curChat = ele
           }
