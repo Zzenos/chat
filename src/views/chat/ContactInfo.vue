@@ -4,16 +4,17 @@
       <div class="top">
         <!-- 头像  -->
         <a-avatar shape="square" :size="112" :src="allInfo.wechatAvatar" />
-        <!-- 名字 -->
+        <!-- 名字      -->
         <div class="name">
           <span>{{ allInfo.wechatName }}</span>
           <span style="margin-left:8px">
             <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
             <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
           </span>
+          <span v-if="type == 1 && lost == 1" class="lost-customer-sty">流失客户</span>
         </div>
         <div style="color: #FF8000; font-size: 14px; margin-top: 8px; line-height:22px; font-weight: 400;">{{ company }}</div>
-        <!-- <div style="color: #0ead63; font-size: 14px; margin-top: 8px; line-height:22px" v-else>@微信</div> -->
+        <div v-if="type == 1 && !company" style="color: #0ead63; font-size: 14px; margin-top: 8px; line-height:22px">@微信</div>
       </div>
       <div class="bottom">
         <div class="info">
@@ -101,11 +102,12 @@ export default {
         wechatName: '',
         company: '',
         memberCount: ''
-      }
+      },
+      lost: ''
     }
   },
   computed: {
-    ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById', 'contactInfoByWechatId']),
+    ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById']),
     ainfo() {
       const type = Number(this.type)
       let data = {}
@@ -134,9 +136,6 @@ export default {
     },
     addTime() {
       return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
-    },
-    isLost() {
-      return this.contactInfoByWechatId(this.tjId, this.wechatId)
     }
   },
   watch: {
@@ -150,7 +149,7 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { type, wechatAvatar, wechatName, company, memberCount, tjId } = newVal.query
+        const { type, wechatAvatar, wechatName, company, memberCount, tjId, lost } = newVal.query
         this.wechatId = newVal.params.contactId
         this.tjId = newVal.params.tjId
         this.type = type
@@ -159,23 +158,8 @@ export default {
         this.allInfo.wechatName = wechatName
         this.allInfo.company = company
         this.allInfo.memberCount = memberCount
+        this.lost = lost
         // console.log(this.allInfo, 'allinfo')
-        // console.log(this.$route, 'route')
-      }
-    },
-    isLost: {
-      immediate: true,
-      handler(newVal) {
-        // console.log(newVal.lost, '169-169')
-        if (!newVal) return
-        if (newVal.lost == 0) {
-          this.$store.commit('changeLost', false)
-          // console.log(this.$store.state.lost, 'this.$store.state.lost')
-        }
-        if (newVal.lost == 1) {
-          this.$store.commit('changeLost', true)
-          // console.log(this.$store.state.lost, 'this.$store.state.lost')
-        }
       }
     }
   },
@@ -225,6 +209,19 @@ export default {
         height: 42px;
         line-height: 42px;
         font-weight: 400;
+        .lost-customer-sty {
+          width: 56px;
+          height: 18px;
+          display: inline-block;
+          background: #e1eaff;
+          border-radius: 2px;
+          color: #1d61ef;
+          font-size: 11px;
+          line-height: 16px;
+          font-weight: 400;
+          margin-left: 8px;
+          padding-top: 3px;
+        }
       }
       /deep/ .ant-avatar > img {
         display: block;
