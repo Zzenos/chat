@@ -11,10 +11,11 @@ const MSG_SEND_STATUS = {
  */
 class Msg {
   constructor(options, isSendMsg) {
-    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msgTime, sender, unread = false, seq, clientMsgId } = options
+    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, at_ids, msgTime, sender, to, unread = false, seq, clientMsgId } = options
     this.msgId = msgId // 发出的消息id为uuid
     this.clientMsgId = clientMsgId
     this.sender = sender // 发送人信息
+    this.to = to // 接收人信息
     if (isSendMsg) {
       this.clientMsgId = getUuid() // 发出的消息id为uuid
       this.msgId = this.clientMsgId

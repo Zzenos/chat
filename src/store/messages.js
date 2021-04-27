@@ -119,17 +119,29 @@ export default {
      * @param {Array} data 消息数组
      */
     [types.DISTRIBUTE_MSG]: {
-      handler: ({ commit, state }, data) => {
+      handler: ({ commit, state, rootState }, data) => {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
         }
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
+          const tjId = msg.chatId.split('&')[0]
           if (state.chatMsgHash[msg.msgId]) return
+          // 新会话，添加会话列表
+          if (!state.chatMsgs[msg.chatId] && rootState.chat.chatList[tjId]) {
+            const info = msg.sender.tjId === tjId ? msg.to : msg.sender
+            commit(types.ADD_CHAT_LIST, {
+              tjId,
+              chatList: [
+                {
+                  ...msg,
+                  ...info,
+                  lost: 0
+                }
+              ]
+            })
+          }
           commit(types.ADD_CHAT, msg.chatId)
-          /* if (msg.unread) {
-            commit(types.SET_CHAT_INFO, msg.chatId)
-          } */
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
           // TODO
