@@ -1,7 +1,7 @@
 <template>
   <div class="chat-list_container">
-    <div v-for="item in chats" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
-      <a-badge :offset="[-20, 0]" :count="item.unreadCount" :overflow-count="99">
+    <div v-for="item in chatList" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
+      <a-badge :offset="[-18, 0]" :count="item.unreadCount" :overflow-count="99">
         <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
         <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
       </a-badge>
@@ -19,7 +19,7 @@
         <div class="msg ellipsis">{{ item.lastMsg.defaultContent }}</div>
       </div>
     </div>
-    <no-data text="暂无消息内容" v-if="chats.length === 0" />
+    <no-data text="暂无消息内容" v-if="chatList.length === 0" />
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default {
         return this.$store.getters.chatsByTjId(this.tjId)
       },
       set: function(val) {
-        console.log(val)
+        return val
       }
     }
   },
@@ -79,7 +79,7 @@ export default {
     },
     searchText(n) {
       const chatList = cloneDeep(this.$store.getters.chatsByTjId(this.tjId))
-      this.chats = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
+      this.chatList = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
     },
     selected(n) {
       if (n) {
@@ -117,6 +117,9 @@ export default {
   width: 100%;
   height: calc(100vh - 132px);
   overflow-y: scroll;
+  /deep/.ant-badge-count {
+    box-shadow: none;
+  }
   .item {
     position: relative;
     box-sizing: border-box;

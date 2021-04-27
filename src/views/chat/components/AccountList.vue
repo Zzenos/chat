@@ -75,6 +75,9 @@ export default {
   overflow-y: scroll;
   overflow-x: hidden;
   width: 110px;
+  /deep/.ant-badge-count {
+    box-shadow: none;
+  }
   .act-item {
     position: relative;
     width: 88px;
