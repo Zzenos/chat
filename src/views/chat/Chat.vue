@@ -105,12 +105,12 @@
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
                     />
-                    <!-- !消息发送状态 v-if="item.status == 2"
+                    <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
                       }"
                      -->
-                    <div class="status" @click="clickStatus(index)">
+                    <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
