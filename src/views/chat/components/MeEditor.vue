@@ -130,7 +130,7 @@ export default {
       }
       //图片格式
       if (type == 'image') {
-        if (file.type.split('/')[1] != 'jpg' || file.type.split('/')[1] != 'png' || file.type.split('/')[1] != 'jpeg') {
+        if (file.type.split('/')[1] != 'jpg' && file.type.split('/')[1] != 'png' && file.type.split('/')[1] != 'jpeg') {
           this.noValidVisible = true
           this.noValidTitle = '只支持上传jpg,png,jpeg格式的图片'
           return
