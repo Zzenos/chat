@@ -379,6 +379,20 @@ export default {
       if (newVal) {
         this.$refs.editor.netReconnect()
       }
+    },
+    isLost: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal == '1') {
+          this.$nextTick(() => {
+            this.$refs.editor.changePlaceholder()
+          })
+        } else {
+          this.$nextTick(() => {
+            this.$refs.editor.changePlaceholderT()
+          })
+        }
+      }
     }
   },
   computed: {
