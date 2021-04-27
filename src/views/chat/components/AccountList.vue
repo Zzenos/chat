@@ -34,7 +34,7 @@ export default {
         if (this.$route.params.tjId) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {
-          this.curAct = this.accounts[2]
+          this.curAct = this.accounts[0]
           if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
         }
         if (this.curAct) {
