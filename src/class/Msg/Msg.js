@@ -67,6 +67,7 @@ export class systemMsg extends Msg {
     super(options, isSendMsg)
     let { content } = options
     this.content = content
+    this.defaultContent = content
   }
 }
 
@@ -79,6 +80,7 @@ export class textMsg extends Msg {
     super(options, isSendMsg)
     let { content } = options
     this.content = content
+    this.defaultContent = content
   }
 }
 
@@ -90,6 +92,7 @@ export class imgMsg extends Msg {
     super(options, isSendMsg)
     let { url } = options
     this.url = url // 图片需要给图片地址
+    this.defaultContent = '[图片]'
   }
 }
 /**
@@ -102,6 +105,7 @@ export class voiceMsg extends Msg {
     let { voiceTime, url } = options
     this.voiceTime = voiceTime
     this.url = url
+    this.defaultContent = '[语音]'
   }
 }
 
@@ -116,6 +120,7 @@ export class videoMsg extends Msg {
     this.voiceTime = voiceTime // 时长
     this.url = url
     this.coverUrl = coverUrl
+    this.defaultContent = '[视频]'
   }
 }
 
@@ -131,6 +136,7 @@ export class hyperLinkMsg extends Msg {
     this.title = title // h5标题
     this.desc = desc //文字描述
     this.coverUrl = coverUrl
+    this.defaultContent = `[链接] ${title}`
   }
 }
 /**
@@ -141,6 +147,7 @@ export class contactMsg extends Msg {
     super(options, isSendMsg)
     let { content } = options
     this.content = JSON.parse(content)
+    this.defaultContent = `[名片]`
   }
 }
 /**
@@ -153,6 +160,7 @@ export class fileMsg extends Msg {
     let { url, title } = options
     this.url = url
     this.title = title
+    this.defaultContent = `[文件] ${title}`
   }
 }
 
@@ -166,5 +174,6 @@ export class mpMsg extends Msg {
     let { content, coverUrl } = options
     this.content = JSON.parse(content) // 解码后为小程序的配置json,需要parse一次
     this.coverUrl = coverUrl
+    this.defaultContent = `[小程序]`
   }
 }

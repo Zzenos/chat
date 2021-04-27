@@ -55,7 +55,7 @@ export default {
                 ? curChatMsgs[curChatMsgs.length - 1]
                 : {
                     time: i.lastActiveTime,
-                    content: ''
+                    defaultContent: ''
                   }
               return i.lastMsg.time
             },

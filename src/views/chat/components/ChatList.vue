@@ -16,7 +16,7 @@
         </div>
         <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
-        <div class="msg ellipsis" v-if="item.lastMsg.msgType === 'text'">{{ item.lastMsg.content }}</div>
+        <div class="msg ellipsis">{{ item.lastMsg.defaultContent }}</div>
       </div>
     </div>
     <no-data text="暂无消息内容" v-if="chatList.length === 0" />
