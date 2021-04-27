@@ -4,7 +4,10 @@ import VuexPersistence from 'vuex-persist'
 const vuexLocal = new VuexPersistence({
   key: 'im',
   storage: window.localStorage,
-  reducer: state => ({ token: state.token })
+  reducer: state => ({
+    token: state.token,
+    username: state.username
+  })
   // asyncStorage: true
   // storage: localForage
 })

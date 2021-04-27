@@ -8,23 +8,17 @@ export default {
   props: {
     token: {
       type: String
-    },
-    username: {
-      type: String
     }
   },
   methods: {
-    ...mapMutations(['storeToken'])
+    ...mapMutations(['storeToken', 'saveUserName'])
   },
   created() {
     console.log(`%c ${this.token}`, 'color:#f2f;')
     this.storeToken(this.token)
-    sessionStorage.setItem('username', JSON.stringify(this.username))
+    this.$route.query.username && this.saveUserName(this.$route.query.username)
     this.$router.push({
-      path: `/chatframe`,
-      query: {
-        username: this.username
-      }
+      path: `/chatframe`
     })
   },
   render() {
