@@ -92,6 +92,7 @@ export default {
     return {
       wechatId: this.$route.params.contactId,
       groupId: this.$route.query.tjId,
+      tjId: this.$route.params.tjId,
       //type 1 客户  2 群聊 3 成员
       type: this.$route.query.type,
       // info: [],
@@ -104,7 +105,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById']),
+    ...mapGetters(['customerDetailsById', 'groupDetailsById', 'memberDetailsById', 'contactInfoByWechatId']),
     ainfo() {
       const type = Number(this.type)
       let data = {}
@@ -135,8 +136,7 @@ export default {
       return this.allInfo.addTime ? this.allInfo.addTime.replace('T', ' ') : ''
     },
     isLost() {
-      // return this.userDetailsById(this.id)
-      return []
+      return this.contactInfoByWechatId(this.tjId, this.wechatId)
     }
   },
   watch: {
@@ -152,24 +152,25 @@ export default {
       handler(newVal) {
         const { type, wechatAvatar, wechatName, company, memberCount, tjId } = newVal.query
         this.wechatId = newVal.params.contactId
+        this.tjId = newVal.params.tjId
         this.type = type
         this.groupId = tjId
         this.allInfo.wechatAvatar = wechatAvatar
         this.allInfo.wechatName = wechatName
         this.allInfo.company = company
         this.allInfo.memberCount = memberCount
-        console.log(this.allInfo, 'allinfo')
+        // console.log(this.allInfo, 'allinfo')
         // console.log(this.$route, 'route')
       }
     },
     isLost: {
       immediate: true,
       handler(newVal) {
-        if (newVal == 0) {
+        // console.log(newVal.lost, '169-169')
+        if (newVal.lost == 0) {
           this.$store.commit('changeLost', false)
-          console.log('a')
         }
-        if (newVal == 1) {
+        if (newVal.lost == 1) {
           this.$store.commit('changeLost', true)
         }
       }
