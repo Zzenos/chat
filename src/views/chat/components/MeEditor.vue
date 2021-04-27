@@ -113,6 +113,7 @@ export default {
       if (type !== 'image' && type !== 'video') {
         this.noValidVisible = true
         this.noValidTitle = '目前只支持发送图片视频'
+        this.$refs.restFile.value = ''
         return
       }
       //视频格式
@@ -120,11 +121,13 @@ export default {
         if (file.type.split('/')[1] != 'mp4') {
           this.noValidVisible = true
           this.noValidTitle = '只支持上传mp4格式的视频'
+          this.$refs.restFile.value = ''
           return
         }
         if (size >= 25) {
           this.noValidVisible = true
           this.noValidTitle = '只支持25M以内的视频'
+          this.$refs.restFile.value = ''
           return
         }
       }
@@ -133,11 +136,13 @@ export default {
         if (file.type.split('/')[1] != 'jpg' && file.type.split('/')[1] != 'png' && file.type.split('/')[1] != 'jpeg') {
           this.noValidVisible = true
           this.noValidTitle = '只支持上传jpg,png,jpeg格式的图片'
+          this.$refs.restFile.value = ''
           return
         }
         if (size >= 25) {
           this.noValidVisible = true
           this.noValidTitle = '只支持25M以内的图片'
+          this.$refs.restFile.value = ''
           return
         }
       }
@@ -168,15 +173,12 @@ export default {
               wechatName: wechatName,
               wechatAvatar: wechatAvatar
             },
-            // url: 'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
-            //url: "http://kfpt.oss-cn-hangzhou.aliyuncs.com/pc/pcwork/msgfile/20210426/502ee1258775a1607501078e5c3e089d/bbb4f60860704d27978ab31e205f9c16.jpg"
-            // url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/13fac4f421984182aa871cf13b3dc02b.jpg',
-            // coverUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/13fac4f421984182aa871cf13b3dc02b.jpg',
             url: url,
             coverUrl: coverUrl,
             notResend: true
           })
         }
+        this.$refs.restFile.value = ''
       })
     },
     // 选择视频文件后回调方法

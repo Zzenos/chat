@@ -142,15 +142,15 @@
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
-        <div class="top" style="text-align:left">
+        <div class="top">
           <!-- style="text-align:left"要删 -->
           <span class="groupInfo">群资料</span>
           <!-- <span>快捷回复</span> -->
         </div>
         <div class="search">
-          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
         </div>
-        <div class="memberList" v-if="groupInfo.memberCount">
+        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
           <!-- style="padding-top:50px"要删 -->
           <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
           <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
