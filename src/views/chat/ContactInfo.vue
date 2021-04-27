@@ -299,6 +299,7 @@ export default {
         color: #ffffff;
         line-height: 40px;
         cursor: pointer;
+        border-radius: 4px;
       }
     }
   }
@@ -346,6 +347,7 @@ export default {
       line-height: 22px;
       padding-top: 9px;
       cursor: pointer;
+      border-radius: 4px;
     }
   }
 

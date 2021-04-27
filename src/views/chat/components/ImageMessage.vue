@@ -5,7 +5,7 @@
     <div v-show="sendingPic" class="loading-text">发送中</div>
   </div>
   <div v-else>
-    <span style="height:46px;line-height:46px;font-size:14px">[当前版本暂不支持查看此消息]</span>
+    <span style="height:46px;line-height:46px;font-size:14px">[图片加载失败]</span>
   </div>
 </template>
 <script>
