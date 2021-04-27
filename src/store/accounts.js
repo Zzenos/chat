@@ -19,7 +19,7 @@ export default {
         return state.accounts.map(i => {
           return {
             info: i.info,
-            unreadCount: rootState.chat.chatInfo[i.info.tjId] ? rootState.chat.chatInfo[i.info.tjId].unreadCount : 0
+            unreadCount: rootState.messages.chatInfo[i.info.tjId] ? rootState.messages.chatInfo[i.info.tjId].unreadCount : 0
           }
         })
       }

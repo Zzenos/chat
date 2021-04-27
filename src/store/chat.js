@@ -8,8 +8,7 @@ import orderBy from 'lodash/orderBy'
 export default {
   state: {
     chatListHash: {}, //会话列表hash，chatId全局唯一
-    chatList: {},
-    chatInfo: {}
+    chatList: {}
   },
   mutations: {
     // 根究探鲸id获取会话列表
@@ -36,36 +35,6 @@ export default {
       } else {
         state.chatList[tjId].splice(0, 0, ...filterLsit)
       }
-    },
-    // 记录会话消息数量
-    [types.SET_CHAT_INFO](state, chatId) {
-      const tjId = chatId.split('&')[0]
-      let info = {}
-      if (state.chatInfo[tjId]) {
-        if (state.chatInfo[tjId][chatId]) {
-          state.chatInfo[tjId][chatId].unreadCount++
-          state.chatInfo[tjId].unreadCount++
-        }
-        info = state.chatInfo[tjId]
-      } else {
-        info = { unreadCount: 1 }
-        info[chatId] = { unreadCount: 1 }
-      }
-      Vue.set(state.chatInfo, `${tjId}`, info)
-    },
-    // 更新会话消息数量
-    [types.UPDATE_CHAT_INFO](state, chatId) {
-      const tjId = chatId.split('&')[0]
-      let info = {}
-      if (state.chatInfo[tjId]) {
-        if (!state.chatInfo[tjId][chatId]) {
-          return
-        }
-        state.chatInfo[tjId].unreadCount = state.chatInfo[tjId].unreadCount - state.chatInfo[tjId][chatId].unreadCount
-        state.chatInfo[tjId][chatId].unreadCount = 0
-        info = { ...state.chatInfo[tjId] }
-        Vue.set(state.chatInfo, `${tjId}`, info)
-      }
     }
   },
   actions: {},
@@ -79,7 +48,7 @@ export default {
             function(i) {
               const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
               const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
-              const curChatInfo = state.chatInfo[tjId] ? state.chatInfo[tjId][i.chatId] : null
+              const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
               i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
               i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
               i.lastMsg = curChatMsgs.length

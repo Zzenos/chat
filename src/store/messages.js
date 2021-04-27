@@ -18,7 +18,8 @@ export default {
   state: {
     chatMsgs: {},
     sendingMsgHash: {},
-    chatMsgHash: {}
+    chatMsgHash: {},
+    chatInfo: {}
   },
   mutations: {
     // 新会话
@@ -29,6 +30,7 @@ export default {
     // 需要检查是否为ACK中返回的消息体
     [types.ADD_MSG](state, msg) {
       // 查重
+      console.log(msg)
       if (state.chatMsgHash[msg.msgId]) return
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经在会话中，进行msg_id的更改即可
@@ -43,6 +45,23 @@ export default {
             return obj.seq
           })
           state.chatMsgs[msg.chatId].splice(index, 0, msg)
+
+          // 计算未读消息数量
+          if (msg.unread) {
+            const tjId = msg.chatId.split('&')[0]
+            let info = {}
+            if (state.chatInfo[tjId]) {
+              if (state.chatInfo[tjId][msg.chatId]) {
+                state.chatInfo[tjId][msg.chatId].unreadCount++
+                state.chatInfo[tjId].unreadCount++
+              }
+              info = state.chatInfo[tjId]
+            } else {
+              info = { unreadCount: 1 }
+              info[msg.chatId] = { unreadCount: 1 }
+            }
+            Vue.set(state.chatInfo, `${tjId}`, info)
+          }
         }
       }
     },
@@ -64,6 +83,18 @@ export default {
         state.chatMsgs[chatId].forEach(i => {
           i.unread = false
         })
+        // 更新会话消息数量
+        const tjId = chatId.split('&')[0]
+        let info = {}
+        if (state.chatInfo[tjId]) {
+          if (!state.chatInfo[tjId][chatId]) {
+            return
+          }
+          state.chatInfo[tjId].unreadCount = state.chatInfo[tjId].unreadCount - state.chatInfo[tjId][chatId].unreadCount
+          state.chatInfo[tjId][chatId].unreadCount = 0
+          info = { ...state.chatInfo[tjId] }
+          Vue.set(state.chatInfo, `${tjId}`, info)
+        }
         Vue.set(state.chatMsgs, `${chatId}`, state.chatMsgs[chatId])
       }
     },
@@ -96,9 +127,9 @@ export default {
           const msg = MsgGen(msgItem)
           if (state.chatMsgHash[msg.msgId]) return
           commit(types.ADD_CHAT, msg.chatId)
-          if (msg.unread) {
+          /* if (msg.unread) {
             commit(types.SET_CHAT_INFO, msg.chatId)
-          }
+          } */
           commit(types.ADD_MSG, msg)
           commit(types.CACHE_MSG, msg)
           // TODO

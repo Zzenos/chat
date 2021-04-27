@@ -85,7 +85,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([types.UPDATE_CHAT_INFO]),
+    ...mapMutations([types.CLEAR_UNREAD_MSG]),
     handleItem(val, canJump = false) {
       console.log(val)
       const { chatId } = val
@@ -93,7 +93,7 @@ export default {
         return
       }
       this.curChat = val
-      this[types.UPDATE_CHAT_INFO](this.curChat.chatId)
+      this[types.CLEAR_UNREAD_MSG](this.curChat.chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
         query: { ...this.curChat }
