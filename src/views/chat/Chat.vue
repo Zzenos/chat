@@ -105,8 +105,8 @@
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
                     />
-                    <!-- !消息发送状态 v-if="item.status == 2" -->
-                    <div class="status" @click="clickStatus(index)">
+                    <!-- !消息发送状态 -->
+                    <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>

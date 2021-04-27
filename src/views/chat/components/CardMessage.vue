@@ -199,7 +199,7 @@ export default {
         height: 44px;
       }
       .nickname {
-        width: 42px;
+        // width: 42px;
         height: 22px;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
@@ -209,6 +209,9 @@ export default {
         display: block;
         margin-top: -32px;
         margin-left: 56px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
