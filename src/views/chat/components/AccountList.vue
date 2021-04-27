@@ -30,6 +30,7 @@ export default {
       deep: true,
       handler: function(n) {
         if (!n) return
+        if (this.curAct) return
         if (this.$route.params.tjId) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {

@@ -42,9 +42,10 @@ export default {
       const tjId = chatId.split('&')[0]
       let info = {}
       if (state.chatInfo[tjId]) {
-        console.log(state.chatInfo[tjId][chatId])
-        state.chatInfo[tjId][chatId].unreadCount++
-        state.chatInfo[tjId].unreadCount++
+        if (state.chatInfo[tjId][chatId]) {
+          state.chatInfo[tjId][chatId].unreadCount++
+          state.chatInfo[tjId].unreadCount++
+        }
         info = state.chatInfo[tjId]
       } else {
         info = { unreadCount: 1 }
