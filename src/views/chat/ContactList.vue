@@ -106,6 +106,7 @@ export default {
     // border-bottom: 1px solid #e4e5e7;
     /deep/.ant-input {
       border-radius: 0;
+      font-size: 12px;
     }
   }
 }

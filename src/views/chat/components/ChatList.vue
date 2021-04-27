@@ -19,7 +19,7 @@
         <div class="msg ellipsis" v-if="item.lastMsg.msgType === 'text'">{{ item.lastMsg.content }}</div>
       </div>
     </div>
-    <no-data v-if="chatList.length === 0" />
+    <no-data text="暂无消息内容" v-if="chatList.length === 0" />
   </div>
 </template>
 
