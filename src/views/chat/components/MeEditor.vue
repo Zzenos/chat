@@ -34,12 +34,11 @@ import * as types from '@/store/actionType'
 
 export default {
   name: 'MeEditor',
-  props: ['sendToBottom', 'changeSendStatus'],
+  props: ['sendToBottom'],
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
-      readyPlaying: true,
       readonly: false,
       lost: false
     }
@@ -143,9 +142,6 @@ export default {
       //   console.log(this.src)
       // }
       // reader.readAsDataURL(file)
-    },
-    toPlayVoice() {
-      this.readyPlaying = !this.readyPlaying
     },
     changePlaceholder() {
       this.placeholder = '客户已流失，不能发送消息'
