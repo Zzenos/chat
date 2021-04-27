@@ -6,11 +6,13 @@
         <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
       </a-badge>
       <div class="info">
-        <div class="nickname ellipsis">
-          <span v-html="item.wechatName"></span>
-          <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
-          <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
-          <span v-if="item.lost" class="tag">流失客户</span>
+        <div class="nickname">
+          <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '85px' : '150px' }">
+            <span v-html="item.wechatName"></span>
+            <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+            <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
+          </div>
+          <span v-if="[1, 3].includes(item.chatType) && item.lost" class="tag">流失客户</span>
         </div>
         <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
@@ -133,7 +135,8 @@ export default {
       text-align: left;
       height: 44px;
       .nickname {
-        max-width: 160px;
+        display: flex;
+        align-items: center;
         line-height: 22px;
         margin-bottom: 4px;
         .label {

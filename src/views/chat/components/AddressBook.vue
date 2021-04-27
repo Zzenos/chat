@@ -6,9 +6,12 @@
           <div class="list-wraper">
             <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
-              <div class="nickname ellipsis">
-                <span v-html="item.wechatName"></span>
-                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+              <div class="nickname">
+                <div class="ellipsis" :style="{ 'max-width': item.lost ? '150px' : '230px' }">
+                  <span v-html="item.wechatName"></span>
+                  <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+                </div>
+                <span v-if="item.lost" class="tag">流失客户</span>
               </div>
             </div>
             <no-data v-if="customerList.length === 0" />
@@ -195,10 +198,24 @@ export default {
       margin-right: 12px;
     }
     .nickname {
+      display: flex;
+      align-items: center;
       width: 230px;
       text-align: left;
       .label {
         color: #0ead63;
+        margin-left: 8px;
+      }
+      .tag {
+        display: inline-block;
+        background: #e1eaff;
+        color: #1d61ef;
+        width: 56px;
+        height: 18px;
+        line-height: 18px;
+        text-align: center;
+        border-radius: 2px;
+        font-size: 12px;
         margin-left: 8px;
       }
     }
