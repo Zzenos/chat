@@ -25,6 +25,19 @@
       </form>
     </div>
     <textarea :placeholder="placeholder" :readonly="readonly" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
+    <a-modal
+      v-model="noValidVisible"
+      wrapClassName="send-status-modal"
+      getPopupContainer="triggerNode => {
+        return triggerNode.parentNode
+      }"
+      :title="noValidTitle"
+      centered
+      @ok="() => (noValidVisible = false)"
+      ok-text="确认"
+      cancel-text="取消"
+    >
+    </a-modal>
   </div>
 </template>
 <script>
@@ -40,7 +53,9 @@ export default {
       placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
       readonly: false,
-      lost: false
+      lost: false,
+      noValidVisible: false,
+      noValidTitle: ''
     }
   },
   computed: {
@@ -92,7 +107,27 @@ export default {
     uploadImageChange(e) {
       let file = e.target.files[0]
       let type = file.type.split('/')[0]
-      if (type !== 'image' && type !== 'video') return
+      let size = Math.ceil(file.size / 1024 / 1024)
+      console.log(file, type, size)
+      //不是图片和视频
+      if (type !== 'image' && type !== 'video') {
+        this.noValidVisible = true
+        this.noValidTitle = '目前只支持发送图片视频'
+        return
+      }
+      //视频格式
+      if (type == 'video') {
+        if (file.type.split('/')[1] != 'mp4') {
+          this.noValidVisible = true
+          this.noValidTitle = '只支持上传mp4格式的视频'
+          return
+        }
+        if (size >= 25) {
+          this.noValidVisible = true
+          this.noValidTitle = '只支持25M以内的视频'
+          return
+        }
+      }
       let fileType = type == 'image' ? 1 : 2
       let fileData = new FormData()
       fileData.append('file', file)
@@ -202,6 +237,45 @@ export default {
     color: rgba(0, 0, 0, 0.25);
     font-size: 12px;
     font-weight: 400;
+  }
+}
+/deep/ .ant-modal-content {
+  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  // border: 1px solid rgba(0, 0, 0, 0.45);
+  width: 480px;
+  height: 200px;
+  padding-top: 60px;
+  background: #fff;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  .ant-modal-header {
+    border-bottom: none;
+    text-align: center;
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 24px;
+    padding: 0;
+  }
+  .ant-modal-body {
+    display: none;
+  }
+  .ant-modal-footer {
+    border-top: none;
+    margin-top: 44px;
+    text-align: center;
+    .ant-btn {
+      width: 132px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 22px;
+      &.ant-btn-primary {
+        color: #fff;
+      }
+    }
   }
 }
 </style>
