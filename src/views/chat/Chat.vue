@@ -40,7 +40,7 @@
             <img src="@/assets/icon_warning.png" alt="" />
             <span>当前网络不可用，请检查你的网络</span>
           </div>
-
+          <a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal>
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.msgId">
             <!-- 群消息 加入退出群聊-->
@@ -105,25 +105,17 @@
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
                     />
-                    <!-- !消息发送状态 -->
-                    <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
+                    <!-- !消息发送状态 v-if="item.status == 2"
+                      getPopupContainer="triggerNode => {
+                        return triggerNode.parentNode
+                      }"
+                     -->
+                    <div class="status" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
                     </div>
-                    <a-modal
-                      v-model="modal2Visible"
-                      wrapClassName="send-status-modal"
-                      getPopupContainer="triggerNode => {
-                        return triggerNode.parentNode
-                      }"
-                      title="确认要重发这条信息吗？"
-                      centered
-                      @ok="toResendMsg"
-                      ok-text="确认"
-                      cancel-text="取消"
-                    >
-                    </a-modal>
+                    <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                 </div>
               </div>
@@ -706,7 +698,7 @@ export default {
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
   // display: none;
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: rgba(0, 0, 0, 0.65);
 }
 /deep/ .ant-modal-close-x {
   display: none;
