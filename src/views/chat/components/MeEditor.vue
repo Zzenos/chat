@@ -213,6 +213,14 @@ export default {
       // this.readonly = false
       // console.log('当前网络链接成功')
     }
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler() {
+        this.editorText = ''
+      }
+    }
   }
 }
 </script>

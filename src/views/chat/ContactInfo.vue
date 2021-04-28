@@ -12,6 +12,7 @@
             <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
           </span>
           <span v-if="type == 1 && lost == 1" class="lost-customer-sty">流失客户</span>
+          <span v-if="type == 1 && lost == 3" class="lost-customer-sty">删除客户</span>
         </div>
         <div style="color: #FF8000; font-size: 14px; margin-top: 8px; line-height:22px; font-weight: 400;">{{ company }}</div>
         <div v-if="type == 1 && !company" style="color: #0ead63; font-size: 14px; margin-top: 8px; line-height:22px">@微信</div>
