@@ -44,6 +44,7 @@
             <span>当前网络不可用，请检查你的网络</span>
           </div>
           <a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal>
+          <a-modal :visible="showOverModal" wrapClassName="send-status-modal" title="网络连接超时" centered @ok="closeOverModal" @cancel="closeOverModal" ok-text="确认" cancel-text="取消"> </a-modal>
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.msgId">
             <!-- 群消息 加入退出群聊-->
@@ -209,6 +210,9 @@ import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
+import overTimeModal from '@/util/overTime'
+
+const { state: overState } = overTimeModal()
 export default {
   name: 'chat',
   components: {
@@ -315,6 +319,9 @@ export default {
       this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
       this.playingAudioIndex = index
       console.log(this.playingAudioIndex, 'last')
+    },
+    closeOverModal() {
+      overState.show = false
     }
   },
   watch: {
@@ -410,6 +417,9 @@ export default {
           })
         }
       }
+    },
+    showOverModal(n) {
+      console.log(n, 'showOverModal')
     }
   },
   computed: {
@@ -423,6 +433,9 @@ export default {
     ...mapGetters(['contactInfoByWechatId']),
     isLostRequest() {
       return this.contactInfoByWechatId(this.userId, this.wechatId)
+    },
+    showOverModal() {
+      return overState.show
     }
   }
 }

@@ -1,6 +1,7 @@
 import io from 'socket.io-client'
 import { getUuid } from '@/util/util.js'
 import { socketBaseUrl } from '@/apis'
+import overTimeModal from '@/util/overTime'
 
 const MAX_QUEUE_LENGTH = 10 // 最大消息队列长度，超过则认为出现消息问题或短期无法恢复
 // const MAX_RECONNECTION_ATTEMPTS = Infinity // 最大重试次数 Infinity 代表无限重试
@@ -244,6 +245,8 @@ class ZSocket {
       }, 3000)
     } else {
       this.cs(`已经超过自动重连最大次数`)
+      const { state: overState } = overTimeModal()
+      overState.show = true
     }
   }
 
