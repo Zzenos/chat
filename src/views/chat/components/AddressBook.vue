@@ -145,7 +145,7 @@ export default {
       } else if (this.activeKey === 'group') {
         params.groupId = tjId
       }
-      this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, ...params }, ack => {
+      this.$socket.emit(`${this.activeKey}_info`, { tjId: this.$route.params.tjId, [this.activeKey + 'Id']: tjId }, ack => {
         console.log(ack)
         this.curAddress = val
         this.$router.push({
