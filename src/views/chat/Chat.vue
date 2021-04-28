@@ -400,7 +400,7 @@ export default {
     isLost: {
       immediate: true,
       handler(newVal) {
-        if (newVal == '1') {
+        if (newVal == '1' || newVal == '3') {
           this.$nextTick(() => {
             this.$refs.editor.changePlaceholder()
           })

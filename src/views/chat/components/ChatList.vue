@@ -12,7 +12,8 @@
             <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
             <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
           </div>
-          <span v-if="[1, 3].includes(item.chatType) && item.lost" class="tag">流失客户</span>
+          <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
+          <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
         </div>
         <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
