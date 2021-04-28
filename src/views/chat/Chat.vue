@@ -335,7 +335,7 @@ export default {
             }
             return
           }
-          this.$socket.emit(`group_info`, { tjId: this.wechatId }, ack => {
+          this.$socket.emit(`group_info`, { tjId: this.wechatId, groupId: this.tjId }, ack => {
             this.groupInfo = ack.data || {}
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
