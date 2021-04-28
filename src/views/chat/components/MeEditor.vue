@@ -194,7 +194,7 @@ export default {
       // reader.readAsDataURL(file)
     },
     changePlaceholder() {
-      this.placeholder = '客户已流失，不能发送消息'
+      this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
       this.readonly = true
       this.lost = true
     },
