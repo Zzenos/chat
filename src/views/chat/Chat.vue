@@ -24,7 +24,7 @@
           <span class="lost-customer-title" v-if="isLost == '1'">
             <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
           </span>
-          <span class="lost-customer-title" v-if="isLost == '2'">
+          <span class="lost-customer-title" v-if="isLost == '3'">
             <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">删除客户</span>
           </span>
         </div>
@@ -132,7 +132,7 @@
         <div class="lost-customer" v-if="isLost == '1'">
           <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
-        <div class="lost-customer" v-if="isLost == '2'">
+        <div class="lost-customer" v-if="isLost == '3'">
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
@@ -332,7 +332,7 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        // console.log(this.$route, 'chat-route', this.isLost, 'this.isLost')
+        // console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -341,7 +341,7 @@ export default {
             }
             return
           }
-          this.$socket.emit(`group_info`, { tjId: this.wechatId, groupId: this.tjId }, ack => {
+          this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
@@ -371,7 +371,7 @@ export default {
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
       // console.log(newVal, 'chat-lost-newVal', this.isLost)
-      if (newVal && (newVal.lost == '1' || newVal.lost == '2')) {
+      if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
           this.$refs.editor.changePlaceholder()
         })
