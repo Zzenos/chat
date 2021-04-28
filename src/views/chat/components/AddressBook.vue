@@ -7,7 +7,7 @@
             <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
-                <div class="ellipsis" :style="{ 'max-width': item.lost ? '150px' : '230px' }">
+                <div class="ellipsis" :style="{ 'max-width': item.lost ? '150px' : '225px' }">
                   <span v-html="item.wechatName"></span>
                   <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
                 </div>
@@ -21,8 +21,10 @@
           <div class="list-wraper">
             <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-              <div class="nickname ellipsis">
-                <span v-html="item.wechatName"></span>
+              <div class="nickname">
+                <div class="ellipsis" :style="{ 'max-width': '225px' }">
+                  <span v-html="item.wechatName"></span>
+                </div>
                 <span>（{{ item.memberCount }}）</span>
               </div>
             </div>
@@ -33,9 +35,11 @@
           <div class="list-wraper">
             <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
-              <div class="nickname ellipsis">
-                <span v-html="item.wechatName"></span>
-                <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+              <div class="nickname">
+                <div class="ellipsis" :style="{ 'max-width': '225px' }">
+                  <span v-html="item.wechatName"></span>
+                  <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+                </div>
               </div>
             </div>
           </div>
