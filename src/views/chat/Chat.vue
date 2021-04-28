@@ -24,6 +24,9 @@
           <span class="lost-customer-title" v-if="isLost == '1'">
             <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
           </span>
+          <span class="lost-customer-title" v-if="isLost == '2'">
+            <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">删除客户</span>
+          </span>
         </div>
       </div>
     </header>
@@ -128,6 +131,9 @@
         <!-- 客户流失 -->
         <div class="lost-customer" v-if="isLost == '1'">
           <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
+        </div>
+        <div class="lost-customer" v-if="isLost == '2'">
+          <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
@@ -365,7 +371,7 @@ export default {
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
       // console.log(newVal, 'chat-lost-newVal', this.isLost)
-      if (newVal && newVal.lost == '1') {
+      if (newVal && (newVal.lost == '1' || newVal.lost == '2')) {
         this.$nextTick(() => {
           this.$refs.editor.changePlaceholder()
         })

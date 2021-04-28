@@ -11,7 +11,8 @@
                   <span v-html="item.wechatName"></span>
                   <span :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
                 </div>
-                <span v-if="item.lost" class="tag">流失客户</span>
+                <span v-if="item.lost == '1'" class="tag">流失客户</span>
+                <span v-if="item.lost == '2'" class="tag">删除客户</span>
               </div>
             </div>
             <no-data v-if="customerList.length === 0" />
