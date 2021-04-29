@@ -134,7 +134,7 @@
           <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
         </div>
         <div class="lost-customer" v-if="isLost == '3'">
-          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
+          <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
@@ -380,7 +380,7 @@ export default {
       // console.log(newVal, 'chat-lost-newVal', this.isLost)
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
-          this.$refs.editor.changePlaceholder()
+          newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
         })
       } else {
         this.$nextTick(() => {
@@ -409,7 +409,7 @@ export default {
       handler(newVal) {
         if (newVal == '1' || newVal == '3') {
           this.$nextTick(() => {
-            this.$refs.editor.changePlaceholder()
+            newVal == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
           })
         } else {
           this.$nextTick(() => {

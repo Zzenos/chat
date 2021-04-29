@@ -198,6 +198,11 @@ export default {
       this.readonly = true
       this.lost = true
     },
+    changePlaceholderS() {
+      this.placeholder = '客户已删除，消息无法送达，无法编辑内容'
+      this.readonly = true
+      this.lost = true
+    },
     changePlaceholderT() {
       this.placeholder = '输入内容，shift+enter换行，enter发送'
       this.readonly = false
