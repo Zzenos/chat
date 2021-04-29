@@ -44,7 +44,17 @@
             <span>当前网络不可用，请检查你的网络</span>
           </div>
           <a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal>
-          <a-modal :visible="showOverModal" wrapClassName="send-status-modal" title="网络连接超时" centered @ok="closeOverModal" @cancel="closeOverModal" ok-text="确认" cancel-text="取消"> </a-modal>
+          <a-modal
+            :visible="showOverModal"
+            wrapClassName="send-status-modal"
+            title="网络连接超时,请重新刷新页面"
+            centered
+            @ok="closeOverModal"
+            @cancel="closeOverModal"
+            ok-text="确认"
+            cancel-text="取消"
+          >
+          </a-modal>
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.msgId">
             <!-- 群消息 加入退出群聊-->
