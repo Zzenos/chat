@@ -75,6 +75,9 @@ export default {
     [types.ADD_HISTORY_MSG](state, payload) {
       if (state.chatMsgs[payload.chatId]) {
         state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
+      } else {
+        Vue.set(state.chatMsgs, payload.chatId, [])
+        state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
       }
     },
     // 消息设为已读

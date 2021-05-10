@@ -82,7 +82,7 @@
                 <div class="talk-content">
                   <div class="talk-content-msg">
                     <!-- 文本消息 -->
-                    <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
+                    <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 图片消息 -->
                     <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" />
@@ -150,38 +150,41 @@
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
-      <div class="talk-record" v-if="$route.query.chatType == 2">
-        <div class="top">
-          <!-- style="text-align:left"要删 -->
-          <span class="groupInfo">群资料</span>
-          <!-- <span>快捷回复</span> -->
-        </div>
-        <div class="search">
-          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
-        </div>
-        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
-          <!-- style="padding-top:50px"要删 -->
-          <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-            <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+      <button @click="siderBarShow = !siderBarShow">open</button>
+      <transition name="fade">
+        <div class="talk-record" v-if="$route.query.chatType == 2 && siderBarShow">
+          <div class="top">
+            <!-- style="text-align:left"要删 -->
+            <span class="groupInfo">群资料</span>
+            <!-- <span>快捷回复</span> -->
+          </div>
+          <div class="search">
+            <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
+          </div>
+          <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
+            <!-- style="padding-top:50px"要删 -->
+            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
 
-            <span class="name"> {{ item.wechatName }} </span>
-            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+              <span class="name"> {{ item.wechatName }} </span>
+              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="talk-record" v-else>
-        <!-- <div class="top" style="padding:20px;text-align:left">聊天记录</div> -->
-        <div class="search">
-          <!-- <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" /> -->
+        <div class="talk-record" v-if="$route.query.chatType != 2 && siderBarShow">
+          <div class="top" style="padding:20px;text-align:left">聊天记录</div>
+          <div class="search">
+            <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
+          </div>
+          <div class="foot" style="margin-top:200px">
+            <!-- style="margin-top:200px要删 -->
+            <!-- <span>全部</span> -->
+            <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
+          </div>
         </div>
-        <div class="foot" style="margin-top:200px">
-          <!-- style="margin-top:200px要删 -->
-          <!-- <span>全部</span> -->
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
-        </div>
-      </div>
+      </transition>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -208,6 +211,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import Contextmenu from 'vue-contextmenujs'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -221,6 +226,7 @@ import WebappMessage from '@/views/chat/components/WebappMessage'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
+Vue.use(Contextmenu)
 
 const { state: overState } = overTimeModal()
 export default {
@@ -253,7 +259,8 @@ export default {
       toRensendIndex: 0,
       onLine: navigator.onLine,
       playingAudioIndex: null,
-      isLost: ''
+      isLost: '',
+      siderBarShow: true
     }
   },
   mounted() {
@@ -332,6 +339,97 @@ export default {
     },
     closeOverModal() {
       overState.show = false
+    },
+    onCopy(index, item, event) {
+      let menus = []
+      let content = ''
+      if (document.getElementById('copy_class_' + item.id)) {
+        content = document.getElementById('copy_class_' + item.id).innerText
+      }
+
+      if (content) {
+        menus.push({
+          label: '复制',
+          icon: 'el-icon-document-copy',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            // copyTextToClipboard(content)
+          }
+        })
+      }
+
+      // if (item.user_id == this.uid) {
+      //   let time = new Date().getTime() - Date.parse(item.created_at.replace(/-/g, '/'))
+      //   if (Math.floor(time / 1000 / 60) < 2) {
+      //     menus.push({
+      //       label: '撤回',
+      //       icon: 'el-icon-s-flag',
+      //       customClass: 'cus-contextmenu-item',
+      //       onClick: () => {
+      //         this.revokeRecords(index, item)
+      //       }
+      //     })
+      //   }
+      // }
+
+      menus.push({
+        label: '删除',
+        icon: 'delete',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          // this.removeRecords(index, item)
+        }
+      })
+
+      menus.push({
+        label: '转发',
+        icon: 'promotion',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          // this.forwardRecords(index, item)
+        }
+      })
+
+      menus.push({
+        label: '引用',
+        icon: 'connection',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {}
+      })
+
+      menus.push({
+        label: '多选',
+        icon: 'finished',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          // this.openMultiSelect()
+        }
+      })
+
+      // 判断是否是图片消息
+      // if (item.msg_type == 2 && item.file.file_type == 1) {
+      //   menus.push({
+      //     label: '收藏',
+      //     icon: 'el-icon-picture',
+      //     customClass: 'cus-contextmenu-item',
+      //     onClick: () => {
+      //       this.$store.commit('SAVE_USER_EMOTICON', {
+      //         record_id: item.id
+      //       })
+      //     }
+      //   })
+      // }
+
+      this.$contextmenu({
+        items: menus,
+        event,
+        customClass: 'cus-contextmenu',
+        zIndex: 3,
+        minWidth: 120
+      })
+
+      // this.closeMultiSelect()
+      event.preventDefault()
     }
   },
   watch: {
@@ -741,6 +839,15 @@ export default {
 // /deep/ .ant-modal {
 //   top: 40%;
 // }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
 /deep/ .ant-modal-mask {
   display: none;
 }
