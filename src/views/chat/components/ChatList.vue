@@ -100,7 +100,7 @@ export default {
   methods: {
     ...mapMutations([types.CLEAR_UNREAD_MSG]),
     handleItem(val, canJump = false) {
-      console.log(val)
+      console.log('click chat', val)
       const { chatId } = val
       if (this.curChat.chatId === chatId && !canJump) {
         return
