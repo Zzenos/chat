@@ -14,6 +14,7 @@
     "core-js": "^3.6.5",
     "localforage": "^1.9.0",
     "moment": "^2.29.1",
+    "qs": "^6.10.1",
     "socket.io-client": "^2.4.0",
     "v-viewer": "^1.5.1",
     "vue": "^2.6.11",

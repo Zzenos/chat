@@ -8,8 +8,7 @@
       minlength: voiceTime < 10
     }"
   >
-    <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>
-    <i :max="voiceTime" style="display:none"></i>
+    <!-- <audio controls :src="url" ref="audioPlayer" style="display:none"></audio> -->
     <div class="self__audio" @click="playAll">
       <div class="audio__trigger">
         <div class="audio-icon">
@@ -18,6 +17,10 @@
         </div>
       </div>
       <div class="audio__duration">{{ voiceTime }}''</div>
+    </div>
+    <div class="translate" v-show="transferShow">
+      <span>{{ translateText }}</span>
+      <span @click="closeTranslate" style="margin-left:50px">&times;</span>
     </div>
   </div>
 </template>
@@ -55,6 +58,17 @@ export default {
     },
     onlyOnePlay: {
       type: Boolean
+    },
+    translateText: {
+      type: String,
+      default: ''
+    },
+    transferShow: {
+      type: Boolean,
+      default: false
+    },
+    closeTranslateText: {
+      type: Function
     }
   },
   methods: {
@@ -69,6 +83,9 @@ export default {
     },
     playUrl() {
       this.amr.playOrPauseOrResume()
+    },
+    closeTranslate() {
+      this.closeTranslateText(this.index)
     }
   },
   watch: {
@@ -80,7 +97,7 @@ export default {
         // console.log(newVal)
         this.amr = new BenzAMRRecorder()
         this.amr.initWithUrl(newVal).then(function() {
-          // console.log('初始化完毕')
+          // console.log('初始化完毕')'https://zm-weike.oss-cn-beijing.aliyuncs.com/chat/test.wav'
           vm.init = true
         })
         this.amr.onEnded(function() {
@@ -129,6 +146,11 @@ export default {
       color: #000000;
       line-height: 22px;
     }
+  }
+  .translate {
+    height: 21px;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.3);
   }
 
   &.isleft {

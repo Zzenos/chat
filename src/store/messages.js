@@ -41,10 +41,12 @@ export default {
           state.chatMsgs[msg.chatId].splice(index, 1, msg)
           console.log('找到了对应的clientMsgId并置换')
         } else {
-          const index = sortedIndexBy(state.chatMsgs[msg.chatId], msg, function(obj) {
+          // 返回 value值 应该在数组array中插入的索引位置 index
+          const seqIndex = sortedIndexBy(state.chatMsgs[msg.chatId], msg, function(obj) {
             return obj.seq
           })
-          state.chatMsgs[msg.chatId].splice(index, 0, msg)
+          // 比较seq，计算该条消息在会话中的位置，然后插入
+          state.chatMsgs[msg.chatId].splice(seqIndex, 0, msg)
 
           // 计算未读消息数量
           if (msg.unread) {

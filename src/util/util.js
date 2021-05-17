@@ -104,3 +104,36 @@ export function parseTime(time, cFormat) {
   })
   return time_str
 }
+
+const autoSize = size => {
+  if (Number(size) === 'NaN') return
+  let unit = 'byte'
+  const units = ['byte', 'KB', 'MB', 'GB', 'TB', 'PB']
+  let i = 5
+  let s = 0
+  while (i) {
+    if (size >= 1024 ** i) {
+      break
+    }
+    i--
+  }
+  unit = units[i]
+  s = (size / 1024 ** i).toFixed(2)
+  return `${s}${unit}`
+}
+
+export const exportFile = (data, name) => {
+  const url = window.URL.createObjectURL(new Blob([data]))
+  const link = document.createElement('a')
+  link.style.display = 'none'
+  link.href = url
+  const fileName = `${name}_${new Date().getTime()}.xlsx`
+  link.setAttribute('download', fileName)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
+
+export default {
+  autoSize
+}

@@ -102,6 +102,7 @@ export default {
     handleItem(val, canJump = false) {
       console.log(val)
       const { chatId } = val
+      const { accountId, accountName } = this.$route.query
       if (this.curChat.chatId === chatId && !canJump) {
         return
       }
@@ -109,7 +110,7 @@ export default {
       this[types.CLEAR_UNREAD_MSG](this.curChat.chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
-        query: { ...this.curChat }
+        query: { ...this.curChat, accountId, accountName }
       })
     }
   }

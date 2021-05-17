@@ -134,6 +134,7 @@ export default {
     handleItem(val, canJump = false) {
       console.log(val)
       const { wechatId, tjId } = val
+      const { accountId, accountName } = this.$route.query
       if (this.curAddress.tjId === tjId && !canJump) {
         return
       }
@@ -153,7 +154,9 @@ export default {
           path: `/chatframe/${this.tjId}/contactInfo/${wechatId}?type=${type}`,
           query: {
             ...val,
-            type
+            type,
+            accountId,
+            accountName
           }
         })
       })

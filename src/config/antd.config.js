@@ -51,7 +51,9 @@ import {
   Progress,
   Divider,
   Badge,
-  Avatar
+  Avatar,
+  List,
+  Carousel
 } from 'ant-design-vue'
 
 moment.locale('zh-cn')
@@ -145,3 +147,7 @@ Vue.component(Statistic.name, Statistic)
 Vue.component(Progress.name, Progress)
 Vue.component(Badge.name, Badge)
 Vue.component(Avatar.name, Avatar)
+Vue.component(List.name, List)
+Vue.component(List.Item.name, List.Item)
+Vue.component(List.Item.Meta.name, List.Item.Meta)
+Vue.component(Carousel.name, Carousel)

@@ -2,29 +2,66 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <!-- <li v-if="!lost">
-          <img src="@/assets/chat_icon_emoticon.png" alt="" />
-        </li> -->
+        <li v-if="!lost" v-wheel="changeEmojiList" id="emoji-parent">
+          <a-popover v-model="emojiVisible" :getPopupContainer="() => parentNode" trigger="click" @visibleChange="hideEmojiSelect">
+            <div slot="content" class="emoji-content">
+              <a-carousel ref="emojiCarousel" :afterChange="changeEnd" :wheel-disabled="emojiCarouselDisabled">
+                <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
+                  <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
+                </div>
+                <div slot="customPaging">
+                  <span class="carousel-circle"></span>
+                </div>
+              </a-carousel>
+            </div>
+            <!-- <a-icon type="smile" :class="['icon-emoji', disabled && 'icon-emoji_disabled']" /> -->
+            <img src="@/assets/chat_icon_emoticon.png" alt="" />
+          </a-popover>
+        </li>
         <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
-        <!-- <li v-if="!lost" @click="$refs.restFile2.click()">
-          <img src="@/assets/chat_icon_image.png" alt="" />
-        </li> -->
+        <li v-if="!lost">
+          <upload :getOssTokenApi="uploadFile.getOssTokenApi" :notifyCheckApi="uploadFile.notifyOssCheck" @uploaded="uploaded"> </upload>
+        </li>
+        <li v-if="!lost" class="chat-record" @click="showRecord">
+          <img src="@/assets/chat_icon_record.png" alt="" />
+        </li>
         <!-- 客户流失显示 -->
-        <!-- <li v-if="lost">
+        <li v-if="lost">
           <img src="@/assets/chat_icon_emoticon_lost.png" alt="" />
-        </li> -->
+        </li>
         <li v-if="lost">
           <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
+        <li v-if="lost" class="chat-record" @click="showRecord">
+          <img src="@/assets/chat_icon_record.png" alt="" />
+        </li>
       </ul>
+      <!-- ------------- -->
       <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
         <input type="file" ref="restFile" @change="uploadImageChange" />
-        <input type="file" ref="restFile2" accept="video/*" @change="uploadVideoChange" />
       </form>
     </div>
-    <textarea :placeholder="placeholder" :readonly="readonly" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" />
+    <!-- <textarea :placeholder="placeholder" :readonly="readonly" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" /> -->
+    <div class="meditor-foot">
+      <div
+        ref="messagInput"
+        class="message-input"
+        id="message-input"
+        tabindex="1"
+        :contentEditable="!readonly"
+        :placeholder="placeholder"
+        @keydown="keydownEvent($event)"
+        @input="changeText"
+        @blur="editBlur"
+        rows="6"
+      ></div>
+      <div class="reply" v-show="replyShow">
+        <span>{{ replyName }}:{{ replyContent }}</span>
+        <span @click="closeReply">&times;</span>
+      </div>
+    </div>
     <a-modal
       v-model="noValidVisible"
       wrapClassName="send-status-modal"
@@ -38,16 +75,25 @@
       cancel-text="取消"
     >
     </a-modal>
+    <!-- <span class="reply">
+      reply          v-html="editorText"         @focus="isChange = false"
+    </span> -->
   </div>
 </template>
 <script>
+import deepClone from 'lodash/cloneDeep'
 import axios from 'axios'
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
+import Upload from './Upload.vue'
+import filesLibrary from '@/apis/library'
+import { emojiList } from '@/util/emojiList'
+import { wheel } from '@/util/wheel.js'
 
 export default {
+  components: { Upload },
   name: 'MeEditor',
-  props: ['sendToBottom'],
+  props: ['sendToBottom', 'showRecordModal'],
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
@@ -55,8 +101,41 @@ export default {
       readonly: false,
       lost: false,
       noValidVisible: false,
-      noValidTitle: ''
+      noValidTitle: '',
+      // 上传素材
+      uploadFile: {
+        // loading: false,
+        getOssTokenApi: filesLibrary.getOssToken,
+        notifyCheckApi: filesLibrary.notifyOssCheck
+      },
+      isfocus: false,
+      isChange: true,
+      sendText: '',
+      value: '',
+      // 替换占位符
+      prefix: ['{', '}'],
+      // 是否禁用
+      disabled: false,
+      // 控制emoji弹窗显示
+      emojiVisible: false,
+      // emoji父级弹窗
+      parentNode: null,
+      // emoji列表
+      emojiList,
+      // emoji分页列表
+      emojiPageList: [],
+      rangeOfInputBox: null,
+      emojiCarouselDisabled: false,
+      replyShow: false,
+      replyName: '',
+      replyContent: ''
     }
+  },
+  directives: {
+    wheel
+  },
+  created() {
+    this.handleEmojiList()
   },
   computed: {
     userInfo() {
@@ -69,27 +148,74 @@ export default {
       // console.log('send', e)
     },
     keydownEvent(e) {
-      if (e.keyCode == 13 && this.editorText == '') e.preventDefault()
-      if (e.keyCode == 13 && this.editorText !== '' && e.shiftKey == false) {
-        let { contactId, tjId } = this.$route.params
-        let { wechatName, wechatAvatar } = this.userInfo.info
-        this[types.SEND_MSG]({
-          msgType: 'text',
-          chatId: contactId,
-          chatType: this.$route.query.chatType,
-          fromId: tjId,
-          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: this.editorText,
-          sender: {
-            wechatName: wechatName,
-            wechatAvatar: wechatAvatar
-          },
-          notResend: true
-        })
+      // console.log(e, this.editorText, 'key-down')
+      if (e.keyCode == 13 && e.shiftKey == false) {
+        // console.log(e, 'eeeeeee')
+        e.preventDefault()
+        console.log(this.editorText, 'enter-down')
+        // let { contactId, tjId } = this.$route.params
+        // let { wechatName, wechatAvatar } = this.userInfo.info
+        // this[types.SEND_MSG]({
+        //   msgType: 'text',
+        //   chatId: contactId,
+        //   chatType: this.$route.query.chatType,
+        //   fromId: tjId,
+        //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+        //   content: this.editorText,
+        //   sender: {
+        //     wechatName: wechatName,
+        //     wechatAvatar: wechatAvatar
+        //   },
+        //   notResend: true
+        // })
         this.sendToBottom()
         this.editorText = ''
+        this.$refs.messagInput.innerHTML = ''
+        this.closeReply()
         e.preventDefault()
       }
+      if (e.keyCode == 13 && e.shiftKey == true) {
+        // e.preventDefault()
+        // console.log('br', e)
+        this.textareaRange()
+      }
+    },
+    textareaRange() {
+      // let el = this.$refs.messagInput
+      // const range = document.createRange()
+      // const sel = document.getSelection()
+      // const offset = sel.focusOffset
+      // const content = el.innerHTML
+      // console.log(el, range, sel, offset, content, '-----')
+      // el.innerHTML = content.slice(0, offset) + '\n' + content.slice(offset)
+      // // el.innerHTML = content.slice(0, offset) + '\n' + ' '
+      // console.log(el.innerHTML, '----', el.childNodes, el)
+      // range.setStart(el.childNodes[0], offset)
+      // // range.selectNodeContents(el.childNodes[1])
+      // // range.setStartAfter(el.childNodes[el.childNodes.length - 1])
+      // // range.collapseToEnd()
+      // // range.collapse(false)
+      // range.collapse(true)
+      // sel.removeAllRanges()
+      // sel.addRange(range)
+      //----------------
+      // console.log('textareaRange')
+      // let o = this.$refs.messagInput.lastChild
+      // console.log('oooo', o)
+      // let el = this.$refs.messagInput
+      // console.log('ooooel', el)
+      // let sel = document.getSelection()
+      // console.log('selsel', sel)
+      // let range = sel.getRangeAt(0)
+      // console.log('rangerange', range)
+      // let rangeEndOffset = range.endOffset
+      // console.log('rangeEndOffset', rangeEndOffset)
+      // var node = document.createElement('br')
+      // range.insertNode(node)
+      // console.log(el.innerHTML, 'el-innerhtnl')
+      // el.innerHTML = el.innerHTML + ''
+      // range.setStart(node, sel.focusOffset + 1)
+      // sel.addRange(range)
     },
     // clear() {
     //   this.draft_text = this.editorText
@@ -103,7 +229,7 @@ export default {
     //   console.log(index_name)
     //   this.editorText = ''
     // }
-    // 选择图片文件后回调方法
+    // 选择图片视频文件后回调方法
     uploadImageChange(e) {
       let file = e.target.files[0]
       let type = file.type.split('/')[0]
@@ -182,18 +308,6 @@ export default {
         this.$refs.restFile.value = ''
       })
     },
-    // 选择视频文件后回调方法
-    uploadVideoChange() {
-      // let file = e.target.files[0]
-      // let reader = new FileReader()
-      // let fileSize = Math.ceil(file.size / 1024)
-      // let fileName = file.name
-      // reader.onload = () => {
-      //   this.src = reader.result
-      //   console.log(this.src)
-      // }
-      // reader.readAsDataURL(file)
-    },
     changePlaceholder() {
       this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
       this.readonly = true
@@ -218,13 +332,155 @@ export default {
       // this.placeholder = '输入内容，shift+enter换行，enter发送'
       // this.readonly = false
       // console.log('当前网络链接成功')
+    },
+    showRecord() {
+      this.showRecordModal()
+    },
+    uploaded(e) {
+      // if (e.length > 0) this.listByDir() e ==> this.uploadedList  ==> url + title
+      console.log(e)
+      let { contactId, tjId } = this.$route.params
+      let { wechatName, wechatAvatar } = this.userInfo.info
+      this[types.SEND_MSG]({
+        msgType: 'file',
+        chatId: contactId,
+        chatType: this.$route.query.chatType,
+        fromId: tjId,
+        toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+        url: '',
+        title: '',
+        sender: {
+          wechatName: wechatName,
+          wechatAvatar: wechatAvatar
+        },
+        notResend: true
+      })
+    },
+    changeText() {
+      // this.sendText = this.$refs.messagInput.innerText
+      // console.log(this.sendText, this.$refs.messagInput.innerText, 'this.$refs.messagInput.inner')
+      // if (this.isChange) {
+      //   const value = deepClone(this.$refs.messagInput.innerHTML)
+      //   this.editorText = value
+      // }
+      // var range = document.selection.createRange()
+      // range.collapse(false)
+      const value = deepClone(this.$refs.messagInput.innerHTML)
+      this.value = value
+    },
+    editBlur() {
+      // console.log('editBlur')
+      this.isChange = true
+    },
+    changeEmojiList(isNext) {
+      this.emojiCarouselDisabled = true
+      this.$refs.emojiCarousel[isNext ? 'next' : 'prev']()
+    },
+    changeEnd() {
+      this.emojiCarouselDisabled = false
+    },
+    insertSpecialText(text) {
+      if (this.disabled) return
+      const content = `${(text.prefix && text.prefix[0]) || this.prefix[0] || ''}${text.content || text}${(text.prefix && text.prefix[1]) || this.prefix[1] || ''}`
+      this.insertEmoji(content)
+    },
+    insertEmoji(emoji, isFocus = true) {
+      this.getEndFocus()
+      // const emojiEl = document.createElement('img');
+      // emojiEl.src = '/static/img/emoji01.jpeg';
+      // const emojiEl = document.createElement('span');
+      // emojiEl.innerHTML = emoji
+      const emojiEl = document.createTextNode(emoji)
+      if (!this.rangeOfInputBox) {
+        this.rangeOfInputBox = new Range()
+        this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+        // 设为非折叠状态
+        this.rangeOfInputBox.collapse(false)
+        // return this.$refs.inputBox.appendChild(emojiEl)
+      }
+      // 判断是否折叠状态
+      if (this.rangeOfInputBox.collapsed) {
+        this.rangeOfInputBox.insertNode(emojiEl)
+      } else {
+        this.rangeOfInputBox.deleteContents()
+        this.rangeOfInputBox.insertNode(emojiEl)
+      }
+      this.emojiVisible = false
+      this.changeText()
+      this.rangeOfInputBox.collapse(false)
+      // 光标选中当前插入位置
+      if (isFocus && this.rangeOfInputBox) {
+        const selection = getSelection()
+        selection.removeAllRanges()
+        selection.addRange(this.rangeOfInputBox)
+      }
+    },
+    hideEmojiSelect() {
+      if (this.disabled) {
+        this.emojiVisible = false
+      }
+    },
+    handleEmojiList() {
+      const eachPage = 72
+      const page = Math.ceil(this.emojiList.length / eachPage)
+      for (let i = 0; i < page; i++) {
+        this.$set(this.emojiPageList, i, this.emojiList.slice(i * eachPage, (i + 1) * eachPage))
+      }
+    },
+    handleClick(event) {
+      const target = event.target
+      if (target.tagName.toLowerCase() === 'img') {
+        const range = new Range()
+        range.setStartBefore(target)
+        // range.setStartAfter(target);
+        range.collapse(true)
+        document.getSelection().removeAllRanges()
+        document.getSelection().addRange(range)
+      }
+    },
+    getEndFocus() {
+      // 获取输入光标位置
+      document.onselectionchange = () => {
+        const selection = document.getSelection()
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0)
+          if (this.$refs.messagInput?.contains(range.commonAncestorContainer)) {
+            this.rangeOfInputBox = range
+          }
+        }
+      }
+    },
+    closeReply() {
+      this.replyShow = false
+    },
+    openReply(name, content) {
+      this.replyShow = true
+      this.replyName = name
+      this.replyContent = content
     }
+  },
+  mounted() {
+    // 获取emoji弹窗父元素位置 用来固定弹窗位置
+    this.parentNode = document.getElementById('emoji-parent')
+    this.getEndFocus()
+    this.value && this.insertEmoji(this.value, false)
   },
   watch: {
     $route: {
       immediate: true,
       handler() {
+        // console.log('value-1')
         this.editorText = ''
+        this.$nextTick(() => {
+          this.$refs.messagInput.innerHTML = ''
+        })
+      }
+    },
+    value: {
+      immediate: true,
+      handler(n) {
+        // console.log('value-change', n)
+        this.editorText = n
       }
     }
   }
@@ -239,10 +495,13 @@ export default {
 
   .emoj {
     height: 52px;
+    width: 100%;
     box-sizing: border-box;
     border-top: 1px solid #e4e5e7;
     ul {
       display: flex;
+      height: 52px;
+      width: 100%;
       padding-left: 23px;
       list-style: none;
       margin: 0;
@@ -251,6 +510,10 @@ export default {
         height: 52px;
         line-height: 52px;
         cursor: pointer;
+        &.chat-record {
+          // align-items: flex-end;
+          margin-left: auto;
+        }
       }
     }
   }
@@ -270,6 +533,42 @@ export default {
     color: rgba(0, 0, 0, 0.25);
     font-size: 12px;
     font-weight: 400;
+  }
+  .meditor-foot {
+    width: 100%;
+    flex: 1 1 0;
+    overflow-y: auto;
+    .message-input {
+      width: 100%;
+      max-width: 100%;
+      // flex: 1 1 0;
+      // overflow-y: auto;
+      min-height: 21px;
+      text-align: left;
+      padding: 0 24px;
+      // border: 1px solid #ccc;
+      position: relative;
+      &:focus {
+        outline: none;
+      }
+      &:empty::before {
+        content: attr(placeholder);
+        position: absolute;
+        left: 24px;
+        top: 0;
+        color: rgba(0, 0, 0, 0.25);
+        font-size: 12px;
+        font-weight: 400;
+      }
+    }
+    .reply {
+      text-align: left;
+      height: 21px;
+      padding-left: 24px;
+      span {
+        background: rgba(0, 0, 0, 0.4);
+      }
+    }
   }
 }
 /deep/ .ant-modal-content {
@@ -310,5 +609,65 @@ export default {
       }
     }
   }
+}
+.icon-emoji {
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  user-select: none;
+  &.icon-emoji_disabled {
+    cursor: not-allowed;
+    &:active {
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+  &:active {
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+.emoji-page {
+  padding-bottom: 10px;
+}
+.emoji-content {
+  // background-color: #3a4d76;
+  // width: 400px;
+  width: 360px;
+  height: 340px;
+}
+.carousel-circle {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #e5e5e5;
+}
+.slick-active {
+  .carousel-circle {
+    background-color: #b2b2b2;
+  }
+}
+.emoji-item {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  // width: 30px;
+  // height: 30px;
+  // margin: 5px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 22px;
+  color: #000;
+  border-radius: 5px;
+  user-select: none;
+  cursor: pointer;
+  &:hover {
+    background-color: #efefef;
+  }
+  // img {
+  //   display: inline-block;
+  //   width: 25px;
+  //   height: 25px;
+  //   vertical-align: middle;
+  // }
 }
 </style>

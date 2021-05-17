@@ -85,16 +85,23 @@
                     <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 图片消息 -->
-                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" />
+                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 文件消息 -->
-                    <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
+                    <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 视频消息 -->
-                    <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" :sendingPic="item.status" />
+                    <video-message
+                      v-else-if="item.msgType == 'video'"
+                      :vid="item.msgId"
+                      :url="item.url"
+                      :coverurl="item.coverUrl"
+                      :sendingPic="item.status"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 个人名片 -->
-                    <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
+                    <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 语音消息 -->
                     <audio-message
@@ -105,10 +112,21 @@
                       :index="index"
                       :onlyOnePlay="item.onlyOnePlay"
                       :changeAudioIndex="changeAudioIndex"
+                      :translateText="item.translateText"
+                      :transferShow="item.transferShow"
+                      :closeTranslateText="closeTranslateText"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
 
                     <!-- 链接消息 -->
-                    <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
+                    <link-message
+                      v-else-if="item.msgType == 'link'"
+                      :href="item.href"
+                      :desc="item.desc"
+                      :title="item.title"
+                      :coverurl="item.coverUrl"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 小程序消息 -->
                     <webapp-message
@@ -118,7 +136,9 @@
                       :title="item.content.title"
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
+
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
@@ -131,6 +151,10 @@
                     </div>
                     <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
+                  <!-- 引用消息 -->
+                  <!-- <div class="reply">
+                    引用消息台了到到我0得哦吃的送
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -147,44 +171,43 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" ref="editor" />
+          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" ref="editor" />
         </div>
       </div>
-      <button @click="siderBarShow = !siderBarShow">open</button>
-      <transition name="fade">
-        <div class="talk-record" v-if="$route.query.chatType == 2 && siderBarShow">
-          <div class="top">
-            <!-- style="text-align:left"要删 -->
-            <span class="groupInfo">群资料</span>
-            <!-- <span>快捷回复</span> -->
-          </div>
-          <div class="search">
-            <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
-          </div>
-          <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
-            <!-- style="padding-top:50px"要删 -->
-            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+      <div class="talk-record" v-if="$route.query.chatType == 2">
+        <div class="top">
+          <!-- style="text-align:left"要删 -->
+          <span class="groupInfo">群资料</span>
+          <!-- <span>快捷回复</span> -->
+        </div>
+        <div class="search">
+          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
+        </div>
+        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
+          <!-- style="padding-top:50px"要删 -->
+          <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+            <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
 
-              <span class="name"> {{ item.wechatName }} </span>
-              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-            </div>
+            <span class="name"> {{ item.wechatName }} </span>
+            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
           </div>
         </div>
-        <div class="talk-record" v-if="$route.query.chatType != 2 && siderBarShow">
-          <div class="top" style="padding:20px;text-align:left">聊天记录</div>
-          <div class="search">
-            <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
-          </div>
-          <div class="foot" style="margin-top:200px">
-            <!-- style="margin-top:200px要删 -->
-            <!-- <span>全部</span> -->
-            <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
-          </div>
+      </div>
+      <div class="talk-record" v-if="$route.query.chatType != 2">
+        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
+        <div class="search">
+          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
         </div>
-      </transition>
+        <div class="foot" style="margin-top:200px">
+          <!-- style="margin-top:200px要删 -->
+          <!-- <span>全部</span> -->
+          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
+        </div>
+      </div>
+      <!-- 聊天记录弹窗 -->
+      <chat-record-modal :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -226,6 +249,7 @@ import WebappMessage from '@/views/chat/components/WebappMessage'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
+import ChatRecordModal from './components/ChatRecordModal'
 Vue.use(Contextmenu)
 
 const { state: overState } = overTimeModal()
@@ -240,7 +264,8 @@ export default {
     CardMessage,
     LinkMessage,
     AudioMessage,
-    WebappMessage
+    WebappMessage,
+    ChatRecordModal
   },
   data() {
     return {
@@ -260,7 +285,10 @@ export default {
       onLine: navigator.onLine,
       playingAudioIndex: null,
       isLost: '',
-      siderBarShow: true
+      // 控制聊天记录弹窗显示
+      chatRecordVisible: false,
+      // 当前查看记录的对象
+      infoData: null
     }
   },
   mounted() {
@@ -342,51 +370,24 @@ export default {
     },
     onCopy(index, item, event) {
       let menus = []
-      let content = ''
-      if (document.getElementById('copy_class_' + item.id)) {
-        content = document.getElementById('copy_class_' + item.id).innerText
-      }
-
-      if (content) {
+      console.log(index, item, 'oncopy')
+      if (item.msgType == 'voice') {
         menus.push({
-          label: '复制',
-          icon: 'el-icon-document-copy',
+          label: '转为文字',
+          icon: 'transfer',
           customClass: 'cus-contextmenu-item',
           onClick: () => {
-            // copyTextToClipboard(content)
+            this.translateText(index, item)
           }
         })
       }
-
-      // if (item.user_id == this.uid) {
-      //   let time = new Date().getTime() - Date.parse(item.created_at.replace(/-/g, '/'))
-      //   if (Math.floor(time / 1000 / 60) < 2) {
-      //     menus.push({
-      //       label: '撤回',
-      //       icon: 'el-icon-s-flag',
-      //       customClass: 'cus-contextmenu-item',
-      //       onClick: () => {
-      //         this.revokeRecords(index, item)
-      //       }
-      //     })
-      //   }
-      // }
-
-      menus.push({
-        label: '删除',
-        icon: 'delete',
-        customClass: 'cus-contextmenu-item',
-        onClick: () => {
-          // this.removeRecords(index, item)
-        }
-      })
 
       menus.push({
         label: '转发',
         icon: 'promotion',
         customClass: 'cus-contextmenu-item',
         onClick: () => {
-          // this.forwardRecords(index, item)
+          this.forwardRecords(index, item)
         }
       })
 
@@ -394,31 +395,10 @@ export default {
         label: '引用',
         icon: 'connection',
         customClass: 'cus-contextmenu-item',
-        onClick: () => {}
-      })
-
-      menus.push({
-        label: '多选',
-        icon: 'finished',
-        customClass: 'cus-contextmenu-item',
         onClick: () => {
-          // this.openMultiSelect()
+          this.replyRecords(index, item)
         }
       })
-
-      // 判断是否是图片消息
-      // if (item.msg_type == 2 && item.file.file_type == 1) {
-      //   menus.push({
-      //     label: '收藏',
-      //     icon: 'el-icon-picture',
-      //     customClass: 'cus-contextmenu-item',
-      //     onClick: () => {
-      //       this.$store.commit('SAVE_USER_EMOTICON', {
-      //         record_id: item.id
-      //       })
-      //     }
-      //   })
-      // }
 
       this.$contextmenu({
         items: menus,
@@ -427,10 +407,51 @@ export default {
         zIndex: 3,
         minWidth: 120
       })
-
-      // this.closeMultiSelect()
       event.preventDefault()
-    }
+    },
+    replyRecords(index, item) {
+      console.log('引用消息', index, item)
+      let content = ''
+      if (item.msgType == 'text') {
+        content = item.content
+      } else if (item.msgType == 'image') {
+        content = '[图片]'
+      }
+      this.$refs.editor.openReply(item.sender.wechatName, content)
+    },
+    forwardRecords() {
+      console.log('转发消息')
+    },
+    showRecordModal() {
+      //聊天记录传入数据infoData
+      const { wechatName, wechatAvatar, chatType, customerUserId, accountId, accountName } = this.$route.query
+      let info =
+        chatType == 2
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: 'wr_XL6CgAAquffXGxaSEm0zvg__-jdvg' } }
+          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerUserId: customerUserId } }
+      this.infoData = {
+        ...info,
+        wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
+      }
+      this.chatRecordVisible = true
+    },
+    translateText(index, item) {
+      console.log(index, item)
+      // axios({
+      //   method: 'post',
+      //   url: 'http://bizchat-chatroom.zmeng123.cn/file/upload',
+      //   data: item.url
+      //}).then(res=>{})
+      // text = res.data.text
+      this.records[index].translateText = 'text'
+      this.records[index].transferShow = true
+      this.$forceUpdate()
+    },
+    closeTranslateText(index) {
+      this.records[index].transferShow = false
+      this.$forceUpdate()
+    },
+    confirmSelectContacts() {}
   },
   watch: {
     $route: {
@@ -447,7 +468,7 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        // console.log(this.$route, 'chat-route')
+        console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -715,6 +736,10 @@ export default {
                   }
                 }
               }
+              .reply {
+                background: rgba(0, 0, 0, 0.4);
+                margin-top: 5px;
+              }
             }
           }
 
@@ -848,51 +873,51 @@ export default {
   opacity: 0;
 }
 
-/deep/ .ant-modal-mask {
+/deep/ .send-status-modal.ant-modal-mask {
   display: none;
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
   // display: none;
   background-color: rgba(0, 0, 0, 0.65);
-}
-/deep/ .ant-modal-close-x {
-  display: none;
-}
-/deep/ .ant-modal-content {
-  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  // border: 1px solid rgba(0, 0, 0, 0.45);
-  width: 480px;
-  height: 200px;
-  padding-top: 60px;
-  background: #fff;
-  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  .ant-modal-header {
-    border-bottom: none;
-    text-align: center;
-    font-size: 16px;
-    font-family: PingFangSC-Medium, PingFang SC;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.85);
-    line-height: 24px;
-    padding: 0;
-  }
-  .ant-modal-body {
+  .ant-modal-close-x {
     display: none;
   }
-  .ant-modal-footer {
-    border-top: none;
-    margin-top: 44px;
-    text-align: center;
-    .ant-btn {
-      width: 132px;
-      font-size: 14px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 22px;
-      &.ant-btn-primary {
-        color: #fff;
+  .ant-modal-content {
+    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+    // border: 1px solid rgba(0, 0, 0, 0.45);
+    width: 480px;
+    height: 200px;
+    padding-top: 60px;
+    background: #fff;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    .ant-modal-header {
+      border-bottom: none;
+      text-align: center;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      padding: 0;
+    }
+    .ant-modal-body {
+      display: none;
+    }
+    .ant-modal-footer {
+      border-top: none;
+      margin-top: 44px;
+      text-align: center;
+      .ant-btn {
+        width: 132px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: #fff;
+        }
       }
     }
   }
