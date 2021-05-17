@@ -34,7 +34,3 @@ export const CLEAR_UNREAD_MSG = 'CLEAR_UNREAD_MSG'
 export const ADD_CUSTOMER_DETAILS = 'ADD_CUSTOMER_DETAILS'
 export const ADD_MEMBER_DETAILS = 'ADD_MEMBER_DETAILS'
 export const ADD_GROUP_DETAILS = 'ADD_GROUP_DETAILS'
-// TODO 动态key
-// export const ACCESS_TOKEN_KEY = Math.random().toString(36).slice(-8)
-export const ACCESS_TOKEN_KEY = 'icvzagx6'
-export const REFRESH_TOKEN_KEY = '1n68iqio'

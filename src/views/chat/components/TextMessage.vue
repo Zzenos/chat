@@ -1,17 +1,12 @@
 <template>
-  <div>
-    <div
-      class="text-message"
-      :class="{
-        left: float == 'left',
-        right: float == 'right'
-      }"
-    >
-      {{ content }}
-    </div>
-    <!-- <div class="reply-text">
-      <span>aazsaxsaiu</span>
-    </div> -->
+  <div
+    class="text-message"
+    :class="{
+      left: float == 'left',
+      right: float == 'right'
+    }"
+  >
+    {{ content }}
   </div>
 </template>
 <script>
@@ -56,10 +51,5 @@ export default {
   &.right {
     background: #d2f0fa;
   }
-}
-.reply-text {
-  height: 21px;
-  line-height: 21px;
-  background: rgba(0, 0, 0, 0.4);
 }
 </style>
