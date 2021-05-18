@@ -169,6 +169,7 @@ export default {
         })
         this.sendToBottom()
         this.editorText = ''
+        this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
         this.closeReply()
         e.preventDefault()
@@ -428,6 +429,7 @@ export default {
       handler() {
         // console.log('value-1')
         this.editorText = ''
+        this.replyContent = ''
         this.$nextTick(() => {
           this.$refs.messagInput.innerHTML = ''
         })

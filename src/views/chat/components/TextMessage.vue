@@ -5,9 +5,8 @@
       left: float == 'left',
       right: float == 'right'
     }"
-  >
-    {{ content }}
-  </div>
+    v-html="content"
+  ></div>
 </template>
 <script>
 export default {
