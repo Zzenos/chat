@@ -82,7 +82,12 @@
                 <div class="talk-content">
                   <div class="talk-content-msg">
                     <!-- 文本消息 -->
-                    <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" @contextmenu.native="onCopy(index, item, $event)" />
+                    <text-message
+                      v-if="item.msgType == 'text'"
+                      :content="item.content.includes('------') ? item.content.split('------')[1] : item.content"
+                      :float="item.float"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 图片消息 -->
                     <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" @contextmenu.native="onCopy(index, item, $event)" />
@@ -114,6 +119,7 @@
                       :changeAudioIndex="changeAudioIndex"
                       :translateText="item.translateText"
                       :translateShow="item.translateShow"
+                      :translateResult="item.translateResult"
                       :closeTranslateText="closeTranslateText"
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
@@ -152,11 +158,11 @@
                     <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
-                  <!-- <div class="reply">
+                  <div class="reply" v-if="item.msgType == 'text' && item.content.includes('------')">
                     <div class="reply-content">
-                      引用消息引用消息引用消息引用消息引用---消息引用消息引----用消息引用消息引用消息引用消息引用消息引用消息引用消息
+                      {{ item.content.split('------')[0] }}
                     </div>
-                  </div> -->
+                  </div>
                 </div>
               </div>
             </div>
@@ -446,17 +452,13 @@ export default {
         let { code, data } = res.data
         console.log(code, data)
         if (code == 200) {
-          console.log('succcess')
           this.records[index].translateText = data.result
-          this.records[index].translateStatus = true
+          this.records[index].translateResult = true
           this.records[index].translateShow = true
-          console.log(this.records[index])
           this.$forceUpdate()
         } else {
-          console.log('fail-audio')
-          this.records[index].translateStatus = false
+          this.records[index].translateResult = false
           this.records[index].translateShow = true
-          console.log(this.records[index])
           this.$forceUpdate()
         }
       })

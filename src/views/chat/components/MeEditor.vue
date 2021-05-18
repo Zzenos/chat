@@ -148,26 +148,25 @@ export default {
       // console.log('send', e)
     },
     keydownEvent(e) {
-      // console.log(e, this.editorText, 'key-down')
       if (e.keyCode == 13 && e.shiftKey == false) {
         // console.log(e, 'eeeeeee')
         e.preventDefault()
-        console.log(this.editorText, 'enter-down')
-        // let { contactId, tjId } = this.$route.params
-        // let { wechatName, wechatAvatar } = this.userInfo.info
-        // this[types.SEND_MSG]({
-        //   msgType: 'text',
-        //   chatId: contactId,
-        //   chatType: this.$route.query.chatType,
-        //   fromId: tjId,
-        //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-        //   content: this.editorText,
-        //   sender: {
-        //     wechatName: wechatName,
-        //     wechatAvatar: wechatAvatar
-        //   },
-        //   notResend: true
-        // })
+        // console.log(this.editorText, 'enter-down')
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        this[types.SEND_MSG]({
+          msgType: 'text',
+          chatId: contactId,
+          chatType: this.$route.query.chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          content: this.replyContent ? this.replyContent + '------' + this.editorText : this.editorText,
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        })
         this.sendToBottom()
         this.editorText = ''
         this.$refs.messagInput.innerHTML = ''

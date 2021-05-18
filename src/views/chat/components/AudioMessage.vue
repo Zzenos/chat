@@ -19,8 +19,8 @@
       <div class="audio__duration">{{ voiceTime }}''</div>
     </div>
     <div class="translate" v-show="translateShow">
-      <span v-show="translateStatus">{{ translateText }}</span>
-      <span v-show="!translateStatus">
+      <span v-show="translateResult">{{ translateText }}</span>
+      <span v-show="!translateResult">
         <img src="@/assets/icon_voice_warning.png" alt="" />
         <span class="fail-text">转换失败</span>
       </span>
@@ -71,7 +71,7 @@ export default {
       type: Boolean,
       default: false
     },
-    translateStatus: {
+    translateResult: {
       type: Boolean,
       default: true
     },
@@ -120,12 +120,6 @@ export default {
       // if (this.amr && this.init) {
       //   this.toPlayAmination(), this.playUrl()
       // }
-    },
-    translateStatus(n, o) {
-      console.log(n, o)
-    },
-    translateShow(n, o) {
-      console.log(n, o)
     }
   }
 }
