@@ -153,7 +153,8 @@ export default {
       axios({
         method: 'post',
         // url: 'http://bizchat-chatroom.zmeng123.cn:9091/file/upload',
-        url: 'http://bizchat-chatroom.zmeng123.cn/file/upload',
+        // url: 'http://bizchat-chatroom.zmeng123.cn/file/upload',
+        url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/file/upload',
         data: fileData
       }).then(res => {
         let { code, data } = res.data
