@@ -24,7 +24,7 @@
         <li v-if="!lost">
           <upload :getOssTokenApi="uploadFile.getOssTokenApi" :notifyCheckApi="uploadFile.notifyOssCheck" @uploaded="uploaded"> </upload>
         </li>
-        <li v-if="!lost" class="chat-record" @click="showRecord">
+        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
         <!-- 客户流失显示 -->
@@ -34,7 +34,7 @@
         <li v-if="lost">
           <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
-        <li v-if="lost" class="chat-record" @click="showRecord">
+        <li v-if="lost && showRecordClick" class="chat-record" @click="showRecord">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
       </ul>
@@ -58,8 +58,11 @@
         rows="6"
       ></div>
       <div class="reply" v-show="replyShow">
-        <span>{{ replyName }}:{{ replyContent }}</span>
-        <span @click="closeReply">&times;</span>
+        <!-- <span class="close-reply" @click="closeReply">&times;</span> -->
+        <div class="reply-content">{{ replyName }}:{{ replyContent }}</div>
+        <div class="close-reply" @click="closeReply">
+          <img src="@/assets/关闭 (1).png" alt="" />
+        </div>
       </div>
     </div>
     <a-modal
@@ -75,9 +78,6 @@
       cancel-text="取消"
     >
     </a-modal>
-    <!-- <span class="reply">
-      reply          v-html="editorText"         @focus="isChange = false"
-    </span> -->
   </div>
 </template>
 <script>
@@ -93,7 +93,7 @@ import { wheel } from '@/util/wheel.js'
 export default {
   components: { Upload },
   name: 'MeEditor',
-  props: ['sendToBottom', 'showRecordModal'],
+  props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
@@ -174,48 +174,6 @@ export default {
         this.closeReply()
         e.preventDefault()
       }
-      if (e.keyCode == 13 && e.shiftKey == true) {
-        // e.preventDefault()
-        // console.log('br', e)
-        this.textareaRange()
-      }
-    },
-    textareaRange() {
-      // let el = this.$refs.messagInput
-      // const range = document.createRange()
-      // const sel = document.getSelection()
-      // const offset = sel.focusOffset
-      // const content = el.innerHTML
-      // console.log(el, range, sel, offset, content, '-----')
-      // el.innerHTML = content.slice(0, offset) + '\n' + content.slice(offset)
-      // // el.innerHTML = content.slice(0, offset) + '\n' + ' '
-      // console.log(el.innerHTML, '----', el.childNodes, el)
-      // range.setStart(el.childNodes[0], offset)
-      // // range.selectNodeContents(el.childNodes[1])
-      // // range.setStartAfter(el.childNodes[el.childNodes.length - 1])
-      // // range.collapseToEnd()
-      // // range.collapse(false)
-      // range.collapse(true)
-      // sel.removeAllRanges()
-      // sel.addRange(range)
-      //----------------
-      // console.log('textareaRange')
-      // let o = this.$refs.messagInput.lastChild
-      // console.log('oooo', o)
-      // let el = this.$refs.messagInput
-      // console.log('ooooel', el)
-      // let sel = document.getSelection()
-      // console.log('selsel', sel)
-      // let range = sel.getRangeAt(0)
-      // console.log('rangerange', range)
-      // let rangeEndOffset = range.endOffset
-      // console.log('rangeEndOffset', rangeEndOffset)
-      // var node = document.createElement('br')
-      // range.insertNode(node)
-      // console.log(el.innerHTML, 'el-innerhtnl')
-      // el.innerHTML = el.innerHTML + ''
-      // range.setStart(node, sel.focusOffset + 1)
-      // sel.addRange(range)
     },
     // clear() {
     //   this.draft_text = this.editorText
@@ -563,10 +521,37 @@ export default {
     }
     .reply {
       text-align: left;
-      height: 21px;
+      height: 34px;
       padding-left: 24px;
-      span {
-        background: rgba(0, 0, 0, 0.4);
+      margin-top: 12px;
+      .reply-content {
+        float: left;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        padding: 8px 8px 8px 12px;
+        font-size: 12px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.45);
+        line-height: 18px;
+        // display: inline-block;
+        max-width: 550px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .close-reply {
+        width: 14px;
+        height: 14px;
+        float: left;
+        margin: 10px 8px;
+        line-height: 1;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.25);
+        img {
+          width: 14px;
+          height: 14px;
+        }
       }
     }
   }

@@ -4,7 +4,7 @@
       <!-- <a-button class="addnew__button" :loading="loading" type="primary">
         {{ this.text }}
       </a-button> -->
-      <img src="@/assets/chat_icon_image.png" alt="" />
+      <img src="@/assets/chat_icon_file.png" alt="" />
     </a-upload>
     <uplaodProgressModal :uploadingFilesList="uploadingFilesList" :showProgressModel="showProgressModel" :isUploadComplete="uploadFullfilled" @close="closeProgressModal" />
   </span>
@@ -205,9 +205,9 @@ export default {
       fileCell.set('uploading')
       try {
         await this.isUploadFileValidate(fileCell.file)
-        await this.getOssToken(fileCell)
+        // await this.getOssToken(fileCell)
         await this.uploadOss(fileCell)
-        await this.checkFile(fileCell)
+        // await this.checkFile(fileCell)
       } catch (err) {
         if (err && err.response) {
           fileCell.set('failed', err.response.data)

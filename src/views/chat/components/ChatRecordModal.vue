@@ -8,8 +8,8 @@
         <span class="infoData-object">所属员工：{{ infoData.wechatAccount.wechatName }}</span>
       </template>
       <template v-else>
-        <img :src="infoData.customerInfo.avatar" class="info-avatar" />
-        <span class="infoData-name">{{ infoData.customerInfo.name }}</span
+        <img :src="infoData.customerInfo && infoData.customerInfo.avatar" class="info-avatar" />
+        <span class="infoData-name">{{ infoData.customerInfo && infoData.customerInfo.name }}</span
         ><span class="wechat-flag">@微信</span>
         <span class="infoData-object">对话员工：{{ infoData.wechatAccount.wechatName }}</span>
       </template>
@@ -107,7 +107,7 @@ export default {
       return this.infoData?.wechatAccount?.wechatId
     },
     customerUserId() {
-      return this.infoData?.customerInfo?.customerUserId
+      return this.infoData?.customerInfo?.customerId
     },
     chatId() {
       return this.infoData?.group?.groupId

@@ -18,9 +18,13 @@
       </div>
       <div class="audio__duration">{{ voiceTime }}''</div>
     </div>
-    <div class="translate" v-show="transferShow">
-      <span>{{ translateText }}</span>
-      <span @click="closeTranslate" style="margin-left:50px">&times;</span>
+    <div class="translate" v-show="translateShow">
+      <span v-show="translateStatus">{{ translateText }}</span>
+      <span v-show="!translateStatus">
+        <img src="@/assets/icon_voice_warning.png" alt="" />
+        <span class="fail-text">转换失败</span>
+      </span>
+      <!-- <span @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span> -->
     </div>
   </div>
 </template>
@@ -63,9 +67,13 @@ export default {
       type: String,
       default: ''
     },
-    transferShow: {
+    translateShow: {
       type: Boolean,
       default: false
+    },
+    translateStatus: {
+      type: Boolean,
+      default: true
     },
     closeTranslateText: {
       type: Function
@@ -112,6 +120,12 @@ export default {
       // if (this.amr && this.init) {
       //   this.toPlayAmination(), this.playUrl()
       // }
+    },
+    translateStatus(n, o) {
+      console.log(n, o)
+    },
+    translateShow(n, o) {
+      console.log(n, o)
     }
   }
 }
@@ -119,18 +133,19 @@ export default {
 <style lang="scss" scoped>
 .audio-message {
   background: #f0f1f2;
-  height: 46px;
+  // height: 46px;
   width: 360px;
   border-radius: 8px;
   box-sizing: border-box;
+  padding: 0 12px;
   .self__audio {
-    // height: 20px;
+    height: 46px;
     display: flex;
     flex-direction: row-reverse;
 
     .audio__trigger {
       cursor: pointer;
-      margin: 13px 8px 13px 12px;
+      margin: 13px 8px 13px 0px;
       line-height: normal;
       transform: rotate(-180deg);
       // order: 2;
@@ -148,9 +163,21 @@ export default {
     }
   }
   .translate {
-    height: 21px;
+    // height: 21px;
+    // padding: 12px;
+    padding: 12px 0;
     text-align: left;
-    background: rgba(0, 0, 0, 0.3);
+    background: #f0f1f2;
+    border-top: 1px solid #e6e7e8;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #000000;
+    line-height: 22px;
+    .fail-text {
+      color: rgba(0, 0, 0, 0.45);
+      margin-left: 8px;
+    }
   }
 
   &.isleft {

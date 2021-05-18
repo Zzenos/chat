@@ -113,7 +113,7 @@
                       :onlyOnePlay="item.onlyOnePlay"
                       :changeAudioIndex="changeAudioIndex"
                       :translateText="item.translateText"
-                      :transferShow="item.transferShow"
+                      :translateShow="item.translateShow"
                       :closeTranslateText="closeTranslateText"
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
@@ -153,7 +153,9 @@
                   </div>
                   <!-- 引用消息 -->
                   <!-- <div class="reply">
-                    引用消息台了到到我0得哦吃的送
+                    <div class="reply-content">
+                      引用消息引用消息引用消息引用消息引用---消息引用消息引----用消息引用消息引用消息引用消息引用消息引用消息引用消息
+                    </div>
                   </div> -->
                 </div>
               </div>
@@ -171,7 +173,7 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" ref="editor" />
+          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
@@ -207,7 +209,7 @@
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
-      <chat-record-modal :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
+      <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -236,6 +238,7 @@
 <script>
 import Vue from 'vue'
 import Contextmenu from 'vue-contextmenujs'
+import axios from 'axios'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -424,11 +427,9 @@ export default {
     },
     showRecordModal() {
       //聊天记录传入数据infoData
-      const { wechatName, wechatAvatar, chatType, customerUserId, accountId, accountName } = this.$route.query
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
       let info =
-        chatType == 2
-          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: 'wr_XL6CgAAquffXGxaSEm0zvg__-jdvg' } }
-          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerUserId: customerUserId } }
+        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
       this.infoData = {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
@@ -437,18 +438,31 @@ export default {
     },
     translateText(index, item) {
       console.log(index, item)
-      // axios({
-      //   method: 'post',
-      //   url: 'http://bizchat-chatroom.zmeng123.cn/file/upload',
-      //   data: item.url
-      //}).then(res=>{})
-      // text = res.data.text
-      this.records[index].translateText = 'text'
-      this.records[index].transferShow = true
-      this.$forceUpdate()
+      axios({
+        method: 'post',
+        url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/voice/convert',
+        data: { url: item.url }
+      }).then(res => {
+        let { code, data } = res.data
+        console.log(code, data)
+        if (code == 200) {
+          console.log('succcess')
+          this.records[index].translateText = data.result
+          this.records[index].translateStatus = true
+          this.records[index].translateShow = true
+          console.log(this.records[index])
+          this.$forceUpdate()
+        } else {
+          console.log('fail-audio')
+          this.records[index].translateStatus = false
+          this.records[index].translateShow = true
+          console.log(this.records[index])
+          this.$forceUpdate()
+        }
+      })
     },
     closeTranslateText(index) {
-      this.records[index].transferShow = false
+      this.records[index].translateShow = false
       this.$forceUpdate()
     },
     confirmSelectContacts() {}
@@ -737,8 +751,23 @@ export default {
                 }
               }
               .reply {
-                background: rgba(0, 0, 0, 0.4);
-                margin-top: 5px;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 4px;
+                margin-top: 8px;
+                padding: 8px 12px;
+                font-size: 12px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: rgba(0, 0, 0, 0.45);
+                line-height: 18px;
+                .reply-content {
+                  max-width: 320px;
+                  display: -webkit-box;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  -webkit-line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                }
               }
             }
           }

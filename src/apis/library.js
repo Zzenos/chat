@@ -14,7 +14,8 @@ const uploadOss = query =>
   axios.request({
     ...query,
     method: 'POST',
-    timeout: 0
+    // timeout: 0
+    timeout: 60 * 1000
   })
 // 通知上传文件校验
 const notifyOssCheck = query =>
