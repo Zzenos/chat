@@ -159,9 +159,7 @@
                   </div>
                   <!-- 引用消息 -->
                   <div class="reply" v-if="item.msgType == 'text' && item.content.includes('------')">
-                    <div class="reply-content">
-                      {{ item.content.split('------')[0] }}
-                    </div>
+                    <div class="reply-content" v-html="item.content.split('------')[0]"></div>
                   </div>
                 </div>
               </div>
