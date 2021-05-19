@@ -152,7 +152,7 @@
       </div>
       <div class="sidebar">
         <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
-          <a-tab-pane key="groupInfo" tab="群资料" v-if="$route.query.chatType == 2">
+          <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
             <!-- <div class="search">
               <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div> -->
@@ -167,15 +167,15 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1">
-            <iframe ref="customerInfoFrame" title="客户资料" src="http://172.20.2.106:9999/app/cusPortrait.html" frameborder="0">
+            <iframe ref="customerInfoFrame" title="客户资料" src="http://test-bizchat.zmeng123.cn/app/cusPortrait.html" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
-          <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="verbalTrickFrame" title="话术库" src="http://172.20.2.106:9999/app/verbalTricks.html" frameborder="0">
+          <!-- <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="verbalTrickFrame" title="话术库" src="http://test-bizchat.zmeng123.cn/app/verbalTricks.html" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
-          </a-tab-pane>
+          </a-tab-pane> -->
         </a-tabs>
       </div>
     </main>
@@ -356,7 +356,7 @@ export default {
           corpId: 'wwfc3ae560ee1592d8',
           contactUserId: customerUserId,
           userId: accountInfo.info.wechatId,
-          wechatName
+          nickname: wechatName
         }
         this.onLine = navigator.onLine
         if (!this.onLine) {

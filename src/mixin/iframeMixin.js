@@ -15,21 +15,19 @@ export default {
   watch: {
     activeKey(n) {
       if (n == 'groupInfo') return
-      this.$nextTick(() => {
-        this.sendMessage('InitUserInfo', this.userInfo)
-      })
+      this.sendMessage('InitUserInfo', this.userInfo)
     }
   },
   mounted() {
     window.addEventListener('message', this.handleMessage, false)
   },
   destoryed() {
-    window.removeEventListener('message', this.handleMessage)
+    window.removeEventListener('message', this.handleMessage, false)
   },
   methods: {
     initIframe(refName) {
-      console.log('iframe ref', this.$refs[`${this.activeKey}Frame`])
-      if (!this.$refs[`${this.activeKey}Frame`]) return
+      console.log('iframe ref', refName, this.$refs[`${refName}`])
+      if (!this.$refs[`${refName}`]) return
       this.iframeWin = this.$refs[refName].contentWindow
     },
     /**
@@ -45,15 +43,18 @@ export default {
       }, 300)
     },
     /**
-     * @description iframe内部发回来的数据
+     * @description 处理iframe内部发回来的数据
      */
     handleMessage(evt) {
       console.warn('evt', evt.data)
-      const { cmd } = evt.data
+      const { cmd, data } = JSON.parse(evt.data)
       // 传递数据
       switch (cmd) {
         case 'ready':
           this.sendMessage('InitUserInfo', this.userInfo)
+          break
+        case 'sendChatMessage':
+          console.log('sendChatMessage params', data)
           break
 
         default:
