@@ -47,6 +47,7 @@ export default {
      */
     handleMessage(evt) {
       console.warn('evt', evt.data)
+      if (evt.origin.indexOf('bizchat') === -1 && !evt.data) return
       const { cmd, data } = JSON.parse(evt.data)
       // 传递数据
       switch (cmd) {

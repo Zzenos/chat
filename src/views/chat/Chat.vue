@@ -166,7 +166,7 @@
               </div>
             </div>
           </a-tab-pane>
-          <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1">
+          <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1 || chatType == 3">
             <iframe ref="customerInfoFrame" title="客户资料" src="http://test-bizchat.zmeng123.cn/app/cusPortrait.html" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
@@ -340,7 +340,7 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { wechatId, wechatName, memberCount = '', chatType, lost, customerUserId } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId } = newVal.query
         const { tjId, contactId } = newVal.params
         const accountInfo = this.userDetailsById(tjId)
         this.userId = tjId
@@ -354,7 +354,7 @@ export default {
         console.log(this.records, 'chat-records')
         this.userInfo = {
           corpId: 'wwfc3ae560ee1592d8',
-          contactUserId: customerUserId,
+          contactUserId: externalWechatId,
           userId: accountInfo.info.wechatId,
           nickname: wechatName
         }
@@ -386,7 +386,7 @@ export default {
           this.activeKey = 'customerInfo'
         }
         if (chatType == 3) {
-          this.activeKey = 'verbalTrick'
+          this.activeKey = 'customerInfo'
         }
         // 给应用传递当前用户信息
         this.$nextTick(() => {
