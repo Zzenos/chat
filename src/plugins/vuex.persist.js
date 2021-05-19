@@ -6,7 +6,7 @@ const vuexLocal = new VuexPersistence({
   storage: window.localStorage,
   reducer: state => ({
     token: state.token,
-    username: state.username
+    userInfo: state.userInfo
   })
   // asyncStorage: true
   // storage: localForage

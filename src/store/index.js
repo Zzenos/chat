@@ -13,14 +13,16 @@ vue.use(vuex)
 const store = new vuex.Store({
   state: {
     token: '',
-    username: 'ZMENG'
+    userInfo: {
+      username: 'ZMENG'
+    }
   },
   mutations: {
     storeToken(state, token) {
       state.token = token
     },
-    saveUserName(state, username) {
-      state.username = username
+    saveUserInfo(state, userInfo) {
+      state.userInfo = JSON.parse(userInfo)
     }
   },
   modules: {
