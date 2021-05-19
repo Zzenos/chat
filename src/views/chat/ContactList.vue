@@ -20,7 +20,7 @@
           <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-show="curTab === 'ContactInfo'" :tjId="tjId" />
         </div>
       </a-col>
-      <a-col flex="auto">
+      <a-col flex="1 1 0">
         <router-view />
       </a-col>
     </a-row>

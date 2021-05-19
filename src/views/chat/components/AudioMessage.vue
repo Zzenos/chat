@@ -8,8 +8,7 @@
       minlength: voiceTime < 10
     }"
   >
-    <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>
-    <i :max="voiceTime" style="display:none"></i>
+    <!-- <audio controls :src="url" ref="audioPlayer" style="display:none"></audio> -->
     <div class="self__audio" @click="playAll">
       <div class="audio__trigger">
         <div class="audio-icon">
@@ -18,6 +17,14 @@
         </div>
       </div>
       <div class="audio__duration">{{ voiceTime }}''</div>
+    </div>
+    <div class="translate" v-show="translateShow">
+      <span v-show="translateResult">{{ translateText }}</span>
+      <span v-show="!translateResult">
+        <img src="@/assets/icon_voice_warning.png" alt="" />
+        <span class="fail-text">转换失败</span>
+      </span>
+      <!-- <span @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span> -->
     </div>
   </div>
 </template>
@@ -55,6 +62,21 @@ export default {
     },
     onlyOnePlay: {
       type: Boolean
+    },
+    translateText: {
+      type: String,
+      default: ''
+    },
+    translateShow: {
+      type: Boolean,
+      default: false
+    },
+    translateResult: {
+      type: Boolean,
+      default: true
+    },
+    closeTranslateText: {
+      type: Function
     }
   },
   methods: {
@@ -69,6 +91,9 @@ export default {
     },
     playUrl() {
       this.amr.playOrPauseOrResume()
+    },
+    closeTranslate() {
+      this.closeTranslateText(this.index)
     }
   },
   watch: {
@@ -80,7 +105,7 @@ export default {
         // console.log(newVal)
         this.amr = new BenzAMRRecorder()
         this.amr.initWithUrl(newVal).then(function() {
-          // console.log('初始化完毕')
+          // console.log('初始化完毕')'https://zm-weike.oss-cn-beijing.aliyuncs.com/chat/test.wav'
           vm.init = true
         })
         this.amr.onEnded(function() {
@@ -102,18 +127,19 @@ export default {
 <style lang="scss" scoped>
 .audio-message {
   background: #f0f1f2;
-  height: 46px;
+  // height: 46px;
   width: 360px;
   border-radius: 8px;
   box-sizing: border-box;
+  padding: 0 12px;
   .self__audio {
-    // height: 20px;
+    height: 46px;
     display: flex;
     flex-direction: row-reverse;
 
     .audio__trigger {
       cursor: pointer;
-      margin: 13px 8px 13px 12px;
+      margin: 13px 8px 13px 0px;
       line-height: normal;
       transform: rotate(-180deg);
       // order: 2;
@@ -128,6 +154,23 @@ export default {
       font-weight: 400;
       color: #000000;
       line-height: 22px;
+    }
+  }
+  .translate {
+    // height: 21px;
+    // padding: 12px;
+    padding: 12px 0;
+    text-align: left;
+    background: #f0f1f2;
+    border-top: 1px solid #e6e7e8;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #000000;
+    line-height: 22px;
+    .fail-text {
+      color: rgba(0, 0, 0, 0.45);
+      margin-left: 8px;
     }
   }
 

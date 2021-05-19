@@ -82,19 +82,31 @@
                 <div class="talk-content">
                   <div class="talk-content-msg">
                     <!-- 文本消息 -->
-                    <text-message v-if="item.msgType == 'text'" :content="item.content" :float="item.float" />
+                    <text-message
+                      v-if="item.msgType == 'text'"
+                      :content="item.content.includes('------') ? item.content.split('------')[1] : item.content"
+                      :float="item.float"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 图片消息 -->
-                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" />
+                    <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 文件消息 -->
-                    <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" />
+                    <file-message v-else-if="item.msgType == 'file'" :url="item.url" :title="item.title" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 视频消息 -->
-                    <video-message v-else-if="item.msgType == 'video'" :vid="item.msgId" :url="item.url" :coverurl="item.coverUrl" :sendingPic="item.status" />
+                    <video-message
+                      v-else-if="item.msgType == 'video'"
+                      :vid="item.msgId"
+                      :url="item.url"
+                      :coverurl="item.coverUrl"
+                      :sendingPic="item.status"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 个人名片 -->
-                    <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" />
+                    <card-message v-else-if="item.msgType == 'card'" :src="item.content.profile_photo" :name="item.content.name" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 语音消息 -->
                     <audio-message
@@ -105,10 +117,22 @@
                       :index="index"
                       :onlyOnePlay="item.onlyOnePlay"
                       :changeAudioIndex="changeAudioIndex"
+                      :translateText="item.translateText"
+                      :translateShow="item.translateShow"
+                      :translateResult="item.translateResult"
+                      :closeTranslateText="closeTranslateText"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
 
                     <!-- 链接消息 -->
-                    <link-message v-else-if="item.msgType == 'link'" :href="item.href" :desc="item.desc" :title="item.title" :coverurl="item.coverUrl" />
+                    <link-message
+                      v-else-if="item.msgType == 'link'"
+                      :href="item.href"
+                      :desc="item.desc"
+                      :title="item.title"
+                      :coverurl="item.coverUrl"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
 
                     <!-- 小程序消息 -->
                     <webapp-message
@@ -118,7 +142,9 @@
                       :title="item.content.title"
                       :url="item.content.pagepath"
                       :coverurl="item.coverUrl"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
+
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
@@ -131,6 +157,8 @@
                     </div>
                     <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
+                  <!-- 引用消息 -->
+                  <reply-message v-if="item.msgType == 'text' && item.content.includes('------')" :float="item.float" :content="item.content.split('------')[0]" />
                 </div>
               </div>
             </div>
@@ -147,7 +175,7 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" ref="editor" />
+          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
       <div class="talk-record" v-if="$route.query.chatType == 2">
@@ -171,10 +199,10 @@
           </div>
         </div>
       </div>
-      <div class="talk-record" v-else>
-        <!-- <div class="top" style="padding:20px;text-align:left">聊天记录</div> -->
+      <div class="talk-record" v-if="$route.query.chatType != 2">
+        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
         <div class="search">
-          <!-- <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" /> -->
+          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
         </div>
         <div class="foot" style="margin-top:200px">
           <!-- style="margin-top:200px要删 -->
@@ -182,6 +210,8 @@
           <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
         </div>
       </div>
+      <!-- 聊天记录弹窗 -->
+      <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -208,6 +238,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import Contextmenu from 'vue-contextmenujs'
+import axios from 'axios'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -218,9 +251,12 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
+import ReplyMessage from '@/views/chat/components/ReplyMessage'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
+import ChatRecordModal from './components/ChatRecordModal'
+Vue.use(Contextmenu)
 
 const { state: overState } = overTimeModal()
 export default {
@@ -234,7 +270,9 @@ export default {
     CardMessage,
     LinkMessage,
     AudioMessage,
-    WebappMessage
+    WebappMessage,
+    ReplyMessage,
+    ChatRecordModal
   },
   data() {
     return {
@@ -253,7 +291,11 @@ export default {
       toRensendIndex: 0,
       onLine: navigator.onLine,
       playingAudioIndex: null,
-      isLost: ''
+      isLost: '',
+      // 控制聊天记录弹窗显示
+      chatRecordVisible: false,
+      // 当前查看记录的对象
+      infoData: null
     }
   },
   mounted() {
@@ -332,7 +374,98 @@ export default {
     },
     closeOverModal() {
       overState.show = false
-    }
+    },
+    onCopy(index, item, event) {
+      let menus = []
+      console.log(index, item, 'oncopy')
+      if (item.msgType == 'voice') {
+        menus.push({
+          label: '转为文字',
+          icon: 'transfer',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            this.translateText(index, item)
+          }
+        })
+      }
+
+      menus.push({
+        label: '转发',
+        icon: 'promotion',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          this.forwardRecords(index, item)
+        }
+      })
+
+      menus.push({
+        label: '引用',
+        icon: 'connection',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          this.replyRecords(index, item)
+        }
+      })
+
+      this.$contextmenu({
+        items: menus,
+        event,
+        customClass: 'cus-contextmenu',
+        zIndex: 3,
+        minWidth: 120
+      })
+      event.preventDefault()
+    },
+    replyRecords(index, item) {
+      console.log('引用消息', index, item)
+      let content = ''
+      if (item.msgType == 'text') {
+        content = item.content
+      } else if (item.msgType == 'image') {
+        content = '[图片]'
+      }
+      this.$refs.editor.openReply(item.sender.wechatName, content)
+    },
+    forwardRecords() {
+      console.log('转发消息')
+    },
+    showRecordModal() {
+      //聊天记录传入数据infoData
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
+      let info =
+        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
+      this.infoData = {
+        ...info,
+        wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
+      }
+      this.chatRecordVisible = true
+    },
+    translateText(index, item) {
+      console.log(index, item)
+      axios({
+        method: 'post',
+        url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/voice/convert',
+        data: { url: item.url }
+      }).then(res => {
+        let { code, data } = res.data
+        console.log(code, data)
+        if (code == 200) {
+          this.records[index].translateText = data.result
+          this.records[index].translateResult = true
+          this.records[index].translateShow = true
+          this.$forceUpdate()
+        } else {
+          this.records[index].translateResult = false
+          this.records[index].translateShow = true
+          this.$forceUpdate()
+        }
+      })
+    },
+    closeTranslateText(index) {
+      this.records[index].translateShow = false
+      this.$forceUpdate()
+    },
+    confirmSelectContacts() {}
   },
   watch: {
     $route: {
@@ -349,7 +482,7 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        // console.log(this.$route, 'chat-route')
+        console.log(this.$route, 'chat-route')
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -508,13 +641,14 @@ export default {
       display: flex;
       flex-direction: column;
       border-right: 1px solid #e4e5e7;
-      transform: translateX(0px);
+      // transform: translateX(0px);
+      position: relative;
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
         padding: 40px 10px 10px;
         overflow-y: auto;
-        position: relative;
+        // position: relative;
         &::-webkit-scrollbar {
           display: none;
         }
@@ -525,7 +659,8 @@ export default {
           width: 100%;
           height: 40px;
           background: #f7e7e8;
-          position: fixed;
+          // position: fixed;
+          position: absolute;
           top: 0;
           left: 0;
           z-index: 999;
@@ -741,51 +876,60 @@ export default {
 // /deep/ .ant-modal {
 //   top: 40%;
 // }
-/deep/ .ant-modal-mask {
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/deep/ .send-status-modal.ant-modal-mask {
   display: none;
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
   // display: none;
   background-color: rgba(0, 0, 0, 0.65);
-}
-/deep/ .ant-modal-close-x {
-  display: none;
-}
-/deep/ .ant-modal-content {
-  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  // border: 1px solid rgba(0, 0, 0, 0.45);
-  width: 480px;
-  height: 200px;
-  padding-top: 60px;
-  background: #fff;
-  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  .ant-modal-header {
-    border-bottom: none;
-    text-align: center;
-    font-size: 16px;
-    font-family: PingFangSC-Medium, PingFang SC;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.85);
-    line-height: 24px;
-    padding: 0;
-  }
-  .ant-modal-body {
+  .ant-modal-close-x {
     display: none;
   }
-  .ant-modal-footer {
-    border-top: none;
-    margin-top: 44px;
-    text-align: center;
-    .ant-btn {
-      width: 132px;
-      font-size: 14px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: rgba(0, 0, 0, 0.65);
-      line-height: 22px;
-      &.ant-btn-primary {
-        color: #fff;
+  .ant-modal-content {
+    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+    // border: 1px solid rgba(0, 0, 0, 0.45);
+    width: 480px;
+    height: 200px;
+    padding-top: 60px;
+    background: #fff;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    .ant-modal-header {
+      border-bottom: none;
+      text-align: center;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      padding: 0;
+    }
+    .ant-modal-body {
+      display: none;
+    }
+    .ant-modal-footer {
+      border-top: none;
+      margin-top: 44px;
+      text-align: center;
+      .ant-btn {
+        width: 132px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: #fff;
+        }
       }
     }
   }

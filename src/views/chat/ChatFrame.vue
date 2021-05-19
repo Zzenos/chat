@@ -10,7 +10,7 @@
             <div>{{ username }}</div>
           </div>
         </a-col>
-        <a-col flex="auto">
+        <a-col flex="1 1 0">
           <router-view />
         </a-col>
       </a-row>

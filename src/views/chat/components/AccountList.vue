@@ -35,7 +35,8 @@ export default {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else if (!this.curAct && this.accounts.length > 0) {
           this.curAct = this.accounts[0]
-          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0` })
+          const { wechatId, wechatName } = this.curAct.info
+          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
         }
         if (this.curAct) {
           const tjId = this.curAct.info.tjId
@@ -50,12 +51,12 @@ export default {
   },
   methods: {
     handleAct(account) {
-      const { tjId } = account.info
+      const { tjId, wechatId, wechatName } = account.info
       if (this.curAct.info.tjId === tjId) {
         return
       }
       this.curAct = account
-      // 拉取数据
+      // 拉取数据 wechatId wechatName ?accountId=${wechatId}&accountName=${wechatName}
       if (!this.$store.getters.contactByTjId(tjId)) {
         this.$socket.emit('init', { tjId }, ack => {
           if (ack.code === 200) {
@@ -63,7 +64,7 @@ export default {
           }
         })
       }
-      this.$router.push({ path: `/chatframe/${tjId}/recent/0` })
+      this.$router.push({ path: `/chatframe/${tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
     }
   }
 }

@@ -17,7 +17,7 @@
         </div>
         <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
-        <div class="msg ellipsis">{{ item.lastMsg.defaultContent }}</div>
+        <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
       </div>
     </div>
     <no-data text="暂无消息内容" v-if="chats.length === 0" />
@@ -102,6 +102,7 @@ export default {
     handleItem(val, canJump = false) {
       console.log(val)
       const { chatId } = val
+      const { accountId, accountName } = this.$route.query
       if (this.curChat.chatId === chatId && !canJump) {
         return
       }
@@ -109,7 +110,7 @@ export default {
       this[types.CLEAR_UNREAD_MSG](this.curChat.chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
-        query: { ...this.curChat }
+        query: { ...this.curChat, accountId, accountName }
       })
     }
   }
