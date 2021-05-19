@@ -17,7 +17,7 @@
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
-          <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-show="curTab === 'ContactInfo'" :tjId="tjId" />
+          <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-if="curTab === 'ContactInfo'" :tjId="tjId" />
         </div>
       </a-col>
       <a-col flex="1 1 0">

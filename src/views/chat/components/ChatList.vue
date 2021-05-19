@@ -1,5 +1,6 @@
 <template>
   <div class="chat-list_container">
+    <a-spin size="large" tip="数据加载中..." :spinning="spinning"></a-spin>
     <div v-for="item in chats" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
       <a-badge :offset="[-18, 0]" :count="item.unreadCount" :overflow-count="99">
         <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
@@ -20,7 +21,7 @@
         <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
       </div>
     </div>
-    <no-data text="暂无消息内容" v-if="chats.length === 0" />
+    <no-data text="暂无消息内容" v-if="!spinning && chats.length === 0" />
   </div>
 </template>
 
@@ -34,7 +35,8 @@ export default {
   data() {
     return {
       curChat: { chatId: null },
-      chats: []
+      chats: [],
+      spinning: true
     }
   },
   props: {
@@ -63,8 +65,7 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        // console.log('chatList $route ==>', n)
-
+        console.log('chatList $route ==>', n)
         // 切换账号或者刷新后进入，会话的默认选中状态
         const { contactId } = n.params
         if (contactId === '0') {
@@ -92,9 +93,20 @@ export default {
         }
       }
     },
-    chatList(n) {
-      console.log(`tjId:${this.tjId}=>chatList`, n)
-      this.chats = n
+    chatList: {
+      immediate: true,
+      handler: function(n, o) {
+        if (n === o) return
+        // console.log(`tjId:${this.tjId}=>chatList`, n)
+        if (n && n.length === 0) {
+          this.spinning = true
+        } else {
+          this.$nextTick(() => {
+            this.spinning = false
+          })
+        }
+        this.chats = n
+      }
     }
   },
   methods: {
