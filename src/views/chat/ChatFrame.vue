@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       spinning: true,
-      username: this.$store.state.username
+      username: this.$store.state.userInfo.username
     }
   },
   props: {

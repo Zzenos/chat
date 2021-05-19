@@ -11,12 +11,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['storeToken', 'saveUserName'])
+    ...mapMutations(['storeToken', 'saveUserInfo'])
   },
   created() {
     console.log(`%c ${this.token}`, 'color:#f2f;')
     this.storeToken(this.token)
-    this.$route.query.username && this.saveUserName(this.$route.query.username)
+    this.$route.query.userInfo && this.saveUserInfo(this.$route.query.userInfo)
     this.$router.push({
       path: `/chatframe`
     })
