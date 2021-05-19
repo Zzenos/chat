@@ -158,9 +158,7 @@
                     <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
-                  <div class="reply" v-if="item.msgType == 'text' && item.content.includes('------')">
-                    <div class="reply-content" v-html="item.content.split('------')[0]"></div>
-                  </div>
+                  <reply-message v-if="item.msgType == 'text' && item.content.includes('------')" :float="item.float" :content="item.content.split('------')[0]" />
                 </div>
               </div>
             </div>
@@ -253,6 +251,7 @@ import MeEditor from '@/views/chat/components/MeEditor'
 import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
+import ReplyMessage from '@/views/chat/components/ReplyMessage'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
@@ -272,6 +271,7 @@ export default {
     LinkMessage,
     AudioMessage,
     WebappMessage,
+    ReplyMessage,
     ChatRecordModal
   },
   data() {
@@ -641,13 +641,14 @@ export default {
       display: flex;
       flex-direction: column;
       border-right: 1px solid #e4e5e7;
-      transform: translateX(0px);
+      // transform: translateX(0px);
+      position: relative;
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
         padding: 40px 10px 10px;
         overflow-y: auto;
-        position: relative;
+        // position: relative;
         &::-webkit-scrollbar {
           display: none;
         }
@@ -658,7 +659,8 @@ export default {
           width: 100%;
           height: 40px;
           background: #f7e7e8;
-          position: fixed;
+          // position: fixed;
+          position: absolute;
           top: 0;
           left: 0;
           z-index: 999;
@@ -748,25 +750,6 @@ export default {
                     left: 50%;
                     transform: translate(-50%, -50%);
                   }
-                }
-              }
-              .reply {
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 4px;
-                margin-top: 8px;
-                padding: 8px 12px;
-                font-size: 12px;
-                font-family: PingFangSC-Regular, PingFang SC;
-                font-weight: 400;
-                color: rgba(0, 0, 0, 0.45);
-                line-height: 18px;
-                .reply-content {
-                  max-width: 320px;
-                  display: -webkit-box;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
                 }
               }
             }
