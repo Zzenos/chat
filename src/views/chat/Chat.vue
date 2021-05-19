@@ -178,37 +178,33 @@
           <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
-      <div class="talk-record" v-if="$route.query.chatType == 2">
-        <div class="top">
-          <!-- style="text-align:left"要删 -->
-          <span class="groupInfo">群资料</span>
-          <!-- <span>快捷回复</span> -->
-        </div>
-        <div class="search">
-          <!-- <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" /> -->
-        </div>
-        <div class="memberList" v-if="groupInfo.memberCount" style="padding-top:50px">
-          <!-- style="padding-top:50px"要删 -->
-          <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-          <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-            <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-
-            <span class="name"> {{ item.wechatName }} </span>
-            <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-            <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-          </div>
-        </div>
-      </div>
-      <div class="talk-record" v-if="$route.query.chatType != 2">
-        <div class="top" style="padding:20px;text-align:left">聊天记录</div>
-        <div class="search">
-          <a-input-search placeholder="搜索" style="width: 260px; height: 32px; margin: 30px 18px" />
-        </div>
-        <div class="foot" style="margin-top:200px">
-          <!-- style="margin-top:200px要删 -->
-          <!-- <span>全部</span> -->
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" style="margin:100px auto" />
-        </div>
+      <div class="sidebar">
+        <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
+          <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
+            <!-- <div class="search">
+              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+            </div> -->
+            <div class="memberList" v-if="groupInfo.memberCount">
+              <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+              <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                <span class="name"> {{ item.wechatName }} </span>
+                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+              </div>
+            </div>
+          </a-tab-pane>
+          <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="customerInfoFrame" title="客户资料" src="http://test-bizchat.zmeng123.cn/app/cusPortrait.html" frameborder="0">
+              <p>Your Browser dose not support iframes</p>
+            </iframe>
+          </a-tab-pane>
+          <!-- <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="verbalTrickFrame" title="话术库" src="http://test-bizchat.zmeng123.cn/app/verbalTricks.html" frameborder="0">
+              <p>Your Browser dose not support iframes</p>
+            </iframe>
+          </a-tab-pane> -->
+        </a-tabs>
       </div>
       <!-- 聊天记录弹窗 -->
       <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
@@ -227,12 +223,11 @@
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
-      <div class="talk-record" style="position:relative">
-        <!-- <div style="width:100%;height:64px;position:absolute"></div> -->
+      <!-- <div class="sidebar" style="position:relative">
         <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
           <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -257,10 +252,12 @@ import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
 Vue.use(Contextmenu)
+import iframeMixin from '@/mixin/iframeMixin'
 
 const { state: overState } = overTimeModal()
 export default {
   name: 'chat',
+  mixins: [iframeMixin],
   components: {
     TextMessage,
     ImageMessage,
@@ -276,6 +273,7 @@ export default {
   },
   data() {
     return {
+      activeKey: '',
       loadRecord: 1,
       userId: this.$route.params.tjId,
       chatId: this.$route.params.contactId,
@@ -302,6 +300,10 @@ export default {
     this.toBottom()
     window.addEventListener('online', this.updateOnlineStatus)
     window.addEventListener('offline', this.updateOnlineStatus)
+  },
+  destroyed() {
+    window.removeEventListener('online', this.updateOnlineStatus)
+    window.removeEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
     ...mapActions([types.SEND_MSG]),
@@ -471,8 +473,9 @@ export default {
     $route: {
       immediate: true,
       handler(newVal) {
-        const { wechatId, wechatName, memberCount = '', chatType, lost } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId } = newVal.query
         const { tjId, contactId } = newVal.params
+        const accountInfo = this.userDetailsById(tjId)
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
@@ -482,7 +485,21 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
-        console.log(this.$route, 'chat-route')
+        this.userInfo = {
+          corpId: 'wwfc3ae560ee1592d8',
+          contactUserId: externalWechatId,
+          userId: accountInfo.info.wechatId,
+          nickname: wechatName
+        }
+        this.onLine = navigator.onLine
+        if (!this.onLine) {
+          this.$refs.editor.netLost()
+        } else {
+          this.$nextTick(() => {
+            this.$refs.editor.netReconnect()
+          })
+        }
+        // 获取群资料
         if (chatType == 2) {
           if (!this.wechatId) {
             this.groupInfo = {
@@ -491,26 +508,24 @@ export default {
             }
             return
           }
+          this.activeKey = 'groupInfo'
           this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
+          return
         }
-        // this.$refs.editor.clear()
-        // this.$refs.editor.getDraftText(this.chatId)
-        this.onLine = navigator.onLine
-        // console.log(this.onLine, 'this.onLine')
-        if (!this.onLine) {
-          this.$refs.editor.netLost()
-          // this.$nextTick(() => {
-          //   this.$refs.editor.netLost()
-          // })
-        } else {
-          // this.$refs.editor.netReconnect()
-          this.$nextTick(() => {
-            this.$refs.editor.netReconnect()
-          })
+        if (chatType == 1) {
+          this.activeKey = 'customerInfo'
         }
+        if (chatType == 3) {
+          this.activeKey = 'customerInfo'
+        }
+        // 给应用传递当前用户信息
+        this.$nextTick(() => {
+          console.log(this.chatId)
+          this.chatId != '0' && this.sendMessage('InitUserInfo', this.userInfo)
+        })
       }
     },
     records() {
@@ -573,7 +588,7 @@ export default {
         return item
       })
     },
-    ...mapGetters(['contactInfoByWechatId']),
+    ...mapGetters(['contactInfoByWechatId', 'userDetailsById']),
     isLostRequest() {
       return this.contactInfoByWechatId(this.userId, this.wechatId)
     },
@@ -626,9 +641,6 @@ export default {
       .talk-container {
         flex: 1 1 0;
       }
-    }
-    .talk-record {
-      width: 300px;
     }
   }
 
@@ -797,27 +809,14 @@ export default {
       }
     }
 
-    .talk-record {
+    .sidebar {
       width: 300px;
       display: flex;
       flex-direction: column;
 
-      .top {
-        width: 300px;
-        height: 60px;
-        font-size: 14px;
-        color: #000;
-        line-height: 22px;
-        padding-top: 26px;
-        padding-left: 21px;
-        border-bottom: 1px solid #e4e5e7;
-
-        .groupInfo {
-          margin-right: 34px;
-          padding-bottom: 12px;
-          color: #1d61ef;
-          border-bottom: 1px solid #1d61ef;
-        }
+      iframe {
+        width: 100%;
+        height: calc(100vh - 129px);
       }
 
       // .search {
