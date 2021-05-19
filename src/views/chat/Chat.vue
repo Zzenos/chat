@@ -426,6 +426,11 @@ export default {
       } else if (item.msgType == 'image') {
         content = '[图片]'
       }
+      content = content.includes('------') ? content.split('------')[1] : content
+      let container = document.createElement('div')
+      container.innerHTML = content
+      content = container.innerText
+      container = null
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
     forwardRecords() {
