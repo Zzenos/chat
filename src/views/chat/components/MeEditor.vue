@@ -22,7 +22,8 @@
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
         <li v-if="!lost">
-          <upload :getOssTokenApi="uploadFile.getOssTokenApi" :notifyCheckApi="uploadFile.notifyOssCheck" @uploaded="uploaded"> </upload>
+          <!--  :accept="['png']" -->
+          <upload :showType="'file'" :getOssTokenApi="uploadFile.getOssTokenApi" :notifyCheckApi="uploadFile.notifyOssCheck" @uploaded="uploaded"> </upload>
         </li>
         <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord">
           <img src="@/assets/chat_icon_record.png" alt="" />
@@ -295,35 +296,48 @@ export default {
     showRecord() {
       this.showRecordModal()
     },
-    uploaded(e) {
-      // if (e.length > 0) this.listByDir() e ==> this.uploadedList  ==> url + title
-      console.log(e)
+    uploaded(e, type) {
+      console.log(e, type)
       let { contactId, tjId } = this.$route.params
       let { wechatName, wechatAvatar } = this.userInfo.info
-      this[types.SEND_MSG]({
-        msgType: 'file',
+      let sendData = {
         chatId: contactId,
         chatType: this.$route.query.chatType,
         fromId: tjId,
         toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-        url: '',
-        title: '',
         sender: {
           wechatName: wechatName,
           wechatAvatar: wechatAvatar
         },
         notResend: true
-      })
+      }
+      if (type == 'file') {
+        sendData.msgType = 'file'
+        sendData.url = e.OssInfo.host + '/' + e.OssInfo.key
+        sendData.title = e.OssInfo.filename
+      }
+      if (type == 'iv') {
+        sendData.msgType = e.file.type.split('/')[0]
+        sendData.url = e.OssInfo.host + '/' + e.OssInfo.key
+        sendData.coverUrl = e.OssInfo.host + '/' + e.OssInfo.key + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
+      }
+      console.log(sendData, 'sendData')
+      // this[types.SEND_MSG]({
+      //   msgType: 'file',
+      //   chatId: contactId,
+      //   chatType: this.$route.query.chatType,
+      //   fromId: tjId,
+      //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+      //   url: '',
+      //   title: '',
+      //   sender: {
+      //     wechatName: wechatName,
+      //     wechatAvatar: wechatAvatar
+      //   },
+      //   notResend: true
+      // })
     },
     changeText() {
-      // this.sendText = this.$refs.messagInput.innerText
-      // console.log(this.sendText, this.$refs.messagInput.innerText, 'this.$refs.messagInput.inner')
-      // if (this.isChange) {
-      //   const value = deepClone(this.$refs.messagInput.innerHTML)
-      //   this.editorText = value
-      // }
-      // var range = document.selection.createRange()
-      // range.collapse(false)
       const value = deepClone(this.$refs.messagInput.innerHTML)
       this.value = value
     },

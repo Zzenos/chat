@@ -4,7 +4,8 @@
       <!-- <a-button class="addnew__button" :loading="loading" type="primary">
         {{ this.text }}
       </a-button> -->
-      <img src="@/assets/chat_icon_file.png" alt="" />
+      <img v-if="showType == 'image'" src="@/assets/chat_icon_image.png" alt="" />
+      <img v-if="showType == 'file'" src="@/assets/chat_icon_file.png" alt="" />
     </a-upload>
     <uplaodProgressModal :uploadingFilesList="uploadingFilesList" :showProgressModel="showProgressModel" :isUploadComplete="uploadFullfilled" @close="closeProgressModal" />
   </span>
@@ -118,7 +119,8 @@ export default {
     // 上传完毕校验API
     notifyCheckApi: {
       type: Function,
-      default: filesLibrary.notifyOssCheck
+      // default: filesLibrary.notifyOssCheck
+      default: null
     },
     // 是否支持多选,要求IE10+
     multiple: {
@@ -129,6 +131,9 @@ export default {
     showProgress: {
       type: Boolean,
       default: true
+    },
+    showType: {
+      type: String
     }
   },
   data() {
@@ -174,15 +179,20 @@ export default {
         this.uploadedList = tempArr
         // this.$emit('uploaded', this.uploadedList)
         this.uploadedList = []
-        // console.log('after uploaded emit', this.uploadingFilesList, this.uploadedList)
+        // console.log('after uploaded emit', this.uploadingFilesList[0], this.uploadedList)
       }
     }
   },
   methods: {
     closeProgressModal() {
+      let a = this.uploadingFilesList[0].OssInfo
+      let b = a.host + '/' + a.key
+      console.log('clos-li', this.uploadingFilesList[0], this.uploadingFilesList[0].file, this.uploadingFilesList[0].OssInfo, b)
+      this.$emit('uploaded', this.uploadingFilesList[0], 'file')
       this.showUploadModel = false
       this.uploadingFilesList = []
       this.$emit('close')
+      // , this.uploadingFilesList[0].file, this.uploadingFilesList[0].OssInfo
     },
     /**
      * 获取OSS上传凭证
@@ -205,9 +215,9 @@ export default {
       fileCell.set('uploading')
       try {
         await this.isUploadFileValidate(fileCell.file)
-        // await this.getOssToken(fileCell)
+        await this.getOssToken(fileCell)
         await this.uploadOss(fileCell)
-        // await this.checkFile(fileCell)
+        await this.checkFile(fileCell)
       } catch (err) {
         if (err && err.response) {
           fileCell.set('failed', err.response.data)
@@ -236,15 +246,17 @@ export default {
       return new Promise((resolve, reject) => {
         this.getOssTokenApi()
           .then(res => {
-            if (res.status >= 200 && res.status < 300) {
+            console.log(res, 'get - oss')
+            //  res.status >= 200 && res.status < 300
+            if (res) {
               fileCell.OssInfo = {
-                policy: res.data.policy,
-                OSSAccessKeyId: res.data.access_key,
-                signature: res.data.signature,
-                key: `${res.data.directory}/${fileCell.file.name}`,
-                host: res.data.host,
+                policy: res.policy,
+                OSSAccessKeyId: res.accessid,
+                signature: res.signature,
+                key: `${res.dir}${fileCell.file.name}`,
+                host: res.host,
                 filename: fileCell.file.name,
-                directory: res.data.directory
+                directory: res.dir
               }
               fileCell.hasToken = true
               resolve(fileCell)
@@ -278,11 +290,12 @@ export default {
         filesLibrary
           .uploadOss(uploadParams)
           .then(res => {
-            if (res && res.status === 204) {
-              resolve()
-            } else {
-              reject(new Error('上传失败'))
-            }
+            // if (res && res.status === 204) {
+            console.log(res)
+            resolve()
+            // } else {
+            //   reject(new Error('上传失败'))
+            // }
           })
           .catch(err => {
             reject(err)
@@ -296,7 +309,7 @@ export default {
         qs.stringify({
           parent_id: this.parentId,
           filename: fileCell.OssInfo.filename,
-          oss_path: `${fileCell.OssInfo.directory}/${fileCell.OssInfo.filename}`,
+          oss_path: `${fileCell.OssInfo.directory}${fileCell.OssInfo.filename}`,
           verify: this.checkInfo
         })
       )

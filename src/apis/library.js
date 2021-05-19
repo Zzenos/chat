@@ -5,7 +5,8 @@ const PREFIX_API = '/assetmanager'
 // 获取oss上传凭证
 const getOssToken = query =>
   axios.request({
-    url: `${PREFIX_API}/file/upload/form`,
+    // url: `${PREFIX_API}/file/upload/form`,
+    url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/oss/signature',
     method: 'GET',
     data: query
   })
