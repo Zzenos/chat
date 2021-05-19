@@ -185,6 +185,7 @@ export default {
         width: 212px;
         color: rgba(0, 0, 0, 0.45);
         line-height: 18px;
+        height: 18px;
         font-size: 12px;
       }
     }
