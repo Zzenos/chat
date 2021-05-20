@@ -13,7 +13,9 @@
   <div class="reply-message-pop">
     <a-popover v-model="visible" title="" :placement="placement" trigger="click" overlayClassName="reply-message-popover">
       <div slot="content" @click="hide" v-html="content"></div>
-      <div class="reply-content" v-html="content"></div>
+      <div style="padding: 8px 12px;background: rgba(0, 0, 0, 0.05);border-radius: 4px;margin-top: 8px;">
+        <div class="reply-content" v-html="content"></div>
+      </div>
     </a-popover>
   </div>
 </template>
@@ -101,10 +103,10 @@ export default {
 }
 .reply-message-pop {
   .reply-content {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-    margin-top: 8px;
-    padding: 8px 12px;
+    // background: rgba(0, 0, 0, 0.05);
+    // border-radius: 4px;
+    // margin-top: 8px;
+    // padding: 8px 12px;
     font-size: 12px;
     font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
