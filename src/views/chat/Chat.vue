@@ -449,6 +449,9 @@ export default {
     },
     translateText(index, item) {
       console.log(index, item)
+      this.records[index].translateShow = true
+      this.records[index].translateResult = 'pending'
+      this.$forceUpdate()
       axios({
         method: 'post',
         url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/voice/convert',
@@ -458,12 +461,12 @@ export default {
         console.log(code, data)
         if (code == 200) {
           this.records[index].translateText = data.result
-          this.records[index].translateResult = true
-          this.records[index].translateShow = true
+          this.records[index].translateResult = 'success'
+          // this.records[index].translateShow = true
           this.$forceUpdate()
         } else {
-          this.records[index].translateResult = false
-          this.records[index].translateShow = true
+          this.records[index].translateResult = 'fail'
+          // this.records[index].translateShow = true
           this.$forceUpdate()
         }
       })

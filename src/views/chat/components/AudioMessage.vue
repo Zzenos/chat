@@ -8,7 +8,7 @@
       minlength: voiceTime < 10
     }"
   >
-    <!-- <audio controls :src="url" ref="audioPlayer" style="display:none"></audio> -->
+    <!-- <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>  pending-->
     <div class="self__audio" @click="playAll">
       <div class="audio__trigger">
         <div class="audio-icon">
@@ -19,12 +19,13 @@
       <div class="audio__duration">{{ voiceTime }}''</div>
     </div>
     <div class="translate" v-show="translateShow">
-      <span v-show="translateResult">{{ translateText }}</span>
-      <span v-show="!translateResult">
+      <span v-show="translateResult == 'pending'"><img src="@/assets/sending.png" alt="" class="loading"/></span>
+      <span v-show="translateResult == 'success'">{{ translateText }}</span>
+      <span v-show="translateResult == 'fail'">
         <img src="@/assets/icon_voice_warning.png" alt="" />
         <span class="fail-text">转换失败</span>
       </span>
-      <!-- <span @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span> -->
+      <span v-show="translateResult != 'pending'" @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span>
     </div>
   </div>
 </template>
@@ -72,8 +73,8 @@ export default {
       default: false
     },
     translateResult: {
-      type: Boolean,
-      default: true
+      type: String,
+      default: 'pending'
     },
     closeTranslateText: {
       type: Function
@@ -168,6 +169,10 @@ export default {
     font-weight: 400;
     color: #000000;
     line-height: 22px;
+    .loading {
+      width: 20px;
+      height: 20px;
+    }
     .fail-text {
       color: rgba(0, 0, 0, 0.45);
       margin-left: 8px;
