@@ -3,8 +3,8 @@
     <div class="address-book_tab">
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="customer" tab="客户">
-          <div class="list-wraper">
-            <div v-for="item in customerList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+          <RecycleScroller class="list-wraper" :items="customerList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+            <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <div class="ellipsis" :style="{ 'max-width': item.lost ? '150px' : '225px' }">
@@ -15,12 +15,12 @@
                 <span v-if="item.lost == '3'" class="tag">删除客户</span>
               </div>
             </div>
-            <no-data v-if="customerList.length === 0" />
-          </div>
+          </RecycleScroller>
+          <no-data v-if="customerList.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="group" tab="群聊">
-          <div class="list-wraper">
-            <div v-for="item in groupList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+          <RecycleScroller class="list-wraper" :items="groupList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+            <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <div class="nickname">
                 <div class="ellipsis" :style="{ 'max-width': '225px' }">
@@ -29,12 +29,12 @@
                 <span>（{{ item.memberCount }}）</span>
               </div>
             </div>
-            <no-data v-if="groupList.length === 0" />
-          </div>
+          </RecycleScroller>
+          <no-data v-if="groupList.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="member" tab="成员">
-          <div class="list-wraper">
-            <div v-for="item in memberList" :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
+          <RecycleScroller class="list-wraper" :items="memberList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+            <div :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
                 <div class="ellipsis" :style="{ 'max-width': '225px' }">
@@ -43,7 +43,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </RecycleScroller>
           <no-data v-if="memberList.length === 0" />
         </a-tab-pane>
       </a-tabs>

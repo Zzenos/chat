@@ -1,26 +1,28 @@
 <template>
   <div class="chat-list_container">
     <a-spin size="large" tip="数据加载中..." :spinning="spinning"></a-spin>
-    <div v-for="item in chats" :key="item.chatId" class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
-      <a-badge :offset="[-18, 0]" :count="item.unreadCount" :overflow-count="99">
-        <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-        <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
-      </a-badge>
-      <div class="info">
-        <div class="nickname">
-          <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '70px' : '140px' }">
-            <span v-html="item.wechatName"></span>
-            <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
-            <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
+    <RecycleScroller class="scroller" :items="chats" :emitUpdate="true" :item-size="72" key-field="chatId" v-slot="{ item }">
+      <div class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
+        <a-badge :offset="[-18, 0]" :count="item.unreadCount" :overflow-count="99">
+          <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
+          <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
+        </a-badge>
+        <div class="info">
+          <div class="nickname">
+            <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '70px' : '140px' }">
+              <span v-html="item.wechatName"></span>
+              <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
+              <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
+            </div>
+            <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
+            <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
           </div>
-          <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
-          <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
+          <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
+          <!-- 需要根据消息类型，处理显示的内容 -->
+          <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
         </div>
-        <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
-        <!-- 需要根据消息类型，处理显示的内容 -->
-        <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
       </div>
-    </div>
+    </RecycleScroller>
     <no-data text="暂无消息内容" v-if="!spinning && chats.length === 0" />
   </div>
 </template>
@@ -133,9 +135,12 @@ export default {
 .chat-list_container {
   width: 100%;
   height: calc(100vh - 132px);
-  overflow-y: scroll;
+  // overflow-y: scroll;
   /deep/.ant-badge-count {
     box-shadow: none;
+  }
+  .scroller {
+    height: 100%;
   }
   .item {
     position: relative;
