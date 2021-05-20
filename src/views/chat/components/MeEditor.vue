@@ -80,7 +80,9 @@
       ></div>
       <div class="reply" v-show="replyShow">
         <!-- <span class="close-reply" @click="closeReply">&times;</span> -->
-        <div class="reply-content">{{ replyName }}:{{ replyContent }}</div>
+        <div class="reply-content">
+          <div class="meditor-reply-content">{{ replyName }}:{{ replyContent }}</div>
+        </div>
         <div class="close-reply" @click="closeReply">
           <img src="@/assets/关闭 (1).png" alt="" />
         </div>
@@ -560,11 +562,12 @@ export default {
     }
     .reply {
       text-align: left;
-      height: 34px;
+      min-height: 34px;
       padding-left: 24px;
       margin-top: 12px;
+      display: flex;
+      align-items: center;
       .reply-content {
-        float: left;
         background: rgba(0, 0, 0, 0.05);
         border-radius: 4px;
         padding: 8px 8px 8px 12px;
@@ -573,17 +576,19 @@ export default {
         font-weight: 400;
         color: rgba(0, 0, 0, 0.45);
         line-height: 18px;
-        // display: inline-block;
-        max-width: 550px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        .meditor-reply-content {
+          max-width: 320px;
+          display: -webkit-box;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
       }
       .close-reply {
         width: 14px;
-        height: 14px;
-        float: left;
-        margin: 10px 8px;
+        // height: 14px;
+        margin-left: 8px;
         line-height: 1;
         border-radius: 50%;
         background: rgba(0, 0, 0, 0.25);
