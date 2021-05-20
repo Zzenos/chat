@@ -18,7 +18,7 @@
         </div>
         <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
         <!-- 需要根据消息类型，处理显示的内容 -->
-        <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
+        <div class="msg ellipsis" v-html="item.lastMsg.defaultContent.includes('------') ? item.lastMsg.defaultContent.split('------')[1] : item.lastMsg.defaultContent"></div>
       </div>
     </div>
     <no-data text="暂无消息内容" v-if="!spinning && chats.length === 0" />
