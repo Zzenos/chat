@@ -467,6 +467,8 @@ export default {
         // console.log('value-1')
         this.editorText = ''
         this.replyContent = ''
+        this.replyName = ''
+        this.replyShow = false
         this.$nextTick(() => {
           this.$refs.messagInput.innerHTML = ''
         })
