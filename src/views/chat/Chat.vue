@@ -430,6 +430,7 @@ export default {
       let container = document.createElement('div')
       container.innerHTML = content
       content = container.innerText
+      content = '"' + content + '"'
       container = null
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
