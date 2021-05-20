@@ -132,7 +132,12 @@ export default {
       type: Boolean,
       default: true
     },
+    //展示类型
     showType: {
+      type: String
+    },
+    //消息发送类型
+    sendType: {
       type: String
     }
   },
@@ -142,7 +147,8 @@ export default {
       parentId: 0,
       showUploadModel: false, // 显示上传进度提示
       uploadingFilesList: [], // 正在上传的文件列表
-      uploadedList: [] // 上传成功的文件列表
+      uploadedList: [], // 上传成功的文件列表,
+      resultStatus: false
     }
   },
   components: {
@@ -188,7 +194,11 @@ export default {
       let a = this.uploadingFilesList[0].OssInfo
       let b = a.host + '/' + a.key
       console.log('clos-li', this.uploadingFilesList[0], this.uploadingFilesList[0].file, this.uploadingFilesList[0].OssInfo, b)
-      this.$emit('uploaded', this.uploadingFilesList[0], 'file')
+      // this.$emit('uploaded', this.uploadingFilesList[0], 'file')
+      if (this.resultStatus) {
+        this.$emit('uploaded', this.uploadingFilesList[0], this.sendType)
+        this.resultStatus = false
+      }
       this.showUploadModel = false
       this.uploadingFilesList = []
       this.$emit('close')
@@ -261,10 +271,14 @@ export default {
               fileCell.hasToken = true
               resolve(fileCell)
             } else {
+              console.log('上传失败111')
+              this.resultStatus = false
               reject(new Error(res.data))
             }
           })
           .catch(err => {
+            this.resultStatus = false
+            console.log('上传失败报错222')
             reject(err)
           })
       })
@@ -291,7 +305,8 @@ export default {
           .uploadOss(uploadParams)
           .then(res => {
             // if (res && res.status === 204) {
-            console.log(res)
+            console.log(res, '上传成功-----')
+            this.resultStatus = true
             resolve()
             // } else {
             //   reject(new Error('上传失败'))

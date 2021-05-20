@@ -21,9 +21,29 @@
         <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
         </li>
+        <!-- <li v-if="!lost">
+          <upload
+            :showType="'image'"
+            :sendType="'iv'"
+            :accept="['png', 'jpg', 'jpeg', 'mp4']"
+            :maxSize="25 * 1024 * 1024"
+            :getOssTokenApi="uploadFile.getOssTokenApi"
+            :notifyCheckApi="uploadFile.notifyOssCheck"
+            @uploaded="uploaded"
+          >
+          </upload>
+        </li> -->
         <li v-if="!lost">
           <!--  :accept="['png']" -->
-          <upload :showType="'file'" :getOssTokenApi="uploadFile.getOssTokenApi" :notifyCheckApi="uploadFile.notifyOssCheck" @uploaded="uploaded"> </upload>
+          <upload
+            :showType="'file'"
+            :sendType="'file'"
+            :accept="['pdf', 'jpg', 'jpeg', 'wav']"
+            :getOssTokenApi="uploadFile.getOssTokenApi"
+            :notifyCheckApi="uploadFile.notifyOssCheck"
+            @uploaded="uploaded"
+          >
+          </upload>
         </li>
         <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord">
           <img src="@/assets/chat_icon_record.png" alt="" />
@@ -173,7 +193,6 @@ export default {
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
         this.closeReply()
-        e.preventDefault()
       }
     },
     // clear() {
@@ -322,6 +341,7 @@ export default {
         sendData.coverUrl = e.OssInfo.host + '/' + e.OssInfo.key + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
       }
       console.log(sendData, 'sendData')
+      // this[types.SEND_MSG](sendData)
       // this[types.SEND_MSG]({
       //   msgType: 'file',
       //   chatId: contactId,
@@ -454,7 +474,10 @@ export default {
       immediate: true,
       handler(n) {
         // console.log('value-change', n)
-        this.editorText = n
+        let container = document.createElement('div')
+        container.innerHTML = n
+        this.editorText = container.innerText
+        container = null
       }
     }
   }

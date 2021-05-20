@@ -82,12 +82,7 @@
                 <div class="talk-content">
                   <div class="talk-content-msg">
                     <!-- 文本消息 -->
-                    <text-message
-                      v-if="item.msgType == 'text'"
-                      :content="item.content.includes('------') ? item.content.split('------')[1] : item.content"
-                      :float="item.float"
-                      @contextmenu.native="onCopy(index, item, $event)"
-                    />
+                    <text-message v-if="item.msgType == 'text'" :content="item.defaultContent" :float="item.float" @contextmenu.native="onCopy(index, item, $event)" />
 
                     <!-- 图片消息 -->
                     <image-message v-else-if="item.msgType == 'image'" :src="item.url" :sendingPic="item.status" @contextmenu.native="onCopy(index, item, $event)" />
@@ -420,18 +415,12 @@ export default {
     },
     replyRecords(index, item) {
       console.log('引用消息', index, item)
-      let content = ''
-      if (item.msgType == 'text') {
-        content = item.content
-      } else if (item.msgType == 'image') {
-        content = '[图片]'
-      }
-      content = content.includes('------') ? content.split('------')[1] : content
+      let content = item.defaultContent
       let container = document.createElement('div')
       container.innerHTML = content
       content = container.innerText
-      content = '"' + content + '"'
       container = null
+      content = '"' + content + '"'
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
     forwardRecords() {
