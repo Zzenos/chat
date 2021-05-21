@@ -18,10 +18,10 @@
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
         </li>
-        <li v-if="!lost" @click="$refs.restFile.click()">
+        <!-- <li v-if="!lost" @click="$refs.restFile.click()">
           <img src="@/assets/chat_icon_image.png" alt="" />
-        </li>
-        <!-- <li v-if="!lost">
+        </li> -->
+        <li v-if="!lost">
           <upload
             :showType="'image'"
             :sendType="'iv'"
@@ -32,13 +32,12 @@
             @uploaded="uploaded"
           >
           </upload>
-        </li> -->
+        </li>
         <li v-if="!lost">
-          <!--  :accept="['png']" -->
           <upload
             :showType="'file'"
             :sendType="'file'"
-            :accept="['pdf', 'docx', 'mp3', 'mp4', 'wav', 'ppt', 'pptx', 'txt', 'webp']"
+            :accept="['pdf', 'lpdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'xlsx', 'zip', 'exe']"
             :getOssTokenApi="uploadFile.getOssTokenApi"
             :notifyCheckApi="uploadFile.notifyOssCheck"
             @uploaded="uploaded"
