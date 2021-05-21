@@ -38,7 +38,7 @@
           <upload
             :showType="'file'"
             :sendType="'file'"
-            :accept="['pdf', 'jpg', 'jpeg', 'wav']"
+            :accept="['pdf', 'docx', 'mp3', 'mp4', 'wav', 'ppt', 'pptx', 'txt', 'webp']"
             :getOssTokenApi="uploadFile.getOssTokenApi"
             :notifyCheckApi="uploadFile.notifyOssCheck"
             @uploaded="uploaded"
@@ -343,7 +343,7 @@ export default {
         sendData.coverUrl = e.OssInfo.host + '/' + e.OssInfo.key + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
       }
       console.log(sendData, 'sendData')
-      // this[types.SEND_MSG](sendData)
+      this[types.SEND_MSG](sendData)
       // this[types.SEND_MSG]({
       //   msgType: 'file',
       //   chatId: contactId,
