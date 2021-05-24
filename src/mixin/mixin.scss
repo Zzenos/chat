@@ -1,0 +1,250 @@
+// 常量定义： 例：固定颜色、大小、尺寸，便于全局统一
+
+
+
+// 函数scss
+// 元素长宽
+@mixin wh($width, $height) {
+  width: $width;
+  height: $height;
+}
+// 垂直居中
+@mixin heightLine($h, $l: null) {
+  height: $h;
+
+  @if $l {
+    line-height: $l;
+  } @else {
+    line-height: $h;
+  }
+}
+// 字体颜色,大小, 水平布局
+@mixin font($size: 14px, $color: rgba(0, 0, 0, 1), $text-align: center) {
+  font-size: $size;
+  color: $color;
+  text-align: $text-align;
+}
+// flex布局
+@mixin flex($justify-content: center, $align-items: center) {
+  display: flex;
+  justify-content: $justify-content;
+  align-items: $align-items;
+}
+// 相对定位 没有入参为null
+@mixin positionAbs($top: null, $right: null, $bottom: null, $left: null) { // 上右下左
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+// 默认相对父元素居中
+@mixin positionCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+// 容器内loading图标
+@mixin loading {
+  font-size: 32px;
+  color: #1890ff;
+  @include positionCenter;
+}
+
+// 用户多选选样式
+@mixin checkedItem {
+  .checked-item {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 52px;
+    padding-left: 8px;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+
+    &.active {
+      background-color: #e9eaeb;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      margin-right: 12px;
+    }
+
+    .info {
+      text-align: left;
+
+      .nickname {
+        display: flex;
+        align-items: center;
+        line-height: 36px;
+
+        .label {
+          color: #0ead63;
+          margin-left: 8px;
+        }
+
+        .tag {
+          display: inline-block;
+          background: #e1eaff;
+          color: #1d61ef;
+          width: 56px;
+          height: 18px;
+          line-height: 18px;
+          text-align: center;
+          border-radius: 2px;
+          font-size: 12px;
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+}
+
+// 多选勾选后展示样式
+@mixin checkedListItem {
+  .checked-item {
+    display: inline-block;
+    position: relative;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    margin-right: 50px;
+
+    .checkbox-item-text {
+      width: 150px;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .label-name {
+      width: 150px;
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      line-height: 22px;
+    }
+
+    .label-ownerName {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 18px;
+    }
+
+    .checked-item_close {
+      position: absolute;
+      right: -10px;
+      top: -10px;
+      cursor: pointer;
+    }
+
+    .user-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+  }
+}
+
+// 表格微信头像昵称样式
+@mixin wechatItem {
+  .wechat-item {
+    display: inline-block;
+
+    .wechat-item_right {
+      max-width: 200px;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .wechat-name {
+      display: block;
+    }
+
+    .wechat-flag {
+      color: #00b300;
+      margin-left: 5px;
+    }
+
+    .wechat-name-text {
+      max-width: 150px;
+      display: inline-block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+
+    .wechat-nickname {
+      display: block;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 14px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      overflow: hidden;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+  }
+}
+
+@mixin companyWechat {
+  .company-wechat_user {
+    background-color: #edf4fe;
+    display: inline-block;
+    padding: 10px 20px;
+
+    .user-icon {
+      color: #6893ed;
+    }
+  }
+}
+
+// 数据统计顶部样式
+@mixin dataStatistics {
+  .data-statistics {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+
+  .data-top_item {
+    flex: 1;
+    text-align: center;
+  }
+
+  .data-value {
+    padding-bottom: 16px;
+    font-size: 36px;
+    line-height: 54px;
+    color: rgba(0, 0, 0, .85);
+  }
+
+  .data-label {
+    font-size: 14px;
+    color: rgba(0, 0, 0, .85);
+  }
+}

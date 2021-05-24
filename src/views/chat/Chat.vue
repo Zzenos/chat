@@ -203,6 +203,8 @@
       </div>
       <!-- 聊天记录弹窗 -->
       <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
+      <!-- 选择群聊窗口 -->
+      <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -229,6 +231,8 @@
 
 <script>
 import Vue from 'vue'
+import { mapActions, mapGetters } from 'vuex'
+import * as types from '@/store/actionType'
 import Contextmenu from 'vue-contextmenujs'
 import axios from 'axios'
 import { formateTime, parseTime } from '@/util/util'
@@ -242,10 +246,9 @@ import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
 import ReplyMessage from '@/views/chat/components/ReplyMessage'
-import { mapActions, mapGetters } from 'vuex'
-import * as types from '@/store/actionType'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
+import TransmitMsgModal from './components/TransmitMsgModal'
 Vue.use(Contextmenu)
 import iframeMixin from '@/mixin/iframeMixin'
 
@@ -264,7 +267,8 @@ export default {
     AudioMessage,
     WebappMessage,
     ReplyMessage,
-    ChatRecordModal
+    ChatRecordModal,
+    TransmitMsgModal
   },
   data() {
     return {
@@ -288,7 +292,8 @@ export default {
       // 控制聊天记录弹窗显示
       chatRecordVisible: false,
       // 当前查看记录的对象
-      infoData: null
+      infoData: null,
+      transmitMsgVisible: false
     }
   },
   mounted() {
@@ -425,6 +430,11 @@ export default {
     },
     forwardRecords() {
       console.log('转发消息')
+      this.transmitMsgVisible = true
+    },
+    // 转发
+    transmitMsg() {
+      this.transmitMsgVisible = false
     },
     showRecordModal() {
       //聊天记录传入数据infoData
