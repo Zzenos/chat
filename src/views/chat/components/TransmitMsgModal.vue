@@ -55,15 +55,15 @@
 </template>
 
 <script>
-// import moment from 'moment'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import * as types from '@/store/actionType'
 import SelectModal from '@/components/common/SelectModal.vue'
 
 export default {
   components: {
     SelectModal
   },
-  props: ['visible', 'title', 'checkedList'],
+  props: ['visible', 'title', 'checkedList', 'msg'],
   data() {
     return {
       // 左侧搜索条件
@@ -80,7 +80,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['chatsByTjId', 'contactByTjId']),
+    ...mapGetters(['chatsByTjId', 'contactByTjId', 'userDetailsById']),
     chatList() {
       return this.chatsByTjId(this.$route.params.tjId)
     },
@@ -97,22 +97,14 @@ export default {
         item.disabled = [1, 3].includes(item.chatType) && [1, 3].includes(item.lost)
         return item
       })
-      console.log(n, this.checkOptions)
+      // console.log(n, this.checkOptions)
     }
   },
   methods: {
+    ...mapActions([types.SEND_MSG]),
     /**
-     * @author 王泽
-     * @time  2021-03-19
-     * @param {checkedList:要过滤的数据}
-     * @description 勾选过滤方法
-     */
-    filterCheckedList(checkedList) {
-      return checkedList.filter(item => item.name.includes(this.keyword))
-    },
-    /**
-     * @author 王泽
-     * @time  2021-03-19
+     * @author wlx
+     * @time  2021-05-24
      * @param
      * @description 搜索
      */
@@ -120,8 +112,8 @@ export default {
       this.checkOptions = this.searchData.name ? this[`${this.curSource}List`].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchData.name) > -1) : this[`${this.curSource}List`]
     },
     /**
-     * @author 王泽
-     * @time  2021-03-18
+     * @author wlx
+     * @time  2021-05-24
      * @param
      * @description 关闭弹窗
      */
@@ -129,18 +121,43 @@ export default {
       this.$emit('update:visible', false)
     },
     /**
-     * @author 王泽
-     * @time  2021-03-18
+     * @author wlx
+     * @time  2021-05-24
      * @param
      * @description 确认选择
      */
     confirmSelect(checkedList) {
+      console.log(checkedList, 'transmitMsgList')
+      checkedList.forEach(item => {
+        const { tjId } = this.$route.params
+        const {
+          info: { wechatName, wechatAvatar }
+        } = this.userDetailsById(tjId)
+        const { msgType, content, url, coverUrl, title, voiceTime } = this.msg
+        const msg = {
+          msgType,
+          content,
+          url,
+          coverUrl,
+          title,
+          voiceTime,
+          chatId: `${tjId}&${item.wechatId}`,
+          chatType: item.chatType,
+          fromId: tjId,
+          toId: item.wechatId,
+          sender: {
+            wechatName,
+            wechatAvatar
+          },
+          notResend: true
+        }
+        this[types.SEND_MSG](msg)
+      })
       this.$emit('confirmSelect', checkedList)
     }
   },
   mounted() {
     this.curSource = 'chat'
-    console.log('transmitMsg mounted')
   }
 }
 </script>

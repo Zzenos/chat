@@ -204,7 +204,7 @@
       <!-- 聊天记录弹窗 -->
       <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
       <!-- 选择群聊窗口 -->
-      <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
+      <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </main>
   </div>
   <div class="chatCotainer" v-else>
@@ -293,7 +293,8 @@ export default {
       chatRecordVisible: false,
       // 当前查看记录的对象
       infoData: null,
-      transmitMsgVisible: false
+      transmitMsgVisible: false,
+      msgInfo: {} // 消息体
     }
   },
   mounted() {
@@ -428,8 +429,9 @@ export default {
       content = '"' + content + '"'
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
-    forwardRecords() {
-      console.log('转发消息')
+    forwardRecords(index, item) {
+      console.log('转发消息', index, item)
+      this.msgInfo = item
       this.transmitMsgVisible = true
     },
     // 转发
@@ -474,8 +476,7 @@ export default {
     closeTranslateText(index) {
       this.records[index].translateShow = false
       this.$forceUpdate()
-    },
-    confirmSelectContacts() {}
+    }
   },
   watch: {
     $route: {

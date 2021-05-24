@@ -27,7 +27,7 @@
                   </a-checkbox>
                 </a-checkbox-group>
               </template>
-              <div class="no-data" v-else>暂无数据</div>
+              <a-empty :image="simpleImage" v-else />
             </a-spin>
           </div>
         </div>
@@ -43,7 +43,7 @@
             <a-button type="link" @click="handleBatchLimit">批量设置添加上限</a-button>
           </div>
           <div v-if="showDeleteAll">
-            <a-button type="link" @click="handleDelete()">全部删除</a-button>
+            <a-button type="link" :disabled="!rightList.length" @click="handleDelete()">全部删除</a-button>
           </div>
         </div>
         <div class="modal-list">
@@ -81,6 +81,7 @@
 
 <script>
 import deepClone from 'lodash/cloneDeep'
+import { Empty } from 'ant-design-vue'
 
 export default {
   props: {
@@ -234,6 +235,9 @@ export default {
       this.indeterminate = !!checkedList.length && checkedList.length < this.checkOptions.length
       this.checkAll = this.checkOptions.length ? checkedList.length === this.checkOptions.length : false
     }
+  },
+  beforeCreate() {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
   },
   mounted() {
     this.echoSelect()
