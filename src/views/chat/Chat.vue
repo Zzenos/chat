@@ -153,7 +153,7 @@
                     <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
-                  <reply-message v-if="item.msgType == 'text' && item.content.includes('------')" :float="item.float" :content="item.content.split('------')[0]" />
+                  <reply-message v-if="item.msgType == 'text' && item.content != item.defaultContent" :float="item.float" :content="dealContent(item.content)" />
                 </div>
               </div>
             </div>
@@ -429,6 +429,15 @@ export default {
       container = null
       content = '"' + content + '"'
       this.$refs.editor.openReply(item.sender.wechatName, content)
+    },
+    dealContent(content) {
+      if (content.includes('------')) {
+        return content.split('------')[0]
+      } else if (content.includes('- - - - - - - - - - - - - - -')) {
+        return content.split('- - - - - - - - - - - - - - -')[0]
+      } else {
+        return content
+      }
     },
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
