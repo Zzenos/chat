@@ -18,9 +18,6 @@
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
         </li>
-        <!-- <li v-if="!lost" @click="$refs.restFile.click()">
-          <img src="@/assets/chat_icon_image.png" alt="" />
-        </li> -->
         <li v-if="!lost">
           <upload
             :showType="'image'"
@@ -58,10 +55,6 @@
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
       </ul>
-      <!-- ------------- -->
-      <form enctype="multipart/form-data" style="display: none" ref="fileFrom">
-        <input type="file" ref="restFile" @change="uploadImageChange" />
-      </form>
     </div>
     <!-- <textarea :placeholder="placeholder" :readonly="readonly" v-model="editorText" @input="inputEvent($event)" @keydown="keydownEvent($event)" rows="6" /> -->
     <div class="meditor-foot">
@@ -104,7 +97,6 @@
 </template>
 <script>
 import deepClone from 'lodash/cloneDeep'
-import axios from 'axios'
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
 import Upload from './Upload.vue'
@@ -208,86 +200,6 @@ export default {
     //   console.log(index_name)
     //   this.editorText = ''
     // }
-    // 选择图片视频文件后回调方法
-    uploadImageChange(e) {
-      let file = e.target.files[0]
-      let type = file.type.split('/')[0]
-      let size = Math.ceil(file.size / 1024 / 1024)
-      console.log(file, type, size)
-      //不是图片和视频
-      if (type !== 'image' && type !== 'video') {
-        this.noValidVisible = true
-        this.noValidTitle = '目前只支持发送图片视频'
-        this.$refs.restFile.value = ''
-        return
-      }
-      //视频格式
-      if (type == 'video') {
-        if (file.type.split('/')[1] != 'mp4') {
-          this.noValidVisible = true
-          this.noValidTitle = '只支持上传mp4格式的视频'
-          this.$refs.restFile.value = ''
-          return
-        }
-        if (size >= 25) {
-          this.noValidVisible = true
-          this.noValidTitle = '只支持25M以内的视频'
-          this.$refs.restFile.value = ''
-          return
-        }
-      }
-      //图片格式
-      if (type == 'image') {
-        if (file.type.split('/')[1] != 'jpg' && file.type.split('/')[1] != 'png' && file.type.split('/')[1] != 'jpeg') {
-          this.noValidVisible = true
-          this.noValidTitle = '只支持上传jpg,png,jpeg格式的图片'
-          this.$refs.restFile.value = ''
-          return
-        }
-        if (size >= 25) {
-          this.noValidVisible = true
-          this.noValidTitle = '只支持25M以内的图片'
-          this.$refs.restFile.value = ''
-          return
-        }
-      }
-      let fileType = type == 'image' ? 1 : 2
-      let fileData = new FormData()
-      fileData.append('file', file)
-      fileData.append('fileType', fileType)
-      axios({
-        method: 'post',
-        // url: 'http://bizchat-chatroom.zmeng123.cn:9091/file/upload',
-        // url: 'http://bizchat-chatroom.zmeng123.cn/file/upload',
-        url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/file/upload',
-        data: fileData
-      }).then(res => {
-        let { code, data } = res.data
-        console.log(code, data)
-        if (code == 200) {
-          let { url, coverUrl = '' } = data
-          console.log(url, coverUrl)
-          let { contactId, tjId } = this.$route.params
-          let { wechatName, wechatAvatar } = this.userInfo.info
-          this[types.SEND_MSG]({
-            msgType: type,
-            chatId: contactId,
-            chatType: this.$route.query.chatType,
-            fromId: tjId,
-            toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-            content: '',
-            sender: {
-              wechatName: wechatName,
-              wechatAvatar: wechatAvatar
-            },
-            url: url,
-            coverUrl: coverUrl,
-            notResend: true
-          })
-        }
-        this.$refs.restFile.value = ''
-      })
-    },
     changePlaceholder() {
       this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
       this.readonly = true
@@ -343,27 +255,12 @@ export default {
       }
       console.log(sendData, 'sendData')
       this[types.SEND_MSG](sendData)
-      // this[types.SEND_MSG]({
-      //   msgType: 'file',
-      //   chatId: contactId,
-      //   chatType: this.$route.query.chatType,
-      //   fromId: tjId,
-      //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-      //   url: '',
-      //   title: '',
-      //   sender: {
-      //     wechatName: wechatName,
-      //     wechatAvatar: wechatAvatar
-      //   },
-      //   notResend: true
-      // })
     },
     changeText() {
       const value = deepClone(this.$refs.messagInput.innerHTML)
       this.value = value
     },
     editBlur() {
-      // console.log('editBlur')
       this.isChange = true
     },
     changeEmojiList(isNext) {

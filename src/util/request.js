@@ -5,8 +5,8 @@ import router from '@/router'
 
 class Request {
   constructor() {
-    // this.baseURL = process.env.VUE_APP_BASE_API
-    this.baseURL = 'https://test-bizchat.zmeng123.cn/api'
+    this.baseURL = process.env.VUE_APP_URANUS_API
+    // this.baseURL = 'https://test-bizchat.zmeng123.cn/api'
     this.timeout = 30000
   }
 
@@ -24,7 +24,7 @@ class Request {
         const { code } = res.data
         if (code === 301 || code === 302) {
           router.replace('/login')
-        } else if (code && code !== 0) {
+        } else if (code && code !== 0 && code !== 200) {
           message.error(res.data.message)
           return Promise.reject(res.data)
         }
