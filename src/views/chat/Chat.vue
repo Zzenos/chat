@@ -432,6 +432,10 @@ export default {
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
       this.msgInfo = item
+      if (['link', 'card', 'weapp'].includes(this.msgInfo.msgType)) {
+        this.$message.warning('该类型消息暂不支持转发')
+        return
+      }
       this.transmitMsgVisible = true
     },
     // 转发
