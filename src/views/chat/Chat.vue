@@ -234,7 +234,8 @@ import Vue from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import Contextmenu from 'vue-contextmenujs'
-import axios from 'axios'
+// import axios from 'axios'
+import filesLibrary from '@/apis/library'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -380,7 +381,7 @@ export default {
     },
     onCopy(index, item, event) {
       let menus = []
-      console.log(index, item, 'oncopy')
+      // console.log(index, item, 'oncopy')
       if (item.msgType == 'voice') {
         menus.push({
           label: '转为文字',
@@ -458,24 +459,24 @@ export default {
       this.records[index].translateShow = true
       this.records[index].translateResult = 'pending'
       this.$forceUpdate()
-      axios({
-        method: 'post',
-        url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/voice/convert',
-        data: { url: item.url }
-      }).then(res => {
-        let { code, data } = res.data
-        console.log(code, data)
-        if (code == 200) {
-          this.records[index].translateText = data.result
-          this.records[index].translateResult = 'success'
-          // this.records[index].translateShow = true
-          this.$forceUpdate()
-        } else {
-          this.records[index].translateResult = 'fail'
-          // this.records[index].translateShow = true
-          this.$forceUpdate()
-        }
-      })
+      filesLibrary
+        .audioText({ url: item.url })
+        .then(res => {
+          console.log(res)
+          let { code, data } = res
+          console.log(code, data)
+          if (code == 200) {
+            this.records[index].translateText = data.result
+            this.records[index].translateResult = 'success'
+            this.$forceUpdate()
+          } else {
+            this.records[index].translateResult = 'fail'
+            this.$forceUpdate()
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     closeTranslateText(index) {
       this.records[index].translateShow = false

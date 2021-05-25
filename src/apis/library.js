@@ -1,12 +1,11 @@
 // 登录接口
 import axios from '@/util/request'
 
-const PREFIX_API = '/assetmanager'
+const PREFIX_API = process.env.VUE_APP_CHAT_API
 // 获取oss上传凭证
 const getOssToken = query =>
   axios.request({
-    // url: `${PREFIX_API}/file/upload/form`,
-    url: 'http://bizchat-chatroom.zmeng123.cn:9091/chatroom/oss/signature',
+    url: `${PREFIX_API}/oss/signature`,
     method: 'GET',
     data: query
   })
@@ -25,9 +24,17 @@ const notifyOssCheck = query =>
     method: 'POST',
     data: query
   })
+//语音转文本
+const audioText = query =>
+  axios.request({
+    url: `${PREFIX_API}/voice/convert`,
+    method: 'POST',
+    data: query
+  })
 
 export default {
   getOssToken,
   notifyOssCheck,
-  uploadOss
+  uploadOss,
+  audioText
 }
