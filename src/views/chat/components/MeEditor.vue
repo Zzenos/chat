@@ -2,10 +2,10 @@
   <div class="meEditor">
     <div class="emoj">
       <ul>
-        <li v-if="!lost" v-wheel="changeEmojiList" id="emoji-parent">
+        <li v-if="!lost" ref="emojiBox" v-wheel="changeEmojiList" id="emoji-parent" wheel-disabled="0">
           <a-popover v-model="emojiVisible" :getPopupContainer="() => parentNode" trigger="click" @visibleChange="hideEmojiSelect">
             <div slot="content" class="emoji-content">
-              <a-carousel ref="emojiCarousel" :afterChange="changeEnd" :wheel-disabled="emojiCarouselDisabled">
+              <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
                 <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
                   <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
                 </div>
@@ -139,7 +139,8 @@ export default {
       // emoji分页列表
       emojiPageList: [],
       rangeOfInputBox: null,
-      emojiCarouselDisabled: false,
+      // emojiCarouselDisabled: false,
+      timer: null,
       replyShow: false,
       replyName: '',
       replyContent: ''
@@ -163,7 +164,6 @@ export default {
     },
     keydownEvent(e) {
       if (e.keyCode == 13 && e.shiftKey == false) {
-        // console.log(e, 'eeeeeee')
         e.preventDefault()
         // console.log(this.editorText, 'enter-down')
         let { contactId, tjId } = this.$route.params
@@ -264,11 +264,16 @@ export default {
       this.isChange = true
     },
     changeEmojiList(isNext) {
-      this.emojiCarouselDisabled = true
+      // this.emojiCarouselDisabled = true
       this.$refs.emojiCarousel[isNext ? 'next' : 'prev']()
     },
     changeEnd() {
-      this.emojiCarouselDisabled = false
+      // this.emojiCarouselDisabled = false
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        this.$refs.emojiBox.setAttribute('wheel-disabled', '0')
+      }, 300)
+      // this.emojiCarouselDisabled = false
     },
     insertSpecialText(text) {
       if (this.disabled) return
@@ -277,10 +282,6 @@ export default {
     },
     insertEmoji(emoji, isFocus = true) {
       this.getEndFocus()
-      // const emojiEl = document.createElement('img');
-      // emojiEl.src = '/static/img/emoji01.jpeg';
-      // const emojiEl = document.createElement('span');
-      // emojiEl.innerHTML = emoji
       const emojiEl = document.createTextNode(emoji)
       if (!this.rangeOfInputBox) {
         this.rangeOfInputBox = new Range()
