@@ -23,9 +23,8 @@ export default {
     }
   },
   watch: {
-    activeKey(n) {
-      if (n == 'groupInfo') return
-      this.sendMessage('InitUserInfo', this.userInfo)
+    activeKey(n, o) {
+      if (n === o || n == 'groupInfo') return
     }
   },
   mounted() {
@@ -36,9 +35,12 @@ export default {
   },
   methods: {
     initIframe(refName) {
-      console.log('iframe ref', refName, this.$refs[`${refName}`])
-      if (!this.$refs[`${refName}`]) return
-      this.iframeWin = this.$refs[refName].contentWindow
+      console.log('iframe ref:', refName, this.$refs[`${refName}`])
+      if (!this.$refs[`${refName}`]) {
+        this.sidebarConfig[this.activeKey].iframeWin = null
+        return
+      }
+      this.sidebarConfig[this.activeKey].iframeWin = this.$refs[refName].contentWindow
     },
     /**
      * @param {String} type
@@ -47,9 +49,9 @@ export default {
      */
     sendMessage(type, data) {
       this.initIframe(`${this.activeKey}Frame`)
-      if (!this.iframeWin) return
+      if (!this.sidebarConfig[this.activeKey].iframeWin) return
       setTimeout(() => {
-        this.iframeWin.postMessage({ type, data }, '*')
+        this.sidebarConfig[this.activeKey].iframeWin.postMessage({ type, data }, '*')
         console.warn('BizChat sendMessage', { type, data })
       }, 300)
     },
