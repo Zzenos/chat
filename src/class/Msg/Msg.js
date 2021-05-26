@@ -81,7 +81,7 @@ export class textMsg extends Msg {
     super(options, isSendMsg)
     let { content } = options
     this.content = content
-    this.defaultContent = content.includes('------') ? content.split('------')[1] : content
+    this.defaultContent = content.includes('------') ? content.split('------')[1] : content.includes('- - - - - - - - - - - - - - -') ? content.split('- - - - - - - - - - - - - - -')[1] : content
   }
 }
 

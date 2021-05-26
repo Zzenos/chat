@@ -25,7 +25,7 @@
         <img src="@/assets/icon_voice_warning.png" alt="" />
         <span class="fail-text">转换失败</span>
       </span>
-      <span v-show="translateResult != 'pending'" @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span>
+      <!-- <span v-show="translateResult != 'pending'" @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span> -->
     </div>
   </div>
 </template>
