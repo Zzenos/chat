@@ -5,11 +5,21 @@ export default {
   data() {
     return {
       iframeWin: null, // iframe 对象
+      // 侧边栏配置
+      sidebarConfig: {
+        customerInfo: {
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
+        },
+        verbalTrick: {
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/verbalTricks.html`
+        }
+      },
+      // 用户信息
       userInfo: {
         // contactUserId: 'wm_XL6CgAAmUTX9xdIFtij2jvoC90-QQ',
         // corpId: 'wwfc3ae560ee1592d8',
         // userId: 'WangJiaXiang'
-      } // 用户信息
+      }
     }
   },
   watch: {
@@ -37,6 +47,7 @@ export default {
      */
     sendMessage(type, data) {
       this.initIframe(`${this.activeKey}Frame`)
+      if (!this.iframeWin) return
       setTimeout(() => {
         this.iframeWin.postMessage({ type, data }, '*')
         console.warn('BizChat sendMessage', { type, data })

@@ -190,15 +190,15 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="customerInfoFrame" title="客户资料" src="http://test-bizchat.zmeng123.cn/app/cusPortrait.html" frameborder="0">
+            <iframe ref="customerInfoFrame" title="客户资料" :src="sidebarConfig.customerInfo.src" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
-          <!-- <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="verbalTrickFrame" title="话术库" src="http://test-bizchat.zmeng123.cn/app/verbalTricks.html" frameborder="0">
+          <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
-          </a-tab-pane> -->
+          </a-tab-pane>
         </a-tabs>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -486,7 +486,8 @@ export default {
   watch: {
     $route: {
       immediate: true,
-      handler(newVal) {
+      handler(newVal, oldVal) {
+        if (newVal === oldVal) return
         const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId } = newVal.query
         const { tjId, contactId } = newVal.params
         const accountInfo = this.userDetailsById(tjId)
