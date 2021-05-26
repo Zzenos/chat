@@ -561,6 +561,7 @@ export default {
   // width: 400px;
   width: 360px;
   height: 340px;
+  overflow: hidden;
 }
 .carousel-circle {
   display: inline-block;
