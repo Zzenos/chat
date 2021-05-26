@@ -3,7 +3,7 @@
     <!-- 文件描述  大小 -->
     <div class="file-box">
       <span class="name">{{ title }}</span>
-      <span class="size"><a :href="url">查看</a></span>
+      <span class="size"><a :href="url" download="">查看</a></span>
     </div>
     <!-- 文件图片 -->
     <div class="ext">
