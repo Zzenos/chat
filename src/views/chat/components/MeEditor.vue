@@ -168,13 +168,20 @@ export default {
         // console.log(this.editorText, 'enter-down')
         let { contactId, tjId } = this.$route.params
         let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let content = null
+        if (chatType == 1) {
+          content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
+        } else {
+          content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+        }
         this[types.SEND_MSG]({
           msgType: 'text',
           chatId: contactId,
-          chatType: this.$route.query.chatType,
+          chatType: chatType,
           fromId: tjId,
           toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText,
+          content: content,
           sender: {
             wechatName: wechatName,
             wechatAvatar: wechatAvatar

@@ -431,13 +431,11 @@ export default {
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
     dealContent(content) {
-      if (content.includes('------')) {
-        return content.split('------')[0]
-      } else if (content.includes('- - - - - - - - - - - - - - -')) {
-        return content.split('- - - - - - - - - - - - - - -')[0]
-      } else {
-        return content
-      }
+      return content.split('\n------\n').lenght > 1
+        ? content.split('\n------\n').shift()
+        : content.split('\n- - - - - - - - - - - - - - -\n').length > 1
+        ? content.split('\n- - - - - - - - - - - - - - -\n').shift()
+        : content.split('\n------\n').shift()
     },
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
