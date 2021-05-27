@@ -190,15 +190,15 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="customerInfoFrame" title="客户资料" :src="sidebarConfig.customerInfo.src" frameborder="0">
+            <iframe ref="customerInfoFrame" title="客户资料" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
-          <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src" frameborder="0">
+          <!-- <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
-          </a-tab-pane>
+          </a-tab-pane> -->
         </a-tabs>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -545,11 +545,6 @@ export default {
         if (chatType == 3) {
           this.activeKey = 'customerInfo'
         }
-        // 给应用传递当前用户信息
-        this.$nextTick(() => {
-          console.log(this.chatId)
-          this.chatId != '0' && this.sendMessage('InitUserInfo', this.userInfo)
-        })
       }
     },
     records() {
