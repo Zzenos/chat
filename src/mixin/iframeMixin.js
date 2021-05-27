@@ -48,6 +48,7 @@ export default {
      * @description 传递数据给iframe
      */
     sendMessage(type, data) {
+      if (!this.activeKey) return
       this.initIframe(`${this.activeKey}Frame`)
       if (!this.sidebarConfig[this.activeKey].iframeWin) return
       setTimeout(() => {
