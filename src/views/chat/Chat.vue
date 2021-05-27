@@ -510,7 +510,7 @@ export default {
         this.sendToBottom()
         console.log(this.records, 'chat-records')
         this.userInfo = {
-          corpId: 'wwfc3ae560ee1592d8',
+          corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
           contactUserId: externalWechatId,
           userId: accountInfo.info.wechatId,
           nickname: wechatName
