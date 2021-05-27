@@ -391,14 +391,6 @@ export default {
             this.translateText(index, item)
           }
         })
-        menus.push({
-          label: '删除',
-          icon: 'delete',
-          customClass: 'cus-contextmenu-item',
-          onClick: () => {
-            this.closeTranslateText(index, item)
-          }
-        })
       }
 
       menus.push({
