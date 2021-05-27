@@ -87,7 +87,7 @@ export default {
     downFile(val) {
       const link = document.createElement('a')
       link.style.display = 'none'
-      link.href = val.fileUrl
+      link.href = val.msgtype == 'voice' ? val.fileUrl : val.href
       document.body.appendChild(link)
       link.click()
       link.remove()
