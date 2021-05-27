@@ -87,18 +87,6 @@ export default {
     contactData() {
       return this.$store.getters.contactByTjId(this.tjId)
     }
-    // groupList() {
-    //   let groupList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].groupList : []
-    //   return this.searchText ? groupList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : groupList
-    // },
-    // customerList() {
-    //   let customerList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].customerList : []
-    //   return this.searchText ? customerList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : customerList
-    // },
-    // memberList() {
-    //   let memberList = this.$store.state.contact[this.tjId] ? this.$store.state.contact[this.tjId].memberList : []
-    //   return this.searchText ? memberList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : memberList
-    // }
   },
   watch: {
     tjId: {
