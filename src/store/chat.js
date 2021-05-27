@@ -40,11 +40,13 @@ export default {
   actions: {},
   getters: {
     chatsByTjId: (state, getters, rootState, rootGetters) => {
-      return tjId => {
+      return (tjId, chatList) => {
+        chatList = chatList || state.chatList[tjId]
+
         // 获取当前会话消息，计算未读消息数量，获取最后一条消息，并排序
-        if (state.chatList[tjId]) {
+        if (chatList && chatList.length) {
           return orderBy(
-            state.chatList[tjId],
+            chatList,
             function(i) {
               const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
               const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)

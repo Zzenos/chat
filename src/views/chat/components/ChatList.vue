@@ -63,11 +63,26 @@ export default {
     }
   },
   watch: {
+    chatList: {
+      immediate: true,
+      handler: function(n, o) {
+        if (n === o) return
+        // console.log(`tjId:${this.tjId}=>chatList`, n)
+        if (n && n.length === 0) {
+          this.spinning = true
+        } else {
+          this.$nextTick(() => {
+            this.spinning = false
+          })
+        }
+        this.chats = n
+      }
+    },
     $route: {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        console.log('chatList $route ==>', n)
+        // console.log('chatList $route ==>', n)
         // 切换账号或者刷新后进入，会话的默认选中状态
         const { contactId } = n.params
         if (contactId === '0') {
@@ -85,7 +100,17 @@ export default {
       immediate: true,
       handler: function(n) {
         const chatList = cloneDeep(this.$store.getters.chatsByTjId(this.tjId))
-        this.chats = n ? chatList.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : chatList
+        if (!n) {
+          this.chats = chatList
+          return
+        }
+        this.spinning = true
+        this.$socket.emit('chat_list_search', { tjId: this.tjId, keyword: n }, ack => {
+          if (ack.code === 200) {
+            this.chats = ack.data.chatList.length ? this.$store.getters.chatsByTjId(this.tjId, ack.data.chatList) : []
+          }
+          this.spinning = false
+        })
       }
     },
     selected(n) {
@@ -94,25 +119,10 @@ export default {
           this.handleItem(this.curChat, true)
         }
       }
-    },
-    chatList: {
-      immediate: true,
-      handler: function(n, o) {
-        if (n === o) return
-        // console.log(`tjId:${this.tjId}=>chatList`, n)
-        if (n && n.length === 0) {
-          this.spinning = true
-        } else {
-          this.$nextTick(() => {
-            this.spinning = false
-          })
-        }
-        this.chats = n
-      }
     }
   },
   methods: {
-    ...mapMutations([types.CLEAR_UNREAD_MSG]),
+    ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST]),
     handleItem(val, canJump = false) {
       console.log('click chat', val)
       const { chatId } = val
@@ -121,6 +131,10 @@ export default {
         return
       }
       this.curChat = val
+      this[types.ADD_CHAT_LIST]({
+        tjId: this.tjId,
+        chatList: [{ ...this.curChat }]
+      })
       this[types.CLEAR_UNREAD_MSG](this.curChat.chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
