@@ -174,7 +174,7 @@ export default {
           chatType: this.$route.query.chatType,
           fromId: tjId,
           toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: this.replyContent ? this.replyContent + '------' + this.editorText : this.editorText,
+          content: this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText,
           sender: {
             wechatName: wechatName,
             wechatAvatar: wechatAvatar
