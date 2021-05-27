@@ -99,6 +99,7 @@ export default {
     searchText: {
       immediate: true,
       handler: function(n) {
+        if (!this.selected) return
         const chatList = cloneDeep(this.$store.getters.chatsByTjId(this.tjId))
         if (!n) {
           this.chats = chatList
