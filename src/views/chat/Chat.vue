@@ -189,8 +189,8 @@
               </div>
             </div>
           </a-tab-pane>
-          <a-tab-pane key="customerInfo" tab="客户资料" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="customerInfoFrame" title="客户资料" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <a-tab-pane key="customerInfo" tab="客户画像" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
