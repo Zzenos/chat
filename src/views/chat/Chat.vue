@@ -830,7 +830,9 @@ export default {
       width: 300px;
       display: flex;
       flex-direction: column;
-
+      /deep/.ant-tabs-bar {
+        margin: 0;
+      }
       iframe {
         width: 100%;
         height: calc(100vh - 129px);
