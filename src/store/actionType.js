@@ -29,6 +29,9 @@ export const FAIL_SENDING_MSG = 'FAIL_SENDING_MSG'
 // 添加会话列表
 export const ADD_CHAT_LIST = 'ADD_CHAT_LIST'
 
+// 设置某个账号的会话列表初始化状态
+export const SET_CHATLIST_INIT_STATUS = 'SET_CHATLIST_INIT_STATUS'
+
 export const CLEAR_UNREAD_MSG = 'CLEAR_UNREAD_MSG'
 // 通讯录详情
 export const ADD_CUSTOMER_DETAILS = 'ADD_CUSTOMER_DETAILS'

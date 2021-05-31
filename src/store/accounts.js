@@ -11,6 +11,14 @@ export default {
           info: i
         }
       })
+    },
+    [types.SET_CHATLIST_INIT_STATUS](state, tjId) {
+      state.accounts.forEach(i => {
+        if (i.info.tjId === tjId) {
+          // 当前选中账号对应的会话初始化的状态
+          i.info.chatInitStatus = true
+        }
+      })
     }
   },
   getters: {

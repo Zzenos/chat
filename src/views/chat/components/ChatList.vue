@@ -67,9 +67,12 @@ export default {
       immediate: true,
       handler: function(n, o) {
         if (n === o) return
-        // console.log(`tjId:${this.tjId}=>chatList`, n)
+        const {
+          info: { chatInitStatus = false }
+        } = this.$store.getters.userDetailsById(this.tjId)
+        console.log(`tjId:${this.tjId}=>chatList`, n, chatInitStatus)
         if (n && n.length === 0) {
-          this.spinning = true
+          this.spinning = !chatInitStatus
         } else {
           this.$nextTick(() => {
             this.spinning = false

@@ -76,6 +76,7 @@ export default {
       this.$socket.on('chat_list', res => {
         if (res.code === 200) {
           this[types.ADD_CHAT_LIST](res.data)
+          this[types.SET_CHATLIST_INIT_STATUS](res.data.tjId)
         }
       })
       // 客户详细信息
@@ -112,7 +113,7 @@ export default {
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS])
+    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS, types.SET_CHATLIST_INIT_STATUS])
   },
   created() {
     this.initSocket()
