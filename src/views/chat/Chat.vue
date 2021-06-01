@@ -835,7 +835,7 @@ export default {
       }
       iframe {
         width: 100%;
-        height: calc(100vh - 129px);
+        height: calc(100vh - 113px);
       }
 
       // .search {
@@ -843,7 +843,9 @@ export default {
       // }
 
       .memberList {
+        height: calc(100vh - 113px);
         padding-left: 20px;
+        padding-top: 20px;
         text-align: left;
         flex: 1 1 0;
         overflow-y: auto;
