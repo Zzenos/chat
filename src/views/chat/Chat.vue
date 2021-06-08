@@ -110,12 +110,7 @@
                       :url="item.url"
                       :voiceTime="item.voiceTime"
                       :index="index"
-                      :onlyOnePlay="item.onlyOnePlay"
-                      :changeAudioIndex="changeAudioIndex"
-                      :translateText="item.translateText"
-                      :translateShow="item.translateShow"
-                      :translateResult="item.translateResult"
-                      :closeTranslateText="closeTranslateText"
+                      :ref="'audio' + item.msgId"
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
@@ -234,8 +229,6 @@ import Vue from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import Contextmenu from 'vue-contextmenujs'
-// import axios from 'axios'
-import filesLibrary from '@/apis/library'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -459,31 +452,12 @@ export default {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
       }
+      console.log(this.infoData, 'this.infoData')
       this.chatRecordVisible = true
     },
     translateText(index, item) {
       console.log(index, item)
-      this.records[index].translateShow = true
-      this.records[index].translateResult = 'pending'
-      this.$forceUpdate()
-      filesLibrary
-        .audioText({ url: item.url })
-        .then(res => {
-          console.log(res)
-          let { code, data } = res
-          console.log(code, data)
-          if (code == 200) {
-            this.records[index].translateText = data.result
-            this.records[index].translateResult = 'success'
-            this.$forceUpdate()
-          } else {
-            this.records[index].translateResult = 'fail'
-            this.$forceUpdate()
-          }
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      this.$refs[`audio${item.msgId}`][0].audioToText()
     },
     closeTranslateText(index) {
       this.records[index].translateShow = false

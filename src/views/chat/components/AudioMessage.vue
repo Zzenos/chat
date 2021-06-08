@@ -8,7 +8,6 @@
       minlength: voiceTime < 10
     }"
   >
-    <!-- <audio controls :src="url" ref="audioPlayer" style="display:none"></audio>  pending-->
     <div class="self__audio" @click="playAll">
       <div class="audio__trigger">
         <div class="audio-icon">
@@ -27,10 +26,14 @@
       </span>
       <!-- <span v-show="translateResult != 'pending'" @click="closeTranslate" style="margin-left:5px;font-size:10px">&times;</span> -->
     </div>
+    <div class="to-text-menu" v-show="textMenuShow" @click="audioToText">
+      转为文字
+    </div>
   </div>
 </template>
 <script>
 import BenzAMRRecorder from 'benz-amr-recorder'
+import filesLibrary from '@/apis/library'
 
 export default {
   name: 'AudioMessage',
@@ -38,13 +41,15 @@ export default {
     return {
       readyPlaying: true,
       init: false,
-      amr: null
+      amr: null,
+      translateText: '',
+      translateShow: false,
+      translateResult: ''
     }
   },
   props: {
     url: {
       type: String,
-      // required: true,
       default: ''
     },
     float: {
@@ -64,20 +69,13 @@ export default {
     onlyOnePlay: {
       type: Boolean
     },
-    translateText: {
-      type: String,
-      default: ''
-    },
-    translateShow: {
-      type: Boolean,
-      default: false
-    },
-    translateResult: {
-      type: String,
-      default: 'pending'
-    },
     closeTranslateText: {
       type: Function
+    },
+    //转文字
+    textMenuShow: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -95,6 +93,26 @@ export default {
     },
     closeTranslate() {
       this.closeTranslateText(this.index)
+    },
+    audioToText() {
+      this.translateShow = true
+      this.translateResult = 'pending'
+      filesLibrary
+        .audioText({ url: this.url })
+        .then(res => {
+          console.log(res)
+          let { code, data } = res
+          console.log(code, data)
+          if (code == 200) {
+            this.translateText = data.result
+            this.translateResult = 'success'
+          } else {
+            this.translateResult = 'fail'
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
   },
   watch: {
@@ -133,6 +151,7 @@ export default {
   border-radius: 8px;
   box-sizing: border-box;
   padding: 0 12px;
+  position: relative;
   .self__audio {
     height: 46px;
     display: flex;
@@ -178,6 +197,22 @@ export default {
       margin-left: 8px;
     }
   }
+  .to-text-menu {
+    display: none;
+    position: absolute;
+    width: 90px;
+    height: 46px;
+    line-height: 46px;
+    top: 0;
+    left: -90px;
+    cursor: pointer;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+  }
+  &:hover .to-text-menu {
+    display: block;
+  }
 
   &.isleft {
     .self__audio {
@@ -190,6 +225,12 @@ export default {
       .audio__duration {
         order: 2;
       }
+    }
+    .to-text-menu {
+      left: 100%;
+    }
+    &:hover .to-text-menu {
+      display: block;
     }
   }
   &.maxlength {
