@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import { getUuid } from '@/util/util.js'
+import { getUuid, getFormattedTime } from '@/util/util.js'
 import { socketBaseUrl } from '@/apis'
 import overTimeModal from '@/util/overTime'
 
@@ -168,7 +168,7 @@ class ZSocket {
       },
       ack => {
         const str = msg.data.map(j => JSON.stringify(j))
-        this.cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}`)
+        this.cs(`${msg.evtName}事件发送成功：${str.join('===')}, ACK: ${JSON.stringify(ack)}, 时间: ${getFormattedTime()}`)
         if (ack && ack.data && ack.data.requestId) {
           const index = this.emitMsgs.findIndex(item => item.requestId === ack.requestId)
           if (index >= 0) this.emitMsgs.splice(index, 1)
@@ -199,6 +199,7 @@ class ZSocket {
     if (this.socket) {
       this.cs(`${evtName}事件的回调注册成功`)
       this.socket.on(evtName, data => {
+        console.log(`%c ${evtName}事件回调成功时间: ${getFormattedTime()}`, 'color:#0fa;')
         this.cs(`${evtName}事件回调成功, ${JSON.stringify(data)}`)
         if (data && this.autoPull) this.lastMessageId = data.id
         if (cb && typeof cb === 'function') cb(data)

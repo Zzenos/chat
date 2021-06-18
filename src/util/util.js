@@ -134,6 +134,16 @@ export const exportFile = (data, name) => {
   link.remove()
 }
 
+export const pad = (num, maxLength) => {
+  const times = maxLength - num.toString().length
+  return new Array(times + 1).join('0') + num
+}
+
+export const getFormattedTime = () => {
+  var time = new Date()
+  return ' @ ' + pad(time.getHours(), 2) + ':' + pad(time.getMinutes(), 2) + ':' + pad(time.getSeconds(), 2) + '.' + pad(time.getMilliseconds(), 3)
+}
+
 export default {
   autoSize
 }
