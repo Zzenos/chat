@@ -495,13 +495,13 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal === oldVal) return
-        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId, alias } = newVal.query
         const { tjId, contactId } = newVal.params
         const accountInfo = this.userDetailsById(tjId)
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
-        this.wechatName = wechatName
+        this.wechatName = alias || wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.chatType = chatType
         this.isLost = lost
