@@ -59,7 +59,9 @@ export default {
       // 历史消息
       this.$socket.on('msg_history', res => {
         if (res.code === 200) {
-          this[types.DISTRIBUTE_MSG](res.data)
+          setTimeout(() => {
+            this[types.DISTRIBUTE_MSG](res.data)
+          }, 0)
         }
       })
       // 新消息
