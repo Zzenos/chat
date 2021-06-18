@@ -3,6 +3,8 @@ import * as types from './actionType'
 import { MsgGen, getSendMsg } from '@/class/Msg'
 import Zsocket from '@/class/ZSocket'
 import sortedIndexBy from 'lodash/sortedIndexBy'
+import { getFormattedTime } from '@/util/util.js'
+
 /**
  *
  * <企微号id>&<会话对方id | 群id> 组成 <会话id>
@@ -128,6 +130,7 @@ export default {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
         }
+        console.log(`%c 开始分发消息: ${getFormattedTime()}`, 'color:#a1a;')
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
           const tjId = msg.chatId.split('&')[0]
@@ -152,6 +155,7 @@ export default {
           // TODO
           commit(types.CLEAR_SENDING_MSG, msg)
         })
+        console.log(`%c 分发消息结束: ${getFormattedTime()}`, 'color:#a1a;')
         // 排序
       }
     },
