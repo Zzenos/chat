@@ -28,7 +28,7 @@ export default {
      */
     contactInfoByWechatId: state => {
       return (tjId, wechatId, tag = 'customerList') => {
-        return state[tjId] && state[tjId][tag] ? state[tjId][tag].find(item => item.wechatId === wechatId) : null
+        return state[tjId] && state[tjId][tag] ? state[tjId][tag][wechatId] : null
       }
     }
   }
