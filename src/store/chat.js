@@ -39,7 +39,7 @@ export default {
   },
   actions: {},
   getters: {
-    chatsByTjId: (state, getters, rootState) => {
+    chatsByTjId: (state, getters, rootState, rootGetters) => {
       return (tjId, chatList) => {
         chatList = chatList || state.chatList[tjId]
 
@@ -49,7 +49,7 @@ export default {
             chatList,
             function(i) {
               const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
-              const curContactInfo = state[tjId] && state[tjId].customerList ? state[tjId].customerList[tjId] : null
+              const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
               const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
               i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
               i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
