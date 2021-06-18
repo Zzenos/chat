@@ -59,9 +59,7 @@ export default {
       // 历史消息
       this.$socket.on('msg_history', res => {
         if (res.code === 200) {
-          setTimeout(() => {
-            this[types.DISTRIBUTE_MSG](res.data)
-          }, 0)
+          this[types.DISTRIBUTE_MSG](res.data)
         }
       })
       // 新消息
@@ -70,9 +68,7 @@ export default {
       })
       // 通讯录
       this.$socket.on('contacts', res => {
-        // if (res.code === 200) {
         this[types.ADD_CONTACT](res.data)
-        // }
       })
       // 添加会话列表
       this.$socket.on('chat_list', res => {

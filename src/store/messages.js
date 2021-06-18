@@ -32,7 +32,6 @@ export default {
     // 需要检查是否为ACK中返回的消息体
     [types.ADD_MSG](state, msg) {
       // 查重
-      // console.log(msg)
       if (state.chatMsgHash[msg.msgId]) return
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经在会话中，进行msg_id的更改即可
