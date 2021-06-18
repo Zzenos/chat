@@ -264,7 +264,7 @@ export default {
       this[types.SEND_MSG](sendData)
     },
     changeText() {
-      const value = deepClone(this.$refs.messagInput.innerHTML)
+      const value = deepClone(this.$refs.messagInput.innerText)
       this.value = value
     },
     editBlur() {
@@ -382,10 +382,14 @@ export default {
       immediate: true,
       handler(n) {
         // console.log('value-change', n)
-        let container = document.createElement('div')
-        container.innerHTML = n
-        this.editorText = container.innerText
-        container = null
+        // let container = document.createElement('div')
+        // n = n + ''
+        // n = n.replace(/<br>/, '')
+        // container.innerHTML = n
+        // this.editorText = container.innerText
+        // console.log(this.editorText, n)
+        // container = null
+        this.editorText = n
       }
     }
   }

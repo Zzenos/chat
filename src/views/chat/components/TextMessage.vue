@@ -42,6 +42,7 @@ export default {
   word-wrap: break-word;
   font-size: 14px;
   font-weight: 400;
+  white-space: pre-line;
 
   &.left {
     background: #f0f1f2;

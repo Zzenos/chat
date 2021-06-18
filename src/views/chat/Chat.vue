@@ -6,8 +6,8 @@
       <div class="title" style="height: 100%">
         <div>
           <!-- 好友名字 -->
-          <span v-if="$route.query.chatType == 1" class="friendName">
-            {{ $route.query.wechatName }}
+          <span v-if="$route.query.chatType == 1" class="friendName ellipsis">
+            {{ $route.query.alias || $route.query.wechatName }}
             <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
             <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </span>
@@ -637,6 +637,7 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       line-height: 24px;
       font-weight: 400;
+      max-width: 450px;
     }
     .lost-customer-title {
       float: left;
