@@ -128,7 +128,7 @@ export default {
      */
     confirmSelect(checkedList) {
       console.log(checkedList, 'transmitMsgList')
-      const { msgType, content, url, coverUrl, title, voiceTime } = this.msg
+      const { msgType, content, url, coverUrl, title, voiceTime, href, desc } = this.msg
       checkedList.forEach(item => {
         const { tjId } = this.$route.params
         const {
@@ -136,11 +136,13 @@ export default {
         } = this.userDetailsById(tjId)
         const msg = {
           msgType,
-          content,
+          content: content && content.replace(/\{用户昵称\}/g, item.wechatName),
           url,
           coverUrl,
           title,
           voiceTime,
+          href,
+          desc,
           chatId: `${tjId}&${item.wechatId}`,
           chatType: item.chatType,
           fromId: tjId,

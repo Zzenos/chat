@@ -8,10 +8,12 @@ export default {
       // 侧边栏配置
       sidebarConfig: {
         customerInfo: {
-          src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
+          // src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
+          src: `http://localhost:9999/app/cusPortrait.html`
         },
         verbalTrick: {
-          src: `${process.env.VUE_APP_LOGIN_URL}/app/verbalTricks.html`
+          // src: `${process.env.VUE_APP_LOGIN_URL}/app/verbalTricks.html`
+          src: `http://localhost:9999/app/verbalTricks.html`
         }
       },
       // 用户信息
@@ -65,8 +67,8 @@ export default {
      * @description 处理iframe内部发回来的数据
      */
     handleMessage(evt) {
-      console.warn('evt', evt.data)
-      if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
+      // console.warn('evt', evt.data)
+      // if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
       const { cmd, data } = JSON.parse(evt.data)
       switch (cmd) {
         case 'ready':
@@ -75,6 +77,45 @@ export default {
           break
         case 'sendChatMessage':
           console.log('sendChatMessage params', data)
+          switch (data.type) {
+            case 1:
+              data.msgType = 'text'
+              console.log(data)
+              break
+            case 9:
+              data.msgType = 'file'
+              data.url = data.fileUrl
+              data.title = data.fileName
+              console.log(data)
+              break
+            case 3:
+              data.msgType = 'video'
+              data.coverUrl = data.videoUrl + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
+              data.url = data.videoUrl
+              console.log(data)
+              break
+            case 4:
+              data.msgType = 'link'
+              data.href = data.url
+              data.coverUrl = data.cover
+              console.log(data)
+              break
+            case 5:
+              data.msgType = 'weapp'
+              data.content = {}
+              data.coverUrl = data.cover
+              data.content.des_1 = data.appName
+              data.content.weappiconurl = data.avatar
+              data.content.title = data.appTitle
+              data.content.pagepath = data.path
+              data.content = JSON.stringify(data.content)
+              console.log(data)
+              break
+            default:
+              break
+          }
+          this.msgInfo = data
+          this.transmitMsgVisible = true
           break
 
         default:

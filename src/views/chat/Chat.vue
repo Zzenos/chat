@@ -169,7 +169,17 @@
         </div>
       </div>
       <div class="sidebar">
-        <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
+        <div v-if="chatType == 1 || chatType == 3">
+          <a-avatar shape="square" :size="36" :src="$route.query.wechatAvatar" />
+          <div>
+            <span>{{ wechatName }}</span>
+            <span>
+              <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
+              <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
+            </span>
+          </div>
+        </div>
+        <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
           <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
             <!-- <div class="search">
               <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
@@ -189,11 +199,16 @@
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
-          <!-- <a-tab-pane key="verbalTrick" tab="快捷回复" v-if="chatType == 1 || chatType == 3">
+          <a-tab-pane key="orderDynamic" tab="订单动态" v-if="chatType == 1 || chatType == 3">
             <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
-          </a-tab-pane> -->
+          </a-tab-pane>
+          <a-tab-pane key="verbalTrick" tab="企业话术" v-if="chatType == 1 || chatType == 3">
+            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+              <p>Your Browser dose not support iframes</p>
+            </iframe>
+          </a-tab-pane>
         </a-tabs>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -274,6 +289,7 @@ export default {
       wechatName: this.$route.query.wechatName,
       memberCount: '',
       chatType: this.$route.query.chatType,
+      allInfo: {},
       groupInfo: {
         memberCount: '',
         members: []
@@ -513,6 +529,10 @@ export default {
         }
         if (chatType == 1) {
           this.activeKey = 'customerInfo'
+          this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
+            this.allInfo = ack.data || {}
+            // console.log(this.allInfo, 'ack-data-allInfo')
+          })
         }
         if (chatType == 3) {
           this.activeKey = 'customerInfo'
@@ -806,6 +826,33 @@ export default {
       flex-direction: column;
       /deep/.ant-tabs-bar {
         margin: 0;
+        margin-bottom: 10px;
+        border-bottom: none;
+        .ant-tabs-nav {
+          .ant-tabs-tab {
+            border: 1px solid lightblue;
+            background: #fff;
+            margin: 0 !important;
+            font-size: 14px;
+            padding: 0px 8px;
+          }
+          .ant-tabs-tab-active {
+            border: 1px solid lightblue;
+            background: lightblue;
+            color: #fff;
+            // margin: 0;
+          }
+        }
+        // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+        //   // height: 1px;
+        //   // transform: none !important;
+        //   // background: lightblue;
+        //   display: none !important;
+        // }
+      }
+      /deep/.ant-tabs-tab .ant-tabs-tab-active {
+        border-color: #000;
+        background: #fff;
       }
       iframe {
         width: 100%;
