@@ -3,7 +3,7 @@
     <div class="address-book_tab">
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="customer" tab="客户">
-          <RecycleScroller class="list-wraper" :items="customerList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+          <RecycleScroller class="list-wraper" :items="customerListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
             <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
@@ -16,10 +16,10 @@
               </div>
             </div>
           </RecycleScroller>
-          <no-data v-if="customerList.length === 0" />
+          <no-data v-if="customerListAry.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="group" tab="群聊">
-          <RecycleScroller class="list-wraper" :items="groupList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+          <RecycleScroller class="list-wraper" :items="groupListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
             <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <div class="nickname">
@@ -30,10 +30,10 @@
               </div>
             </div>
           </RecycleScroller>
-          <no-data v-if="groupList.length === 0" />
+          <no-data v-if="groupListAry.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="member" tab="成员">
-          <RecycleScroller class="list-wraper" :items="memberList" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+          <RecycleScroller class="list-wraper" :items="memberListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
             <div :key="item.wechatId" class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <img class="avatar" :src="item.wechatAvatar" alt="" />
               <div class="nickname">
@@ -44,7 +44,7 @@
               </div>
             </div>
           </RecycleScroller>
-          <no-data v-if="memberList.length === 0" />
+          <no-data v-if="memberListAry.length === 0" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -67,9 +67,9 @@ export default {
       activeKey: 'customer', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
       contactInfo: {},
-      customerList: [],
-      groupList: [],
-      memberList: []
+      customerListAry: [],
+      groupListAry: [],
+      memberListAry: []
     }
   },
   props: {
@@ -105,11 +105,11 @@ export default {
       }
     },
     searchText(n) {
-      const list = `${this.activeKey}List`
+      const list = `${this.activeKey}ListAry`
       this[list] = n ? this.contactInfo[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactInfo[list]
     },
     activeKey(n) {
-      const list = `${n}List`
+      const list = `${n}ListAry`
       this[list] = this.searchText ? this.contactInfo[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchText) > -1) : this.contactInfo[list]
     },
     selected(n) {
@@ -153,7 +153,7 @@ export default {
       const contactData = cloneDeep(n)
       this.contactInfo = contactData
       for (const key in contactData) {
-        if (Object.prototype.hasOwnProperty.call(contactData, key) && key.indexOf('List')) {
+        if (Object.prototype.hasOwnProperty.call(contactData, key) && key.indexOf('ListAry') > 0) {
           this[key] = contactData[key]
         }
       }
