@@ -10,6 +10,10 @@ import accountDetails from './accountDetails'
 
 vue.use(vuex)
 
+let plugins = [vuexLocal.plugin]
+if (process.env.VUE_APP_MODE !== 'production') {
+  plugins.push(createLogger())
+}
 const store = new vuex.Store({
   state: {
     token: '',
@@ -39,6 +43,6 @@ const store = new vuex.Store({
       }
     }
   },
-  plugins: [createLogger(), vuexLocal.plugin]
+  plugins
 })
 export default store
