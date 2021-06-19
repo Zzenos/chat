@@ -169,10 +169,10 @@
         </div>
       </div>
       <div class="sidebar">
-        <div v-if="chatType == 1 || chatType == 3">
-          <a-avatar shape="square" :size="36" :src="$route.query.wechatAvatar" />
-          <div>
-            <span>{{ wechatName }}</span>
+        <div v-if="chatType == 1 || chatType == 3" class="sidebar-top">
+          <a-avatar shape="square" :size="62" :src="$route.query.wechatAvatar" />
+          <div class="info">
+            <span class="nickname">{{ wechatName }}</span>
             <span>
               <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
               <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
@@ -825,6 +825,16 @@ export default {
       width: 300px;
       display: flex;
       flex-direction: column;
+      .sidebar-top {
+        padding-top: 40px;
+        .info {
+          margin-top: 15px;
+          margin-bottom: 25px;
+          .nickname {
+            margin-right: 8px;
+          }
+        }
+      }
       /deep/.ant-tabs-bar {
         margin: 0;
         margin-bottom: 10px;
@@ -835,7 +845,8 @@ export default {
             background: #fff;
             margin: 0 !important;
             font-size: 14px;
-            padding: 0px 8px;
+            padding: 0px 15px;
+            // line-height: 32px;
           }
           .ant-tabs-tab-active {
             border: 1px solid lightblue;
@@ -857,7 +868,8 @@ export default {
       }
       iframe {
         width: 100%;
-        height: calc(100vh - 113px);
+        // height: calc(100vh - 113px);
+        height: calc(100vh - 282px);
       }
 
       // .search {

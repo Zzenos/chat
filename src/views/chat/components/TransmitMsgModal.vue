@@ -136,7 +136,7 @@ export default {
         } = this.userDetailsById(tjId)
         const msg = {
           msgType,
-          content: content && content.replace(/\{用户昵称\}/g, item.wechatName),
+          content: content && (msgType == 'text' ? content.replace(/\{用户昵称\}/g, item.wechatName) : msgType == 'weapp' ? JSON.stringify(content) : content),
           url,
           coverUrl,
           title,
@@ -153,6 +153,7 @@ export default {
           },
           notResend: true
         }
+        console.log(msg)
         this[types.SEND_MSG](msg)
       })
       this.$emit('confirmSelect', checkedList)
