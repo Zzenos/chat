@@ -177,9 +177,13 @@ export class fileMsg extends Msg {
 export class mpMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content, coverUrl } = options
+    let { content, coverUrl, title, id } = options
     this.content = JSON.parse(content) // 解码后为小程序的配置json,需要parse一次
     this.coverUrl = coverUrl
+    this.title = title
     this.defaultContent = `[小程序]`
+    if (isSendMsg) {
+      this.id = id
+    }
   }
 }

@@ -80,25 +80,21 @@ export default {
           switch (data.type) {
             case 1:
               data.msgType = 'text'
-              console.log(data)
               break
             case 9:
               data.msgType = 'file'
               data.url = data.fileUrl
               data.title = data.fileName
-              console.log(data)
               break
             case 3:
               data.msgType = 'video'
               data.coverUrl = data.videoUrl + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
               data.url = data.videoUrl
-              console.log(data)
               break
             case 4:
               data.msgType = 'link'
               data.href = data.url
               data.coverUrl = data.cover
-              console.log(data)
               break
             case 5:
               data.msgType = 'weapp'
@@ -109,7 +105,7 @@ export default {
               data.content.title = data.appTitle
               data.content.pagepath = data.path
               data.content = JSON.stringify(data.content)
-              console.log(data)
+              data.title = data.appTitle
               break
             default:
               break
