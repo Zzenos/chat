@@ -85,10 +85,10 @@ export default {
       return this.chatsByTjId(this.$route.params.tjId)
     },
     customerList() {
-      return this.contactByTjId(this.$route.params.tjId).customerList
+      return this.contactByTjId(this.$route.params.tjId).customerListAry
     },
     groupList() {
-      return this.contactByTjId(this.$route.params.tjId).groupList
+      return this.contactByTjId(this.$route.params.tjId).groupListAry
     }
   },
   watch: {

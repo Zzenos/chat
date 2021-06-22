@@ -134,6 +134,68 @@ export const exportFile = (data, name) => {
   link.remove()
 }
 
+export const pad = (num, maxLength) => {
+  const times = maxLength - num.toString().length
+  return new Array(times + 1).join('0') + num
+}
+
+export const getFormattedTime = () => {
+  var time = new Date()
+  return ' @ ' + pad(time.getHours(), 2) + ':' + pad(time.getMinutes(), 2) + ':' + pad(time.getSeconds(), 2) + '.' + pad(time.getMilliseconds(), 3)
+}
+// 扁平化store结构
+export const js2 = {
+  id: '123',
+
+  author: {
+    id: '1',
+
+    name: 'Paul'
+  },
+
+  title: 'My awesome blog post',
+
+  comments: [
+    {
+      id: '324',
+
+      commenter: {
+        id: '2',
+
+        name: 'Nicole'
+      }
+    }
+  ]
+}
+
+export const js3 = {
+  result: '123',
+
+  entities: {
+    articles: {
+      '123': {
+        id: '123',
+
+        author: '1',
+
+        title: 'My awesome blog post',
+
+        comments: ['324']
+      }
+    },
+
+    users: {
+      '1': { id: '1', name: 'Paul' },
+
+      '2': { id: '2', name: 'Nicole' }
+    },
+
+    comments: {
+      '324': { id: '324', commenter: '2' }
+    }
+  }
+}
+
 export default {
   autoSize
 }

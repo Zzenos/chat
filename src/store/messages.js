@@ -3,6 +3,8 @@ import * as types from './actionType'
 import { MsgGen, getSendMsg } from '@/class/Msg'
 import Zsocket from '@/class/ZSocket'
 import sortedIndexBy from 'lodash/sortedIndexBy'
+import { getFormattedTime } from '@/util/util.js'
+
 /**
  *
  * <企微号id>&<会话对方id | 群id> 组成 <会话id>
@@ -30,7 +32,6 @@ export default {
     // 需要检查是否为ACK中返回的消息体
     [types.ADD_MSG](state, msg) {
       // 查重
-      // console.log(msg)
       if (state.chatMsgHash[msg.msgId]) return
       if (state.chatMsgs[msg.chatId]) {
         // 这里检查cli_msg_id,如果store中存在，则说明已经在会话中，进行msg_id的更改即可
@@ -128,6 +129,7 @@ export default {
         if (Object.prototype.toString.call(data) !== '[object Array]') {
           data = [data]
         }
+        console.log(`%c 开始分发消息: ${getFormattedTime()}`, 'color:#a1a;')
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
           const tjId = msg.chatId.split('&')[0]
@@ -152,6 +154,7 @@ export default {
           // TODO
           commit(types.CLEAR_SENDING_MSG, msg)
         })
+        console.log(`%c 分发消息结束: ${getFormattedTime()}`, 'color:#a1a;')
         // 排序
       }
     },

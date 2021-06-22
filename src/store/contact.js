@@ -5,12 +5,16 @@ export default {
   state: {},
   mutations: {
     [types.ADD_CONTACT](state, contactsData) {
-      // if (state[contactsData[0].tjId]) {
-      //   state[contactsData[0].tjId] = contactsData[0]
-      // } else {
-      //   Vue.set(state, `${contactsData[0].tjId}`, contactsData[0])
-      // }
-      Vue.set(state, `${contactsData[0].tjId}`, contactsData[0])
+      const { tjId, customerList, memberList, groupList } = contactsData[0]
+      const customerListAry = Object.values(customerList),
+        memberListAry = Object.values(memberList),
+        groupListAry = Object.values(groupList)
+      const addressBookData = { ...contactsData[0], customerListAry, memberListAry, groupListAry }
+      if (state[tjId]) {
+        state[tjId] = addressBookData
+      } else {
+        Vue.set(state, `${tjId}`, addressBookData)
+      }
     }
   },
   actions: {},

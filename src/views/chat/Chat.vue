@@ -6,8 +6,8 @@
       <div class="title" style="height: 100%">
         <div>
           <!-- 好友名字 -->
-          <span v-if="$route.query.chatType == 1" class="friendName">
-            {{ $route.query.wechatName }}
+          <span v-if="$route.query.chatType == 1" class="friendName ellipsis">
+            {{ $route.query.alias || $route.query.wechatName }}
             <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
             <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </span>
@@ -469,13 +469,13 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal === oldVal) return
-        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId } = newVal.query
+        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId, alias } = newVal.query
         const { tjId, contactId } = newVal.params
         const accountInfo = this.userDetailsById(tjId)
         this.userId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
-        this.wechatName = wechatName
+        this.wechatName = alias || wechatName
         this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.chatType = chatType
         this.isLost = lost
@@ -611,6 +611,7 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       line-height: 24px;
       font-weight: 400;
+      max-width: 450px;
     }
     .lost-customer-title {
       float: left;

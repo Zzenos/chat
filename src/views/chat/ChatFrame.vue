@@ -68,9 +68,7 @@ export default {
       })
       // 通讯录
       this.$socket.on('contacts', res => {
-        // if (res.code === 200) {
         this[types.ADD_CONTACT](res.data)
-        // }
       })
       // 添加会话列表
       this.$socket.on('chat_list', res => {
