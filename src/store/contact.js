@@ -32,9 +32,7 @@ export default {
      */
     contactInfoByWechatId: state => {
       return (tjId, wechatId, tag = 'customerList') => {
-        if (state[tjId] && state[tjId][tag]) {
-          return state[tjId] && state[tjId][tag] ? state[tjId][tag][wechatId] : null
-        }
+        return state[tjId] && state[tjId][tag] ? state[tjId][tag][wechatId] : null
       }
     }
   }
