@@ -170,13 +170,18 @@
       </div>
       <div class="sidebar">
         <div v-if="chatType == 1 || chatType == 3" class="sidebar-top">
-          <a-avatar shape="square" :size="62" :src="$route.query.wechatAvatar" />
+          <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
           <div class="info">
-            <span class="nickname">{{ wechatName }}</span>
+            <span class="nickname ellipsis">{{ wechatName }}</span>
             <span>
-              <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
-              <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" />
+              <img v-if="allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
+              <img v-if="allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
             </span>
+            <div class="source">
+              <!-- {{ $route.query.company || '@微信' }} -->
+              <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
+              <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
+            </div>
           </div>
         </div>
         <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
@@ -822,16 +827,41 @@ export default {
     }
 
     .sidebar {
-      width: 300px;
+      width: 320px;
       display: flex;
       flex-direction: column;
       .sidebar-top {
+        display: flex;
         padding-top: 40px;
+        height: 140px;
+        background: linear-gradient(180deg, rgba(29, 97, 239, 0.2), rgba(29, 97, 239, 0));
+        .avatar {
+          margin-left: 28px;
+          margin-right: 16px;
+          img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+          }
+        }
         .info {
-          margin-top: 15px;
-          margin-bottom: 25px;
+          margin-top: 8px;
+          font-size: 16px;
+          color: rgba(0, 0, 0, 0.85);
+          line-height: 24px;
+          // margin-bottom: 25px;
           .nickname {
             margin-right: 8px;
+            max-width: 150px;
+            display: block;
+            float: left;
+          }
+          .source {
+            text-align: left;
+            font-size: 12px;
+            color: #0ead63;
+            line-height: 18px;
+            margin-top: 4px;
           }
         }
       }
@@ -841,16 +871,17 @@ export default {
         border-bottom: none;
         .ant-tabs-nav {
           .ant-tabs-tab {
-            border: 1px solid lightblue;
+            border: 1px solid #1d61ef;
             background: #fff;
             margin: 0 !important;
             font-size: 14px;
             padding: 0px 15px;
+            border-radius: 10px 10px 0px 0px 10px;
             // line-height: 32px;
           }
           .ant-tabs-tab-active {
-            border: 1px solid lightblue;
-            background: lightblue;
+            // border: 1px solid #1d61ef;
+            background: #1d61ef;
             color: #fff;
             // margin: 0;
           }
