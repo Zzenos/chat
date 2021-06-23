@@ -871,19 +871,27 @@ export default {
         border-bottom: none;
         .ant-tabs-nav {
           .ant-tabs-tab {
-            border: 1px solid #1d61ef;
+            border-color: #1d61ef;
             background: #fff;
             margin: 0 !important;
             font-size: 14px;
             padding: 0px 15px;
-            border-radius: 10px 10px 0px 0px 10px;
             // line-height: 32px;
+            &:nth-of-type(1) {
+              border-radius: 4px 0px 0px 4px;
+            }
+            &:nth-of-type(2) {
+              border-radius: 0px;
+              border-right: 0px;
+              border-left: 0px;
+            }
+            &:nth-of-type(3) {
+              border-radius: 0px 4px 4px 0px;
+            }
           }
           .ant-tabs-tab-active {
-            // border: 1px solid #1d61ef;
             background: #1d61ef;
             color: #fff;
-            // margin: 0;
           }
         }
         // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
