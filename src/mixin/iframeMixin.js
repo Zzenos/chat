@@ -13,7 +13,11 @@ export default {
         },
         verbalTrick: {
           // src: `${process.env.VUE_APP_LOGIN_URL}/app/verbalTricks.html`
-          src: `http://localhost:9999/app/verbalTricks.html`
+          // src: `http://localhost:9999/app/verbalTricks.html`
+          src: `http://localhost:9999/app/library.html`
+        },
+        orderDynamic: {
+          src: `http://localhost:9999/app/orderDynamic.html`
         }
       },
       // 用户信息

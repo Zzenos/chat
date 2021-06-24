@@ -174,8 +174,8 @@
           <div class="info">
             <span class="nickname ellipsis">{{ wechatName }}</span>
             <span>
-              <img v-if="allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
-              <img v-if="allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
+              <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
+              <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
             </span>
             <div class="source">
               <!-- {{ $route.query.company || '@微信' }} -->
@@ -205,11 +205,11 @@
             </iframe>
           </a-tab-pane>
           <a-tab-pane key="orderDynamic" tab="订单动态" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+            <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
           </a-tab-pane>
-          <a-tab-pane key="verbalTrick" tab="企业话术" v-if="chatType == 1 || chatType == 3">
+          <a-tab-pane key="verbalTrick" tab="话术库" v-if="chatType == 1 || chatType == 3">
             <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
               <p>Your Browser dose not support iframes</p>
             </iframe>
