@@ -1,36 +1,35 @@
 <template>
   <div class="chatCotainer" v-if="chatId != 0">
-    <!-- header -->
-    <header>
-      <!-- title -->
-      <div class="title" style="height: 100%">
-        <div>
-          <!-- 好友名字 -->
-          <span v-if="$route.query.chatType == 1" class="friendName ellipsis">
-            {{ $route.query.alias || $route.query.wechatName }}
-            <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
-            <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
-          </span>
-          <!-- 群聊名称 -->
-          <span v-if="$route.query.chatType == 2" class="groupName">
-            {{ $route.query.wechatName }}
-            <span class="num">{{ memberCount }}</span>
-          </span>
-          <span v-if="$route.query.chatType == 3" class="memberName">
-            {{ $route.query.wechatName }}
-            <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
-          </span>
-          <!-- 流失状态显示 -->
-          <span class="lost-customer-title" v-if="isLost == '1'">
-            <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
-          </span>
-          <span class="lost-customer-title" v-if="isLost == '3'">
-            <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">删除客户</span>
-          </span>
-        </div>
-      </div>
-    </header>
     <main class="mainContainer">
+      <header>
+        <!-- title -->
+        <div class="title" style="height: 100%">
+          <div>
+            <!-- 好友名字 -->
+            <span v-if="$route.query.chatType == 1" class="friendName ellipsis">
+              {{ $route.query.alias || $route.query.wechatName }}
+              <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
+              <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
+            </span>
+            <!-- 群聊名称 -->
+            <span v-if="$route.query.chatType == 2" class="groupName">
+              {{ $route.query.wechatName }}
+              <span class="num">{{ memberCount }}</span>
+            </span>
+            <span v-if="$route.query.chatType == 3" class="memberName">
+              {{ $route.query.wechatName }}
+              <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
+            </span>
+            <!-- 流失状态显示 -->
+            <span class="lost-customer-title" v-if="isLost == '1'">
+              <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
+            </span>
+            <span class="lost-customer-title" v-if="isLost == '3'">
+              <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">删除客户</span>
+            </span>
+          </div>
+        </div>
+      </header>
       <div class="left">
         <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
           <!-- 数据加载状态栏 -->
@@ -168,59 +167,59 @@
           <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
-      <div class="sidebar">
-        <div v-if="chatType == 1 || chatType == 3" class="sidebar-top">
-          <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
-          <div class="info">
-            <span class="nickname ellipsis">{{ wechatName }}</span>
-            <span>
-              <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
-              <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
-            </span>
-            <div class="source">
-              <!-- {{ $route.query.company || '@微信' }} -->
-              <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
-              <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
-            </div>
-          </div>
-        </div>
-        <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
-          <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
-            <!-- <div class="search">
-              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-            </div> -->
-            <div class="memberList" v-if="groupInfo.memberCount">
-              <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-              <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-                <span class="name"> {{ item.wechatName }} </span>
-                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-              </div>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="customerInfo" tab="客户画像" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
-              <p>Your Browser dose not support iframes</p>
-            </iframe>
-          </a-tab-pane>
-          <a-tab-pane key="orderDynamic" tab="订单动态" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
-              <p>Your Browser dose not support iframes</p>
-            </iframe>
-          </a-tab-pane>
-          <a-tab-pane key="verbalTrick" tab="话术库" v-if="chatType == 1 || chatType == 3">
-            <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
-              <p>Your Browser dose not support iframes</p>
-            </iframe>
-          </a-tab-pane>
-        </a-tabs>
-      </div>
       <!-- 聊天记录弹窗 -->
       <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </main>
+    <div class="sidebar">
+      <div v-if="chatType == 1 || chatType == 3" class="sidebar-top">
+        <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
+        <div class="info">
+          <span class="nickname ellipsis">{{ wechatName }}</span>
+          <span>
+            <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
+            <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
+          </span>
+          <div class="source">
+            <!-- {{ $route.query.company || '@微信' }} -->
+            <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
+            <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
+          </div>
+        </div>
+      </div>
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
+        <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
+          <!-- <div class="search">
+              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+            </div> -->
+          <div class="memberList" v-if="groupInfo.memberCount">
+            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+              <span class="name"> {{ item.wechatName }} </span>
+              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            </div>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="customerInfo" tab="客户画像" v-if="chatType == 1 || chatType == 3">
+          <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="orderDynamic" tab="订单动态" v-if="chatType == 1 || chatType == 3">
+          <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="verbalTrick" tab="话术库" v-if="chatType == 1 || chatType == 3">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+      </a-tabs>
+    </div>
   </div>
   <div class="chatCotainer" v-else>
     <header></header>
@@ -619,34 +618,10 @@ export default {
 <style lang="scss" scoped>
 .chatCotainer {
   display: flex;
-  flex-direction: column;
+  // flex-direction: column;
   height: 100vh;
   font-family: PingFangSC-Regular, PingFang SC;
 
-  header {
-    height: 68px;
-    border-bottom: 1px solid #e4e5e7;
-
-    .friendName,
-    .groupName,
-    .memberName {
-      float: left;
-      margin: 22px 8px 22px 20px;
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.85);
-      line-height: 24px;
-      font-weight: 400;
-      max-width: 450px;
-    }
-    .lost-customer-title {
-      float: left;
-      margin: 25px 0;
-      width: 56px;
-      height: 18px;
-      background: #e1eaff;
-      border-radius: 2px;
-    }
-  }
   .noRecords {
     flex: 1 1 0;
     display: flex;
@@ -664,20 +639,42 @@ export default {
   .mainContainer {
     flex: 1 1 0;
     display: flex;
+    flex-direction: column;
+    header {
+      height: 68px;
+      border-bottom: 1px solid #e4e5e7;
 
+      .friendName,
+      .groupName,
+      .memberName {
+        float: left;
+        margin: 22px 8px 22px 20px;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 24px;
+        font-weight: 400;
+        max-width: 450px;
+      }
+      .lost-customer-title {
+        float: left;
+        margin: 25px 0;
+        width: 56px;
+        height: 18px;
+        background: #e1eaff;
+        border-radius: 2px;
+      }
+    }
     .left {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
       border-right: 1px solid #e4e5e7;
-      // transform: translateX(0px);
       position: relative;
       .talk-container {
         flex: 1 1 0;
         box-sizing: border-box;
         padding: 40px 10px 10px;
         overflow-y: auto;
-        // position: relative;
         &::-webkit-scrollbar {
           display: none;
         }
@@ -688,7 +685,6 @@ export default {
           width: 100%;
           height: 40px;
           background: #f7e7e8;
-          // position: fixed;
           position: absolute;
           top: 0;
           left: 0;
@@ -825,150 +821,147 @@ export default {
         height: 160px;
       }
     }
-
-    .sidebar {
-      width: 350px;
+  }
+  .sidebar {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    .sidebar-top {
       display: flex;
-      flex-direction: column;
-      .sidebar-top {
-        display: flex;
-        padding-top: 40px;
-        height: 140px;
-        background: linear-gradient(180deg, rgba(29, 97, 239, 0.2), rgba(29, 97, 239, 0));
-        .avatar {
-          margin-left: 28px;
-          margin-right: 16px;
-          img {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-          }
-        }
-        .info {
-          margin-top: 8px;
-          font-size: 16px;
-          color: rgba(0, 0, 0, 0.85);
-          line-height: 24px;
-          // margin-bottom: 25px;
-          .nickname {
-            margin-right: 8px;
-            max-width: 150px;
-            display: block;
-            float: left;
-          }
-          .source {
-            text-align: left;
-            font-size: 12px;
-            color: #0ead63;
-            line-height: 18px;
-            margin-top: 4px;
-          }
+      padding-top: 40px;
+      height: 140px;
+      background: linear-gradient(180deg, rgba(29, 97, 239, 0.2), rgba(29, 97, 239, 0));
+      .avatar {
+        margin-left: 28px;
+        margin-right: 16px;
+        img {
+          width: 60px;
+          height: 60px;
+          border-radius: 12px;
         }
       }
-      /deep/.ant-tabs-bar {
-        margin: 0;
-        margin-bottom: 20px;
-        border-bottom: none;
-        .ant-tabs-nav {
-          .ant-tabs-tab {
-            border-color: #1d61ef;
-            background: #fff;
-            margin: 0 !important;
-            font-size: 14px;
-            padding: 0px 15px;
-            // line-height: 32px;
-            &:nth-of-type(1) {
-              border-radius: 4px 0px 0px 4px;
-            }
-            &:nth-of-type(2) {
-              border-radius: 0px;
-              border-right: 0px;
-              border-left: 0px;
-            }
-            &:nth-of-type(3) {
-              border-radius: 0px 4px 4px 0px;
-            }
+      .info {
+        margin-top: 8px;
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.85);
+        line-height: 24px;
+        // margin-bottom: 25px;
+        .nickname {
+          margin-right: 8px;
+          max-width: 150px;
+          display: block;
+          float: left;
+        }
+        .source {
+          text-align: left;
+          font-size: 12px;
+          color: #0ead63;
+          line-height: 18px;
+          margin-top: 4px;
+        }
+      }
+    }
+    /deep/.ant-tabs-bar {
+      margin: 0;
+      margin-bottom: 20px;
+      border-bottom: none;
+      .ant-tabs-nav {
+        .ant-tabs-tab {
+          border-color: #1d61ef;
+          background: #fff;
+          margin: 0 !important;
+          font-size: 14px;
+          padding: 0px 15px;
+          // line-height: 32px;
+          &:nth-of-type(1) {
+            border-radius: 4px 0px 0px 4px;
           }
-          .ant-tabs-tab-active {
-            background: #1d61ef;
-            color: #fff;
+          &:nth-of-type(2) {
+            border-radius: 0px;
+            border-right: 0px;
+            border-left: 0px;
+          }
+          &:nth-of-type(3) {
+            border-radius: 0px 4px 4px 0px;
           }
         }
-        // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
-        //   // height: 1px;
-        //   // transform: none !important;
-        //   // background: lightblue;
-        //   display: none !important;
-        // }
+        .ant-tabs-tab-active {
+          background: #1d61ef;
+          color: #fff;
+        }
       }
-      /deep/.ant-tabs-tab .ant-tabs-tab-active {
-        border-color: #000;
-        background: #fff;
-      }
-      iframe {
-        width: 100%;
-        // height: calc(100vh - 113px);
-        height: calc(100vh - 282px);
-      }
-
-      // .search {
-      //     padding:16px 20px;
+      // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+      //   // height: 1px;
+      //   // transform: none !important;
+      //   // background: lightblue;
+      //   display: none !important;
       // }
+    }
+    /deep/.ant-tabs-tab .ant-tabs-tab-active {
+      border-color: #000;
+      background: #fff;
+    }
+    iframe {
+      width: 100%;
+      // height: calc(100vh - 113px);
+      height: calc(100vh - 200px);
+    }
 
-      .memberList {
-        height: calc(100vh - 113px);
-        padding-left: 20px;
-        padding-top: 20px;
-        text-align: left;
-        flex: 1 1 0;
-        overflow-y: auto;
-        .memberInfo {
-          margin-top: 20px;
-          margin-bottom: 20px;
-          display: flex;
-          .name {
-            font-size: 14px;
-            margin-left: 12px;
-            // margin-right: 8x;
-            max-width: 110px;
-            line-height: 36px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          .member-department {
-            color: #ff8000;
-            font-size: 12px;
-            line-height: 18px;
-            font-weight: 400;
-            margin-left: 8px;
-            font-family: PingFangSC-Regular, PingFang SC;
-            max-width: 95px;
-            line-height: 36px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-          .member-wechat {
-            color: #0ead63;
-            font-size: 12px;
-            margin-left: 8px;
-            line-height: 18px;
-            margin-top: 9px;
-            font-weight: 400;
-            font-family: PingFangSC-Regular, PingFang SC;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
+    // .search {
+    //     padding:16px 20px;
+    // }
+
+    .memberList {
+      height: calc(100vh - 113px);
+      padding-left: 20px;
+      padding-top: 20px;
+      text-align: left;
+      flex: 1 1 0;
+      overflow-y: auto;
+      .memberInfo {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        .name {
+          font-size: 14px;
+          margin-left: 12px;
+          // margin-right: 8x;
+          max-width: 110px;
+          line-height: 36px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .member-department {
+          color: #ff8000;
+          font-size: 12px;
+          line-height: 18px;
+          font-weight: 400;
+          margin-left: 8px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          max-width: 95px;
+          line-height: 36px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .member-wechat {
+          color: #0ead63;
+          font-size: 12px;
+          margin-left: 8px;
+          line-height: 18px;
+          margin-top: 9px;
+          font-weight: 400;
+          font-family: PingFangSC-Regular, PingFang SC;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
   }
 }
-// /deep/ .ant-modal {
-//   top: 40%;
-// }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0s;

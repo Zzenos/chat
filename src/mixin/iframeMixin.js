@@ -90,6 +90,10 @@ export default {
               data.url = data.fileUrl
               data.title = data.fileName
               break
+            case 2:
+              data.msgType = 'image'
+              data.url = data.picUrl
+              break
             case 3:
               data.msgType = 'video'
               data.coverUrl = data.videoUrl + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
