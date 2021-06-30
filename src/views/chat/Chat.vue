@@ -827,7 +827,7 @@ export default {
     }
 
     .sidebar {
-      width: 320px;
+      width: 350px;
       display: flex;
       flex-direction: column;
       .sidebar-top {
@@ -867,7 +867,7 @@ export default {
       }
       /deep/.ant-tabs-bar {
         margin: 0;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         border-bottom: none;
         .ant-tabs-nav {
           .ant-tabs-tab {
