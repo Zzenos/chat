@@ -105,7 +105,6 @@ export default {
       }
     }
   }
-  }
   .bottom {
     height: 25px;
     width: 100%;
