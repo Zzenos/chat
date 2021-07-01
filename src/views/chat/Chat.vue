@@ -14,7 +14,7 @@
             <!-- 群聊名称 -->
             <span v-if="$route.query.chatType == 2" class="groupName">
               {{ $route.query.wechatName }}
-              <span class="num">{{ memberCount }}</span>
+              <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
             </span>
             <span v-if="$route.query.chatType == 3" class="memberName">
               {{ $route.query.wechatName }}
@@ -173,36 +173,33 @@
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </main>
     <div class="sidebar">
-      <div v-if="chatType == 1 || chatType == 3" class="sidebar-top">
+      <div class="sidebar-top">
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
-          <span class="nickname ellipsis">{{ wechatName }}</span>
+          <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
           <span>
             <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
             <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
           </span>
-          <div class="source">
-            <!-- {{ $route.query.company || '@微信' }} -->
+          <div class="source" v-if="chatType == 1 || chatType == 3">
             <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
             <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
           </div>
         </div>
       </div>
+      <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
+        <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+        <!-- <div class="search">
+          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+        </div> -->
+        <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+          <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+          <span class="name"> {{ item.wechatName }} </span>
+          <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+          <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+        </div>
+      </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
-        <a-tab-pane key="groupInfo" tab="群资料" v-if="chatType == 2">
-          <!-- <div class="search">
-              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-            </div> -->
-          <div class="memberList" v-if="groupInfo.memberCount">
-            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-              <span class="name"> {{ item.wechatName }} </span>
-              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-            </div>
-          </div>
-        </a-tab-pane>
         <a-tab-pane key="customerInfo" tab="客户画像" v-if="chatType == 1 || chatType == 3">
           <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
             <p>Your Browser dose not support iframes</p>
