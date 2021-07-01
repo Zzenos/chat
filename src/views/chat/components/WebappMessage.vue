@@ -98,11 +98,13 @@ export default {
     }
     .big-img {
       flex: 1 1 0;
+      overflow: hidden;
       img {
         width: 100%;
-        height: 100%;
+        height: auto;
       }
     }
+  }
   }
   .bottom {
     height: 25px;
