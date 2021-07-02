@@ -10,6 +10,7 @@
     :loading="listLoading"
     :allCheckOptions="checkOptions"
     checkOptionKey="wechatId"
+    :echodCheckedList="defaultList"
     @close="closeModal"
     @confirm="confirmSelect"
     class="select-group_modal"
@@ -63,7 +64,7 @@ export default {
   components: {
     SelectModal
   },
-  props: ['visible', 'title', 'checkedList', 'msg'],
+  props: ['visible', 'title', 'checkedList', 'msg', 'defaultList'],
   data() {
     return {
       // 左侧搜索条件

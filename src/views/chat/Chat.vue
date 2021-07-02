@@ -170,7 +170,7 @@
       <!-- 聊天记录弹窗 -->
       <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
       <!-- 选择群聊窗口 -->
-      <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
+      <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </main>
     <div class="sidebar">
       <div class="sidebar-top">
@@ -305,7 +305,8 @@ export default {
       // 当前查看记录的对象
       infoData: null,
       transmitMsgVisible: false,
-      msgInfo: {} // 消息体
+      msgInfo: {}, // 消息体
+      defaultList: []
     }
   },
   mounted() {
@@ -498,6 +499,7 @@ export default {
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
+        this.defaultList = [newVal.query]
         this.userInfo = {
           corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
           contactUserId: externalWechatId,
