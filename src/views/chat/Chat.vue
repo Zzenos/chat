@@ -187,30 +187,39 @@
           </div>
         </div>
       </div>
-      <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-        <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-        <!-- <div class="search">
-          <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-        </div> -->
-        <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-          <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-          <span class="name"> {{ item.wechatName }} </span>
-          <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-          <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-        </div>
-      </div>
-      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card">
-        <a-tab-pane key="customerInfo" tab="客户画像" v-if="chatType == 1 || chatType == 3">
+      <a-tabs default-active-key="groupInfo" :tabBarGutter="5" type="card" v-if="chatType == 2">
+        <a-tab-pane key="groupInfo" tab="群资料">
+          <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
+            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+            <!-- <div class="search">
+              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+            </div> -->
+            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+              <span class="name"> {{ item.wechatName }} </span>
+              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            </div>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane key="verbalTrick" tab="话术库">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+      </a-tabs>
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 1 || chatType == 3">
+        <a-tab-pane key="customerInfo" tab="客户画像">
           <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
-        <a-tab-pane key="orderDynamic" tab="订单动态" v-if="chatType == 1 || chatType == 3">
+        <a-tab-pane key="orderDynamic" tab="订单动态">
           <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
-        <a-tab-pane key="verbalTrick" tab="话术库" v-if="chatType == 1 || chatType == 3">
+        <a-tab-pane key="verbalTrick" tab="话术库">
           <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
@@ -883,6 +892,10 @@ export default {
           &:nth-of-type(3) {
             border-radius: 0px 4px 4px 0px;
           }
+          &:nth-last-child(1) {
+            border-radius: 0px 4px 4px 0px !important;
+            border-right: 1px solid #1d61ef !important;
+          }
         }
         .ant-tabs-tab-active {
           background: #1d61ef;
@@ -911,7 +924,7 @@ export default {
     // }
 
     .memberList {
-      height: calc(100vh - 113px);
+      // height: calc(100vh - 113px);
       padding-left: 20px;
       padding-top: 20px;
       text-align: left;
