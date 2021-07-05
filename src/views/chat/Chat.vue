@@ -187,7 +187,7 @@
           </div>
         </div>
       </div>
-      <a-tabs default-active-key="groupInfo" :tabBarGutter="5" type="card" v-if="chatType == 2">
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
             <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
