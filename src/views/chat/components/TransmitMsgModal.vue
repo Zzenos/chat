@@ -137,7 +137,15 @@ export default {
         } = this.userDetailsById(tjId)
         const msg = {
           msgType,
-          content: content && (msgType == 'text' ? content.replace(/\{用户昵称\}/g, item.wechatName) : msgType == 'weapp' ? JSON.stringify(content) : content),
+          content:
+            content &&
+            (msgType == 'text'
+              ? item.chatType == '2'
+                ? content.replace(/\{用户昵称\}(,|，)?/g, '')
+                : content.replace(/\{用户昵称\}/g, item.wechatName)
+              : msgType == 'weapp'
+              ? JSON.stringify(content)
+              : content),
           url,
           coverUrl,
           title,

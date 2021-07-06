@@ -513,7 +513,7 @@ export default {
           corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
           contactUserId: externalWechatId,
           userId: accountInfo.info.wechatId,
-          nickname: wechatName
+          nickname: chatType == 2 ? '' : wechatName
         }
         this.onLine = navigator.onLine
         if (!this.onLine) {
