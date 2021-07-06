@@ -736,8 +736,8 @@ export default {
         }
 
         .sysInfo {
-          width: 252px;
-          height: 18px;
+          width: 300px;
+          // height: 18px;
           font-size: 12px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
