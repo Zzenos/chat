@@ -176,11 +176,13 @@
       <div class="sidebar-top">
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
-          <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
-          <span>
-            <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
-            <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
-          </span>
+          <div>
+            <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
+            <span>
+              <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
+              <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
+            </span>
+          </div>
           <div class="source" v-if="chatType == 1 || chatType == 3">
             <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
             <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
@@ -849,6 +851,8 @@ export default {
         }
       }
       .info {
+        display: flex;
+        flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
