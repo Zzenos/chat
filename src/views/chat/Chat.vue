@@ -212,17 +212,17 @@
       </a-tabs>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 1 || chatType == 3">
         <a-tab-pane key="customerInfo" tab="客户画像">
-          <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
         <a-tab-pane key="orderDynamic" tab="订单动态">
-          <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="orderDynamicFrame" title="订单动态" :src="sidebarConfig.orderDynamic.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
-          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
