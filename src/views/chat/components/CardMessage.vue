@@ -163,6 +163,13 @@ export default {
               line-height: 22px;
             }
           }
+          .addBtn {
+            width: 100%;
+            height: 50px;
+            background: lightblue;
+            justify-content: center;
+            align-items: center;
+          }
         }
       }
     }

@@ -14,6 +14,7 @@
         </div>
         <div class="input-container">
           <a-input-search v-model="searchText" placeholder="搜索" />
+          <div class="addByPhone" v-if="curTab === 'ContactInfo'">+</div>
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
@@ -103,10 +104,14 @@ export default {
   }
   .input-container {
     padding: 16px;
+    display: flex;
     // border-bottom: 1px solid #e4e5e7;
     /deep/.ant-input {
       border-radius: 0;
       font-size: 12px;
+    }
+    .addByPhone {
+      width: 50px;
     }
   }
 }

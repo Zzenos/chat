@@ -134,6 +134,12 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
+                    <!-- 位置消息 -->
+                    <location-message v-else-if="item.msgType == 'location'" />
+
+                    <!-- 视频号消息 -->
+                    <video-num-message />
+
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
@@ -193,19 +199,38 @@
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
             <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
-            <!-- <div class="search">
-              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-            </div> -->
-            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-              <span class="name"> {{ item.wechatName }} </span>
-              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            <div class="search">
+              <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div>
+            <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
+              <template slot="content">
+                <div class="modal">
+                  <div>
+                    <div class="left">备注<i></i></div>
+                    <span>{{ item.wechatName }}</span>
+                  </div>
+                  <div class="addBtn">添加好友</div>
+                </div>
+              </template>
+              <template slot="title">
+                <a-avatar :src="item.wechatAvatar" />
+                <span class="bigname">{{ item.wechatName }}</span>
+                <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
+                <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
+                <br />
+                <span class="green">@微信</span>
+              </template>
+              <div class="memberInfo">
+                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                <span class="name"> {{ item.wechatName }} </span>
+                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+              </div>
+            </a-popover>
           </div>
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
-          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
@@ -267,6 +292,8 @@ import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
 import ReplyMessage from '@/views/chat/components/ReplyMessage'
+import LocationMessage from '@/views/chat/components/LocationMessage'
+import VideoNumMessage from '@/views/chat/components/VideoNumMessage'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
 import TransmitMsgModal from './components/TransmitMsgModal'
@@ -289,7 +316,9 @@ export default {
     WebappMessage,
     ReplyMessage,
     ChatRecordModal,
-    TransmitMsgModal
+    TransmitMsgModal,
+    LocationMessage,
+    VideoNumMessage
   },
   data() {
     return {
@@ -317,7 +346,9 @@ export default {
       infoData: null,
       transmitMsgVisible: false,
       msgInfo: {}, // 消息体
-      defaultList: []
+      defaultList: [],
+      searchMember: '',
+      members: []
     }
   },
   mounted() {
@@ -537,6 +568,7 @@ export default {
           this.activeKey = 'groupInfo'
           this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
+            this.members = ack.data.members
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
           return
@@ -603,6 +635,12 @@ export default {
     },
     showOverModal(n) {
       console.log(n, 'showOverModal')
+    },
+    searchMember: {
+      immediate: true,
+      handler(n) {
+        this.groupInfo.members = n ? this.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.members
+      }
     }
   },
   computed: {
@@ -938,6 +976,7 @@ export default {
         margin-top: 20px;
         margin-bottom: 20px;
         display: flex;
+        cursor: pointer;
         .name {
           font-size: 14px;
           margin-left: 12px;
