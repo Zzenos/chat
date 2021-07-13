@@ -928,7 +928,7 @@ export default {
     // }
 
     .memberList {
-      // height: calc(100vh - 113px);
+      height: calc(100vh - 190px);
       padding-left: 20px;
       padding-top: 20px;
       text-align: left;
