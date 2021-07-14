@@ -197,35 +197,37 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
             <div class="search">
               <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div>
-            <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
-              <template slot="content">
-                <div class="modal">
-                  <div>
-                    <div class="left">备注<i></i></div>
-                    <span>{{ item.wechatName }}</span>
+            <div class="member-container">
+              <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
+                <template slot="content">
+                  <div class="modal">
+                    <div>
+                      <div class="left">备注<i></i></div>
+                      <span>{{ item.wechatName }}</span>
+                    </div>
+                    <div class="addBtn">添加好友</div>
                   </div>
-                  <div class="addBtn">添加好友</div>
+                </template>
+                <template slot="title">
+                  <a-avatar :src="item.wechatAvatar" />
+                  <span class="bigname">{{ item.wechatName }}</span>
+                  <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
+                  <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
+                  <br />
+                  <span class="green">@微信</span>
+                </template>
+                <div class="memberInfo">
+                  <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                  <span class="name"> {{ item.wechatName }} </span>
+                  <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                  <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
                 </div>
-              </template>
-              <template slot="title">
-                <a-avatar :src="item.wechatAvatar" />
-                <span class="bigname">{{ item.wechatName }}</span>
-                <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
-                <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
-                <br />
-                <span class="green">@微信</span>
-              </template>
-              <div class="memberInfo">
-                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-                <span class="name"> {{ item.wechatName }} </span>
-                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
-              </div>
-            </a-popover>
+              </a-popover>
+            </div>
           </div>
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
@@ -334,7 +336,7 @@ export default {
         memberCount: '',
         members: []
       },
-      modal2Visible: true,
+      modal2Visible: false,
       toRensendIndex: 0,
       onLine: navigator.onLine,
       playingAudioIndex: null,
@@ -965,12 +967,22 @@ export default {
     // }
 
     .memberList {
-      // height: calc(100vh - 113px);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 190px);
       padding-left: 20px;
       padding-top: 20px;
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
+      .memberCount {
+        font-weight: 600;
+        margin: 10px 0;
+      }
+      .member-container {
+        flex: 1 1 0;
+        overflow-y: auto;
+      }
       .memberInfo {
         margin-top: 20px;
         margin-bottom: 20px;
