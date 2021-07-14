@@ -51,13 +51,13 @@ export default {
   },
   methods: {
     handleAct(account) {
-      const { tjId, wechatId, wechatName } = account.info
+      const { tjId, wechatId, wechatName, chatInitStatus = false } = account.info
       if (this.curAct.info.tjId === tjId) {
         return
       }
       this.curAct = account
       // 拉取数据 wechatId wechatName ?accountId=${wechatId}&accountName=${wechatName}
-      if (!this.$store.getters.contactByTjId(tjId)) {
+      if (!chatInitStatus) {
         this.$socket.emit('init', { tjId }, ack => {
           if (ack.code === 200) {
             this.$socket.emit('init_ack', { tjId })
