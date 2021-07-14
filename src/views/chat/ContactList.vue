@@ -15,7 +15,7 @@
         <div class="input-container">
           <a-input-search v-model="searchText" placeholder="搜索" />
           <div class="addByPhone" @click="addModal = true" v-if="curTab === 'ContactInfo'">+</div>
-          <a-modal v-model="addModal" wrapClassName="send-status-modal" title="添加好友" centered @ok="addFriends" ok-text="确认" cancel-text="取消"> </a-modal>
+          <a-modal v-model="addModal" wrapClassName="add-friends-modal" title="添加好友" centered @ok="addFriends" ok-text="确认" cancel-text="取消"> </a-modal>
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
@@ -119,6 +119,55 @@ export default {
     .addByPhone {
       width: 50px;
       cursor: pointer;
+    }
+  }
+}
+/deep/ .add-friends-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.add-friends-modal {
+  // display: none;
+  background-color: rgba(0, 0, 0, 0.65);
+  .ant-modal-close-x {
+    display: none;
+  }
+  .ant-modal-content {
+    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+    // border: 1px solid rgba(0, 0, 0, 0.45);
+    // width: 480px;
+    // height: 200px;
+    // padding-top: 60px;
+    background: #fff;
+    // box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+    // border-radius: 4px;
+    // .ant-modal-header {
+    //   border-bottom: none;
+    //   text-align: center;
+    //   font-size: 16px;
+    //   font-family: PingFangSC-Medium, PingFang SC;
+    //   font-weight: 500;
+    //   color: rgba(0, 0, 0, 0.85);
+    //   line-height: 24px;
+    //   padding: 0;
+    // }
+    // .ant-modal-body {
+    //   display: none;
+    // }
+    .ant-modal-footer {
+      border-top: none;
+      margin-top: 44px;
+      text-align: center;
+      .ant-btn {
+        width: 132px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: #fff;
+        }
+      }
     }
   }
 }

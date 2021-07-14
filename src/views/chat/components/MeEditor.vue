@@ -163,48 +163,56 @@ export default {
       // console.log('send', e)
     },
     keydownEvent(e) {
-      console.log(e, this.$refs.messagInput.children.length, typeof this.$refs.messagInput.children)
+      // console.log(e, this.$refs.messagInput.children.length, typeof this.$refs.messagInput.children)
       // if (this.$refs.messagInput.children[0].tagName == 'IMG') {
       //   this.$refs.messagInput.removeChild(this.$refs.messagInput.children[0])
       // }
-      if (this.$refs.messagInput.children.length > 0) {
-        console.log(Object.keys(this.$refs.messagInput.children), typeof Object.keys(this.$refs.messagInput.children), this.$refs.messagInput.children)
-        Object.keys(this.$refs.messagInput.children).forEach(key => {
-          console.log(this.$refs.messagInput.children[key].src, '---')
-        })
-      }
-      // this.$refs.messagInput.removeChild(this.$refs.messagInput.children[key])
       // if (e.keyCode == 13 && e.shiftKey == false) {
       //   e.preventDefault()
-      //   // console.log(this.editorText, 'enter-down')
-      //   let { contactId, tjId } = this.$route.params
-      //   let { wechatName, wechatAvatar } = this.userInfo.info
-      //   let { chatType } = this.$route.query
-      //   let content = null
-      //   if (chatType == 1) {
-      //     content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
-      //   } else {
-      //     content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+      //   console.log(e, this.$refs.messagInput.children.length, typeof this.$refs.messagInput.children)
+      //   if (this.$refs.messagInput.children.length > 0) {
+      //     console.log(Object.keys(this.$refs.messagInput.children), typeof Object.keys(this.$refs.messagInput.children), this.$refs.messagInput.children)
+      //     Object.keys(this.$refs.messagInput.children).forEach(key => {
+      //       console.dir(this.$refs.messagInput.children[key])
+      //       if (this.$refs.messagInput.children[key].tagName == 'IMG') {
+      //         console.log(this.$refs.messagInput.children[key].src, '---')
+      //         // this.$refs.messagInput.removeChild(this.$refs.messagInput.children[key])
+      //       }
+      //     })
       //   }
-      //   this[types.SEND_MSG]({
-      //     msgType: 'text',
-      //     chatId: contactId,
-      //     chatType: chatType,
-      //     fromId: tjId,
-      //     toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-      //     content: content,
-      //     sender: {
-      //       wechatName: wechatName,
-      //       wechatAvatar: wechatAvatar
-      //     },
-      //     notResend: true
-      //   })
-      //   this.sendToBottom()
-      //   this.editorText = ''
-      //   this.replyContent = ''
-      //   this.$refs.messagInput.innerHTML = ''
-      //   this.closeReply()
+      //   console.log(this.editorText, 'text')
       // }
+      if (e.keyCode == 13 && e.shiftKey == false) {
+        e.preventDefault()
+        // console.log(this.editorText, 'enter-down')
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let content = null
+        if (chatType == 1) {
+          content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
+        } else {
+          content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+        }
+        this[types.SEND_MSG]({
+          msgType: 'text',
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          content: content,
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        })
+        this.sendToBottom()
+        this.editorText = ''
+        this.replyContent = ''
+        this.$refs.messagInput.innerHTML = ''
+        this.closeReply()
+      }
     },
     // clear() {
     //   this.draft_text = this.editorText
