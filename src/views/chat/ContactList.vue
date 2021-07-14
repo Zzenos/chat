@@ -14,7 +14,8 @@
         </div>
         <div class="input-container">
           <a-input-search v-model="searchText" placeholder="搜索" />
-          <div class="addByPhone" v-if="curTab === 'ContactInfo'">+</div>
+          <div class="addByPhone" @click="addModal = true" v-if="curTab === 'ContactInfo'">+</div>
+          <a-modal v-model="addModal" wrapClassName="send-status-modal" title="添加好友" centered @ok="addFriends" ok-text="确认" cancel-text="取消"> </a-modal>
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
@@ -57,13 +58,18 @@ export default {
     return {
       tabOptions: [],
       curTab: 'Chat',
-      searchText: ''
+      searchText: '',
+      addModal: false
     }
   },
   methods: {
     handleTab(val) {
       this.curTab = val
       this.searchText = ''
+    },
+    addFriends() {
+      this.addModal = false
+      //api.toadd(id,id)
     }
   }
 }
@@ -112,6 +118,7 @@ export default {
     }
     .addByPhone {
       width: 50px;
+      cursor: pointer;
     }
   }
 }

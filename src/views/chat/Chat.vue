@@ -138,7 +138,7 @@
                     <location-message v-else-if="item.msgType == 'location'" />
 
                     <!-- 视频号消息 -->
-                    <video-num-message />
+                    <video-num-message v-else-if="item.msgType == 'videoNum'" />
 
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
@@ -150,7 +150,6 @@
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
                     </div>
-                    <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
                   <reply-message v-if="item.msgType == 'text' && item.content != item.defaultContent" :float="item.float" :content="dealContent(item.content)" />
@@ -335,7 +334,7 @@ export default {
         memberCount: '',
         members: []
       },
-      modal2Visible: false,
+      modal2Visible: true,
       toRensendIndex: 0,
       onLine: navigator.onLine,
       playingAudioIndex: null,
