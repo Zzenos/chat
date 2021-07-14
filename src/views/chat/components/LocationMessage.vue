@@ -16,6 +16,10 @@ export default {
     zoom: {
       type: Number,
       default: 10
+    },
+    content: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -78,7 +82,6 @@ export default {
 <style lang="scss" scoped>
 .location-message {
   width: 240px;
-  height: 100px;
-  background: lightblue;
+  height: 150px;
 }
 </style>

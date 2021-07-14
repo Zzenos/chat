@@ -80,6 +80,14 @@
         </div>
       </div>
     </div>
+    <div class="at-container" id="selectuser" v-show="atShow && chatType == 2">
+      <div class="at-item" v-for="item in atList" :key="item.wechatId" @click="choose(item.wechatName)">
+        <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+        <span class="name"> {{ item.wechatName }} </span>
+        <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+        <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+      </div>
+    </div>
     <a-modal
       v-model="noValidVisible"
       wrapClassName="send-status-modal"
@@ -107,7 +115,29 @@ import { wheel } from '@/util/wheel.js'
 export default {
   components: { Upload },
   name: 'MeEditor',
-  props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
+  // props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
+  props: {
+    sendToBottom: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordModal: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordClick: {
+      type: Boolean,
+      default: true
+    },
+    chatType: {
+      type: String,
+      default: '1'
+    },
+    atList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
@@ -143,7 +173,8 @@ export default {
       timer: null,
       replyShow: false,
       replyName: '',
-      replyContent: ''
+      replyContent: '',
+      atShow: false
     }
   },
   directives: {
@@ -182,6 +213,24 @@ export default {
       //   }
       //   console.log(this.editorText, 'text')
       // }
+      if (e.code == 'Digit2' && e.shiftKey == true) {
+        this.atShow = true
+        const selection = getSelection()
+        console.log(selection, this.$refs.messagInput.childNodes, typeof this.$refs.messagInput.childNodes, [...this.$refs.messagInput.childNodes])
+        let ready = [...this.$refs.messagInput.childNodes]
+        let ary = []
+        ready.forEach(item => {
+          // #text IMG   textContent wholeText  currentSrc
+          console.log(item.nodeName)
+          ary.push(item.nodeName)
+        })
+        let index = ary.map((item, i) => {
+          if (item == 'IMG') {
+            return i
+          }
+        })
+        console.log(ary, index)
+      }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
         // console.log(this.editorText, 'enter-down')
@@ -375,6 +424,42 @@ export default {
       this.replyShow = true
       this.replyName = name
       this.replyContent = content
+    },
+    choose(v) {
+      this.atShow = false
+      // this.$refs.messagInput.innerText = this.$refs.messagInput.innerText + v
+      // const selection = getSelection()
+      // selection.removeAllRanges()
+      // selection.collapseToEnd()
+      if (!this.rangeOfInputBox) {
+        this.rangeOfInputBox = new Range()
+        this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+        // 设为非折叠状态
+        this.rangeOfInputBox.collapse(false)
+      }
+      // let spanNode = document.createElement('span')
+      // spanNode.style.color = '#409EFF'
+      // spanNode.innerHTML = v
+      let spanNode = document.createTextNode(v)
+      // spanNode.style.color = '#409EFF'
+      // spanNode.innerHTML = `@${name}&nbsp;`
+      // spanNode.dataset.id = id
+      // 将 contentEditable 设置为false后 富文本视为一个节点，就可以做到、一键删除了  ！！！！
+      spanNode.contentEditable = false
+      if (this.rangeOfInputBox.collapsed) {
+        this.rangeOfInputBox.insertNode(spanNode)
+      } else {
+        this.rangeOfInputBox.deleteContents()
+        this.rangeOfInputBox.insertNode(spanNode)
+      }
+      this.changeText()
+      this.rangeOfInputBox.collapse(false)
+      // 光标选中当前插入位置
+      if (this.rangeOfInputBox) {
+        const selection = getSelection()
+        selection.removeAllRanges()
+        selection.addRange(this.rangeOfInputBox)
+      }
     }
   },
   mounted() {
@@ -392,6 +477,7 @@ export default {
         this.replyContent = ''
         this.replyName = ''
         this.replyShow = false
+        this.atShow = false
         this.$nextTick(() => {
           this.$refs.messagInput.innerHTML = ''
         })
@@ -418,6 +504,7 @@ export default {
 .meEditor {
   width: 100%;
   height: 160px;
+  position: relative;
   display: flex;
   flex-direction: column;
 
@@ -525,6 +612,56 @@ export default {
           width: 14px;
           height: 14px;
         }
+      }
+    }
+  }
+  .at-container {
+    position: absolute;
+    left: 0;
+    top: -250px;
+    width: 220px;
+    height: 250px;
+    padding: 10px;
+    background: #e9eaeb;
+    overflow-y: auto;
+    .at-item {
+      display: flex;
+      cursor: pointer;
+      margin-bottom: 10px;
+      .name {
+        font-size: 14px;
+        margin-left: 12px;
+        // margin-right: 8x;
+        max-width: 100px;
+        line-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-department {
+        color: #ff8000;
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 400;
+        margin-left: 8px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        max-width: 45px;
+        line-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-wechat {
+        color: #0ead63;
+        font-size: 12px;
+        margin-left: 8px;
+        line-height: 18px;
+        margin-top: 9px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }

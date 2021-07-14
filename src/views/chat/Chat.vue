@@ -135,10 +135,10 @@
                     />
 
                     <!-- 位置消息 -->
-                    <location-message v-else-if="item.msgType == 'location'" />
+                    <location-message v-else-if="item.msgType == 'location'" :content="item.content" />
 
                     <!-- 视频号消息 -->
-                    <video-num-message v-else-if="item.msgType == 'videoNum'" />
+                    <video-num-message v-else-if="item.msgType == 'videoNum'" :title="item.title" :coverurl="item.coverUrl" :content="item.content" />
 
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
@@ -169,7 +169,7 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
+          <me-editor :chatType="chatType" :atList="groupInfo.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->

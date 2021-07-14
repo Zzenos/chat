@@ -1,19 +1,19 @@
 <template>
   <div class="video-num-message">
-    <!-- <div class="top">
-      <div class="logo"><img :src="iconurl" alt="" /></div>
-      <div class="appname">{{ des }}</div>
+    <div class="video-num-cover">
+      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
+      <img class="cover" :src="coverurl" alt="" />
     </div>
-    <div class="middle">
-      <div class="app-title">
+    <div class="video-content">
+      <div class="title">
+        <img src="" alt="" />
         {{ title }}
       </div>
-      <div class="big-img">
-        <img :src="coverurl" alt="" />
-      </div>
     </div>
-    <div class="bottom"><img class="webappIcon" src="@/assets/webappIcon.png" alt="" /> 小程序<a :href="url"></a></div> -->
-    video-num-message
+    <div class="video-num-bottom">
+      <img class="webappIcon" src="@/assets/webappIcon.png" alt="" />
+      视频号
+    </div>
   </div>
 </template>
 
@@ -46,72 +46,43 @@ export default {
   data() {
     return {}
   },
-  methods: {},
-  created() {}
+  methods: {}
 }
 </script>
 <style lang="scss" scoped>
-.webapp-message {
-  width: 230px;
-  height: 265px;
-  padding: 10px;
+.video-num-message {
+  // width: 230px;
+  height: 280px;
   background: #f0f1f2;
   display: flex;
   flex-direction: column;
-  .top {
-    display: flex;
-    // padding: 5px;
-    height: 25px;
-    width: 100%;
-    .logo {
-      width: 25px;
-      height: 25px;
-      // background: #000;
-      margin-right: 10px;
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-      }
+  .video-num-cover {
+    position: relative;
+    // width: 230px;
+    height: 200px;
+    .cover {
+      width: auto;
+      max-width: 200px;
+      height: 100%;
     }
-    .appname {
-      line-height: 25px;
-      font-size: 10px;
-      color: rgba(0, 0, 0, 0.45);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .video_icon_play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
   }
-  .middle {
-    flex: 1 1 0;
-    display: flex;
-    flex-direction: column;
-    .app-title {
-      color: rgba(0, 0, 0, 0.85);
-      font-size: 14px;
-      height: 30px;
-      line-height: 30px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      text-align: left;
-    }
-    .big-img {
-      flex: 1 1 0;
-      overflow: hidden;
-      img {
-        width: 100%;
-        height: auto;
-      }
-    }
+  .video-content {
+    height: 40px;
+    text-align: left;
   }
-  .bottom {
+  .video-num-bottom {
     height: 25px;
     width: 100%;
     font-size: 12px;
     border-top: 1px solid #e4e5e7;
     // padding: 5px;
+    padding-left: 10px;
     margin-top: 5px;
     padding-top: 5px;
     text-align-last: left;

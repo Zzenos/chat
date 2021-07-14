@@ -187,3 +187,29 @@ export class mpMsg extends Msg {
     }
   }
 }
+/**
+ * 视频号
+ */
+
+export class videoNumMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content, coverUrl, title } = options
+    this.content = content
+    this.coverUrl = coverUrl
+    this.title = title
+    this.defaultContent = `[视频号]`
+  }
+}
+/**
+ * 位置
+ */
+
+export class locationMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content } = options
+    this.content = content // 解码
+    this.defaultContent = `[位置]`
+  }
+}

@@ -169,6 +169,7 @@ export default {
             background: lightblue;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
           }
         }
       }
