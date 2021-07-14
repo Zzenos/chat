@@ -192,15 +192,17 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-            <span style="font-weight:600">群成员({{ groupInfo.memberCount }})</span>
+            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
             <!-- <div class="search">
               <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div> -->
-            <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-              <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-              <span class="name"> {{ item.wechatName }} </span>
-              <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-              <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            <div class="member-container">
+              <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
+                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                <span class="name"> {{ item.wechatName }} </span>
+                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+              </div>
             </div>
           </div>
         </a-tab-pane>
@@ -928,12 +930,22 @@ export default {
     // }
 
     .memberList {
-      // height: calc(100vh - 113px);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 190px);
       padding-left: 20px;
       padding-top: 20px;
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
+      .memberCount {
+        font-weight: 600;
+        margin: 10px 0;
+      }
+      .member-container {
+        flex: 1 1 0;
+        overflow-y: auto;
+      }
       .memberInfo {
         margin-top: 20px;
         margin-bottom: 20px;
