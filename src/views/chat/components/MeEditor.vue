@@ -111,6 +111,7 @@ import Upload from './Upload.vue'
 import filesLibrary from '@/apis/library'
 import { emojiList } from '@/util/emojiList'
 import { wheel } from '@/util/wheel.js'
+import { downloadImg } from '@/util/util'
 
 export default {
   components: { Upload },
@@ -215,25 +216,39 @@ export default {
       // }
       if (e.code == 'Digit2' && e.shiftKey == true) {
         this.atShow = true
-        const selection = getSelection()
-        console.log(selection, this.$refs.messagInput.childNodes, typeof this.$refs.messagInput.childNodes, [...this.$refs.messagInput.childNodes])
-        let ready = [...this.$refs.messagInput.childNodes]
-        let ary = []
-        ready.forEach(item => {
-          // #text IMG   textContent wholeText  currentSrc
-          console.log(item.nodeName)
-          ary.push(item.nodeName)
-        })
-        let index = ary.map((item, i) => {
-          if (item == 'IMG') {
-            return i
-          }
-        })
-        console.log(ary, index)
       }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
-        // console.log(this.editorText, 'enter-down')
+        //-------------------------------------------------
+        let allnodes = [...this.$refs.messagInput.childNodes]
+        let curText = ''
+        let curTextList = []
+        let imgList = []
+        for (let i = 0; i < allnodes.length; i++) {
+          if (allnodes[i].nodeName !== 'IMG') {
+            //当前节点为文字节点
+            curText = curText + allnodes[i].wholeText
+          } else {
+            // 当前节点为图片节点
+            if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
+              imgList.push(allnodes[i].src)
+            } else {
+              downloadImg(allnodes[i].src).then(url => {
+                imgList.push(url)
+              })
+            }
+            if (curText) {
+              curTextList.push(curText)
+              curText = ''
+            }
+          }
+          if (i == allnodes.length - 1 && curText) {
+            curTextList.push(curText)
+          }
+        }
+        console.log(curTextList, imgList)
+        //-------------------------------------------------
+        console.log(this.editorText, 'enter-down')
         let { contactId, tjId } = this.$route.params
         let { wechatName, wechatAvatar } = this.userInfo.info
         let { chatType } = this.$route.query
@@ -243,7 +258,7 @@ export default {
         } else {
           content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
         }
-        this[types.SEND_MSG]({
+        let msg = {
           msgType: 'text',
           chatId: contactId,
           chatType: chatType,
@@ -255,7 +270,8 @@ export default {
             wechatAvatar: wechatAvatar
           },
           notResend: true
-        })
+        }
+        this[types.SEND_MSG](msg)
         this.sendToBottom()
         this.editorText = ''
         this.replyContent = ''
@@ -563,6 +579,13 @@ export default {
       padding: 0 24px;
       // border: 1px solid #ccc;
       position: relative;
+      word-break: break-word;
+      /deep/ img {
+        max-width: 200px;
+        width: auto;
+        height: 80px;
+        vertical-align: bottom;
+      }
       &:focus {
         outline: none;
       }
