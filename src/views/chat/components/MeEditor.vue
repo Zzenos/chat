@@ -195,31 +195,11 @@ export default {
       // console.log('send', e)
     },
     keydownEvent(e) {
-      // console.log(e, this.$refs.messagInput.children.length, typeof this.$refs.messagInput.children)
-      // if (this.$refs.messagInput.children[0].tagName == 'IMG') {
-      //   this.$refs.messagInput.removeChild(this.$refs.messagInput.children[0])
-      // }
-      // if (e.keyCode == 13 && e.shiftKey == false) {
-      //   e.preventDefault()
-      //   console.log(e, this.$refs.messagInput.children.length, typeof this.$refs.messagInput.children)
-      //   if (this.$refs.messagInput.children.length > 0) {
-      //     console.log(Object.keys(this.$refs.messagInput.children), typeof Object.keys(this.$refs.messagInput.children), this.$refs.messagInput.children)
-      //     Object.keys(this.$refs.messagInput.children).forEach(key => {
-      //       console.dir(this.$refs.messagInput.children[key])
-      //       if (this.$refs.messagInput.children[key].tagName == 'IMG') {
-      //         console.log(this.$refs.messagInput.children[key].src, '---')
-      //         // this.$refs.messagInput.removeChild(this.$refs.messagInput.children[key])
-      //       }
-      //     })
-      //   }
-      //   console.log(this.editorText, 'text')
-      // }
       if (e.code == 'Digit2' && e.shiftKey == true) {
         this.atShow = true
       }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
-        //-------------------------------------------------
         let allnodes = [...this.$refs.messagInput.childNodes]
         let curText = ''
         let curTextList = []
@@ -247,8 +227,7 @@ export default {
           }
         }
         console.log(curTextList, imgList)
-        //-------------------------------------------------
-        console.log(this.editorText, 'enter-down')
+        // console.log(this.editorText, 'enter-down')
         let { contactId, tjId } = this.$route.params
         let { wechatName, wechatAvatar } = this.userInfo.info
         let { chatType } = this.$route.query
