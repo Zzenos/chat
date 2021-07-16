@@ -135,10 +135,16 @@
                     />
 
                     <!-- 位置消息 -->
-                    <location-message v-else-if="item.msgType == 'location'" :content="item.content" />
+                    <location-message
+                      v-else-if="item.msgType == 'location'"
+                      :title="item.content.title"
+                      :des="item.content.des"
+                      :latitude="item.content.latitude"
+                      :longitude="item.content.longitude"
+                    />
 
                     <!-- 视频号消息 -->
-                    <video-num-message v-else-if="item.msgType == 'videoNum'" :title="item.title" :coverurl="item.coverUrl" :content="item.content" />
+                    <video-num-message v-else-if="item.msgType == 'videoNum'" :vid="item.msgId" :title="item.title" :coverurl="item.coverUrl" :des="item.des" :iconurl="item.icon" :url="item.url" />
 
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
@@ -183,6 +189,7 @@
         <div class="info">
           <div>
             <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
+            <span v-if="chatType == 2" class="edit-groupname">编辑</span>
             <span>
               <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
               <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
@@ -197,10 +204,20 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
+            <div class="memberNotice">
+              <div class="noticeTitle">群公告</div>
+              <div class="noticeEdit" @click="editNotice">点击设置群公告</div>
+              <div class="noticeContent">groupInfo.notice........</div>
+              <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" ok-text="完成" cancel-text="取消">
+                <div class="writeNotice">
+                  <textarea ref="groupNotice" placeholder=""></textarea>
+                </div>
+              </a-modal>
+            </div>
             <div class="search">
               <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div>
+            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
             <div class="member-container">
               <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
                 <template slot="content">
@@ -349,7 +366,8 @@ export default {
       msgInfo: {}, // 消息体
       defaultList: [],
       searchMember: '',
-      members: []
+      members: [],
+      editNoticeShow: false
     }
   },
   mounted() {
@@ -523,6 +541,16 @@ export default {
     closeTranslateText(index) {
       this.records[index].translateShow = false
       this.$forceUpdate()
+    },
+    editNotice() {
+      this.editNoticeShow = true
+      this.$nextTick(() => {
+        this.$refs.groupNotice.innerText = ''
+      })
+    },
+    completeEditNotice() {
+      console.log(1123)
+      this.editNoticeShow = false
     }
   },
   watch: {
@@ -894,6 +922,7 @@ export default {
         flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
+        // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
         // margin-bottom: 25px;
@@ -902,6 +931,12 @@ export default {
           max-width: 150px;
           display: block;
           float: left;
+        }
+        .edit-groupname {
+          position: absolute;
+          right: 50px;
+          font-size: 12px;
+          cursor: pointer;
         }
         .source {
           text-align: left;
@@ -962,66 +997,72 @@ export default {
       height: calc(100vh - 190px);
     }
 
-    // .search {
-    //     padding:16px 20px;
-    // }
-
     .memberList {
       display: flex;
       flex-direction: column;
       height: calc(100vh - 190px);
-      padding-left: 20px;
-      padding-top: 20px;
+      padding: 20px;
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
+      .memberNotice {
+        // height: 50px;
+        border-bottom: 1px solid grey;
+        .noticeEdit {
+          color: rgba(0, 0, 0, 0.25);
+          cursor: pointer;
+        }
+      }
       .memberCount {
         font-weight: 600;
         margin: 10px 0;
       }
+      // .search {
+      //     padding:16px 20px;
+      // }
       .member-container {
         flex: 1 1 0;
         overflow-y: auto;
-      }
-      .memberInfo {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        cursor: pointer;
-        .name {
-          font-size: 14px;
-          margin-left: 12px;
-          // margin-right: 8x;
-          max-width: 110px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-department {
-          color: #ff8000;
-          font-size: 12px;
-          line-height: 18px;
-          font-weight: 400;
-          margin-left: 8px;
-          font-family: PingFangSC-Regular, PingFang SC;
-          max-width: 95px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-wechat {
-          color: #0ead63;
-          font-size: 12px;
-          margin-left: 8px;
-          line-height: 18px;
-          margin-top: 9px;
-          font-weight: 400;
-          font-family: PingFangSC-Regular, PingFang SC;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        .memberInfo {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          display: flex;
+          cursor: pointer;
+          .name {
+            font-size: 14px;
+            margin-left: 12px;
+            // margin-right: 8x;
+            max-width: 110px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-department {
+            color: #ff8000;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 400;
+            margin-left: 8px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            max-width: 95px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-wechat {
+            color: #0ead63;
+            font-size: 12px;
+            margin-left: 8px;
+            line-height: 18px;
+            margin-top: 9px;
+            font-weight: 400;
+            font-family: PingFangSC-Regular, PingFang SC;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
       }
     }
@@ -1081,6 +1122,63 @@ export default {
         line-height: 22px;
         &.ant-btn-primary {
           color: #fff;
+        }
+      }
+    }
+  }
+}
+/deep/ .edit-notice-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.edit-notice-modal {
+  background-color: transparent;
+  .ant-modal-close-x {
+    display: none;
+  }
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 450px;
+    padding-top: 10px;
+    border-radius: 4px;
+    .ant-modal-header {
+      border-bottom: none;
+      text-align: center;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      padding: 0;
+    }
+    .ant-modal-body {
+      flex: 1 1 0;
+      .writeNotice {
+        textarea {
+          width: 300px;
+          height: 300px;
+          border: none;
+          outline: none;
+          resize: none;
+        }
+      }
+    }
+    .ant-modal-footer {
+      border-top: none;
+      text-align: center;
+      .ant-btn {
+        width: 80px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        border: none;
+        color: lightgreen;
+        background-color: #f0f1f2;
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: rgba(0, 0, 0, 0.65);
+          margin-left: 20px;
         }
       }
     }

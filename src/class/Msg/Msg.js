@@ -194,10 +194,12 @@ export class mpMsg extends Msg {
 export class videoNumMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content, coverUrl, title } = options
-    this.content = content
+    let { icon, coverUrl, title, des, url } = options
+    this.icon = icon
     this.coverUrl = coverUrl
     this.title = title
+    this.desc = des
+    this.url = url
     this.defaultContent = `[视频号]`
   }
 }

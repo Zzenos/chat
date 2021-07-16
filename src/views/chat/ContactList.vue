@@ -15,7 +15,23 @@
         <div class="input-container">
           <a-input-search v-model="searchText" placeholder="搜索" />
           <div class="addByPhone" @click="addModal = true" v-if="curTab === 'ContactInfo'">+</div>
-          <a-modal v-model="addModal" wrapClassName="add-friends-modal" title="添加好友" centered @ok="addFriends" ok-text="确认" cancel-text="取消"> </a-modal>
+          <a-modal v-model="addModal" wrapClassName="add-friends-modal" title="添加客户" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
+            <div class="add-cell">
+              <div class="add-text">添加成员：</div>
+              <div>{{ $route.query.accountName }}</div>
+            </div>
+            <div class="add-cell">
+              <div class="add-text">搜索客户：</div>
+              <input class="search-cus" type="text" placeholder="请输入客户手机号" />
+            </div>
+            <div class="add-cell">
+              <div class="add-text">验证语：</div>
+              <div>
+                <textarea class="area-cus" name="" id="" rows="4"></textarea>
+                <div class="send-text">你需要发送验证请求，对方通过后才能添加其为客户好友</div>
+              </div>
+            </div>
+          </a-modal>
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
@@ -118,6 +134,7 @@ export default {
     }
     .addByPhone {
       width: 50px;
+      line-height: 32px;
       cursor: pointer;
     }
   }
@@ -126,39 +143,58 @@ export default {
   display: none;
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.add-friends-modal {
-  // display: none;
-  background-color: rgba(0, 0, 0, 0.65);
-  .ant-modal-close-x {
-    display: none;
-  }
+  background-color: rgba(0, 0, 0, 0.35);
+  // .ant-modal-close-x {
+  //   display: none;
+  // }
   .ant-modal-content {
-    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-    // border: 1px solid rgba(0, 0, 0, 0.45);
-    // width: 480px;
-    // height: 200px;
-    // padding-top: 60px;
-    background: #fff;
-    // box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
-    // border-radius: 4px;
+    width: 400px;
+    height: 400px;
     // .ant-modal-header {
-    //   border-bottom: none;
-    //   text-align: center;
-    //   font-size: 16px;
-    //   font-family: PingFangSC-Medium, PingFang SC;
-    //   font-weight: 500;
     //   color: rgba(0, 0, 0, 0.85);
     //   line-height: 24px;
     //   padding: 0;
     // }
-    // .ant-modal-body {
-    //   display: none;
-    // }
+    .ant-modal-body {
+      .add-cell {
+        display: flex;
+        .add-text {
+          width: 100px;
+          height: 50px;
+        }
+        .search-cus {
+          width: 250px;
+          height: 30px;
+          padding-left: 10px;
+          border: 1px solid rgba(0, 0, 0, 0.35);
+          border-radius: 4px;
+          outline: none;
+          &::-webkit-input-placeholder {
+            color: rgba(0, 0, 0, 0.25);
+          }
+        }
+        .area-cus {
+          width: 250px;
+          border: 1px solid rgba(0, 0, 0, 0.35);
+          border-radius: 4px;
+          outline: none;
+          resize: none;
+        }
+        .send-text {
+          width: 250px;
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.25);
+        }
+      }
+    }
     .ant-modal-footer {
       border-top: none;
-      margin-top: 44px;
-      text-align: center;
+      padding-right: 24px;
+      // margin-top: 44px;
+      // text-align: center;
       .ant-btn {
-        width: 132px;
+        // width: 132px;
+        width: 60px;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
