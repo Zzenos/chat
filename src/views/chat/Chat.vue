@@ -218,6 +218,15 @@
               <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
             </div>
             <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
+            <div class="operate" @click="changeMembers('add')">
+              <img src="" alt="" />
+              <span>添加成员</span>
+            </div>
+            <div class="operate" @click="changeMembers('del')">
+              <img src="" alt="" />
+              <span>删除成员</span>
+            </div>
+            <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
             <div class="member-container">
               <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
                 <template slot="content">
@@ -315,6 +324,7 @@ import VideoNumMessage from '@/views/chat/components/VideoNumMessage'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
 import TransmitMsgModal from './components/TransmitMsgModal'
+import OperateGroupMeb from './components/OperateGroupMeb'
 Vue.use(Contextmenu)
 import iframeMixin from '@/mixin/iframeMixin'
 
@@ -336,7 +346,8 @@ export default {
     ChatRecordModal,
     TransmitMsgModal,
     LocationMessage,
-    VideoNumMessage
+    VideoNumMessage,
+    OperateGroupMeb
   },
   data() {
     return {
@@ -367,7 +378,10 @@ export default {
       defaultList: [],
       searchMember: '',
       members: [],
-      editNoticeShow: false
+      editNoticeShow: false,
+      operateMebVisible: false,
+      operateTitle: '添加群成员',
+      operateType: 'add'
     }
   },
   mounted() {
@@ -551,6 +565,15 @@ export default {
     completeEditNotice() {
       console.log(1123)
       this.editNoticeShow = false
+    },
+    changeMembers(type) {
+      this.operateMebVisible = true
+      this.operateTitle = type == 'add' ? '添加群成员' : '删除群成员'
+      this.operateType = type
+    },
+    operateMeb(list, type) {
+      this.operateMebVisible = false
+      console.log(list, type)
     }
   },
   watch: {
@@ -1020,6 +1043,10 @@ export default {
       // .search {
       //     padding:16px 20px;
       // }
+      .operate {
+        height: 30px;
+        cursor: pointer;
+      }
       .member-container {
         flex: 1 1 0;
         overflow-y: auto;
