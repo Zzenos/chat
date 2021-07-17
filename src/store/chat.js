@@ -59,7 +59,8 @@ export default {
                     time: i.lastActiveTime,
                     defaultContent: ''
                   }
-              return i.lastMsg.time
+              i.lastMsg.sortTime = parseInt(i.lastMsg.time / 2000) // 排序的粒度为2秒
+              return i.lastMsg.sortTime
             },
             ['desc']
           )
