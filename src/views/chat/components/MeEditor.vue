@@ -87,7 +87,7 @@
         <div>所有人</div>
       </div>
       <div class="note">群成员</div>
-      <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item.wechatName)">
+      <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
         <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
         <span class="name"> {{ item.wechatName }} </span>
         <!-- <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
@@ -182,7 +182,8 @@ export default {
       replyName: '',
       replyContent: '',
       atShow: false,
-      filterAtList: []
+      filterAtList: [],
+      atIds: []
     }
   },
   directives: {
@@ -239,34 +240,72 @@ export default {
         }
         console.log(curTextList, imgList)
         // console.log(this.editorText, 'enter-down')
-        // let { contactId, tjId } = this.$route.params
-        // let { wechatName, wechatAvatar } = this.userInfo.info
-        // let { chatType } = this.$route.query
-        // let content = null
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let content = null
         // if (chatType == 1) {
+        //   //个微
         //   content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
         // } else {
         //   content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
         // }
-        // let msg = {
-        //   msgType: 'text',
-        //   chatId: contactId,
-        //   chatType: chatType,
-        //   fromId: tjId,
-        //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-        //   content: content,
-        //   sender: {
-        //     wechatName: wechatName,
-        //     wechatAvatar: wechatAvatar
-        //   },
-        //   notResend: true
-        // }
+        let msg = {
+          msgType: 'text',
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          content: content,
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        //发送文本消息
+        for (let i = 0; i < curTextList.length; i++) {
+          //引用消息只会发出第一条文本消息
+          if (i == 0) {
+            if (chatType == 1) {
+              //个微
+              content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
+            } else {
+              content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
+            }
+            msg.msgType = 'text'
+            msg.content = curTextList[i]
+            // 判断@id
+            if (chatType == 2) {
+              this.atIds.forEach(item => {
+                this.atList.forEach(i => {
+                  if (i.wechatId == item) {
+                    if (curTextList[i].indexOf(i.wechatName) == -1) {
+                      this.atIds.splice(this.atIds.indexOf(i.wechatId), 1)
+                    }
+                  }
+                })
+              })
+            }
+            this[types.SEND_MSG](msg)
+          } else {
+            msg.msgType = 'text'
+            msg.content = curTextList[i]
+            this[types.SEND_MSG](msg)
+          }
+        }
+        //发送图片消息
+        imgList.forEach(item => {
+          msg.msgType = 'img'
+          msg.url = item
+          this[types.SEND_MSG](msg)
+        })
         // this[types.SEND_MSG](msg)
-        // this.sendToBottom()
-        // this.editorText = ''
-        // this.replyContent = ''
-        // this.$refs.messagInput.innerHTML = ''
-        // this.closeReply()
+        this.sendToBottom()
+        this.editorText = ''
+        this.replyContent = ''
+        this.$refs.messagInput.innerHTML = ''
+        this.closeReply()
       }
     },
     // clear() {
@@ -441,6 +480,7 @@ export default {
     },
     choose(v) {
       this.atShow = false
+      this.atIds.push(v.wechatId)
       this.filterAtList = this.atList
       this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
       // if (!this.rangeOfInputBox) {
@@ -460,7 +500,7 @@ export default {
       // spanNode.dataset.id = id
       // 将 contentEditable 设置为false后 富文本视为一个节点，就可以做到、一键删除了  ！！！！
       // spanNode.contentEditable = false
-      let spanNode = document.createTextNode(v)
+      let spanNode = document.createTextNode(v.wechatName)
       if (this.rangeOfInputBox.collapsed) {
         this.rangeOfInputBox.insertNode(spanNode)
       } else {
