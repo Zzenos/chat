@@ -219,11 +219,11 @@
             </div>
             <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
             <div class="operate" @click="changeMembers('add')">
-              <img src="" alt="" />
+              <img src="@/assets/icon_addmembers.png" alt="" />
               <span>添加成员</span>
             </div>
-            <div class="operate" @click="changeMembers('del')">
-              <img src="" alt="" />
+            <div class="operate last" @click="changeMembers('del')">
+              <img src="@/assets/icon_deletemembers.png" alt="" />
               <span>删除成员</span>
             </div>
             <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
@@ -232,19 +232,38 @@
                 <template slot="content">
                   <div class="modal">
                     <div>
-                      <div class="left">备注<i></i></div>
+                      <div class="left">群昵称<i></i></div>
                       <span>{{ item.wechatName }}</span>
                     </div>
-                    <div class="addBtn">添加好友</div>
+                    <div>
+                      <div class="left">备注<i></i></div>
+                      <span>{{ item.alias }}</span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div class="addBtn" ref="addBtn" v-text="isFriend(item.wechatId)" @click="clickMeb(item.wechatId)">添加好友</div>
                   </div>
                 </template>
                 <template slot="title">
                   <a-avatar :src="item.wechatAvatar" />
-                  <span class="bigname">{{ item.wechatName }}</span>
-                  <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
-                  <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
+                  <div class="bigname">
+                    <div style="max-width:170px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{ item.wechatName }}</div>
+                    <img v-if="item.gender == 1" src="@/assets/icon_man.png" alt="" />
+                    <img v-if="item.gender == 2" src="@/assets/icon_woman.png" alt="" />
+                  </div>
                   <br />
-                  <span class="green">@微信</span>
+                  <div v-if="item.department" class="department">{{ '@' + item.department }}</div>
+                  <span v-else class="green">@微信</span>
                 </template>
                 <div class="memberInfo">
                   <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
@@ -574,6 +593,21 @@ export default {
     operateMeb(list, type) {
       this.operateMebVisible = false
       console.log(list, type)
+    },
+    isFriend(targetId) {
+      // console.log(this.$route.params.tjId, targetId)
+      // const { tjId } = this.$route.params
+      this.$socket.emit('is_friend', { tj_id: this.userId, target_id: targetId }, ack => {
+        console.log(ack, 'isFriend-ack')
+        if (ack.code == 200) {
+          return ack.data.is_friend ? '发送消息' : '添加为联系人'
+        }
+      })
+      return '添加为联系人'
+    },
+    clickMeb(id) {
+      this.$refs.addBtn.innerText == '发送消息' ? '' : ''
+      console.log(this.userId, id)
     }
   },
   watch: {
@@ -1044,8 +1078,15 @@ export default {
       //     padding:16px 20px;
       // }
       .operate {
-        height: 30px;
+        height: 36px;
+        margin-top: 20px;
         cursor: pointer;
+        span {
+          margin-left: 12px;
+        }
+      }
+      .last {
+        margin-bottom: 10px;
       }
       .member-container {
         flex: 1 1 0;

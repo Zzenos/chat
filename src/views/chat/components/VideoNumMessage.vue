@@ -6,19 +6,22 @@
     </div>
     <div class="video-content">
       <div class="title">
-        <!-- <img :src="iconurl" alt="" /> -->
-        <img class="icon" src="@/assets/webappIcon.png" alt="" />
-        {{ title }}
+        <div class="left">
+          <!-- <img :src="iconurl" alt="" /> -->
+          <img class="icon" src="@/assets/icon_shipinhao.png" alt="" />
+          {{ title }}
+        </div>
+        <div class="right">
+          <img class="videoIcon" src="@/assets/icon_shipinhao.png" alt="" />
+          视频号
+        </div>
       </div>
       <div class="content">
         {{ des }}
       </div>
     </div>
     <div class="video-num-bottom">
-      <div class="bottom-content">
-        <img class="videoIcon" src="@/assets/webappIcon.png" alt="" />
-        视频号
-      </div>
+      {{ des }}
     </div>
   </div>
 </template>
@@ -78,15 +81,16 @@ export default {
 .video-num-message {
   display: flex;
   flex-direction: column;
-  width: 200px;
-  height: 280px;
-  background-color: rgba(0, 0, 0, 0.35);
+  width: 224px;
+  height: 328px;
+  background-color: #fff;
+  border: 1px solid #e4e5e7;
   .video-num-cover {
     position: relative;
-    height: 200px;
+    height: 220px;
     .cover {
       width: 100%;
-      max-height: 200px;
+      max-height: 220px;
     }
     .video_icon_play {
       position: absolute;
@@ -96,37 +100,53 @@ export default {
     }
   }
   .video-content {
-    height: 50px;
-    padding: 10px;
+    height: 75px;
+    padding: 12px;
     text-align: left;
     font-size: 12px;
     color: #fff;
     .title {
-      .icon {
-        width: 15px;
-        height: 15px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 9px;
+      .left {
+        font-size: 12px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 18px;
+        .icon {
+          width: 20px;
+          height: 20px;
+        }
+      }
+      .right {
+        color: rgba(0, 0, 0, 0.45);
       }
     }
     .content {
-      color: rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+      font-family: PingFangSC, PingFangSC-Regular;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 22px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
   }
   .video-num-bottom {
-    // height: 30px;
-    padding: 0 10px;
+    height: 33px;
+    padding: 7px 12px;
     font-size: 12px;
     text-align: left;
-    .bottom-content {
-      padding-top: 5px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      .videoIcon {
-        width: 15px;
-        height: 15px;
-      }
-    }
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    text-align: left;
+    color: rgba(0, 0, 0, 0.45);
+    line-height: 18px;
+    border-top: 1px solid #e4e5e7;
   }
 }
 </style>

@@ -1,8 +1,13 @@
 <template>
   <div class="location-message">
     <div class="top">
-      <div class="title">{{ title }}</div>
-      <div class="desc">{{ des }}</div>
+      <div class="left">
+        <img src="@/assets/icon_map.png" alt="" />
+      </div>
+      <div class="right">
+        <div class="title">{{ title }}</div>
+        <div class="desc">{{ des }}</div>
+      </div>
     </div>
     <div class="map" ref="mapid"></div>
   </div>
@@ -101,32 +106,43 @@ export default {
 <style lang="scss" scoped>
 .location-message {
   position: relative;
-  width: 240px;
-  height: 170px;
+  width: 320px;
+  height: 156px;
+  background: #ffffff;
+  border: 1px solid #e4e5e7;
   .top {
-    width: 240px;
-    height: 50px;
-    padding: 5px 20px;
+    display: flex;
+    width: 320px;
+    height: 68px;
+    padding: 10px;
     box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.5);
     text-align: left;
-    .title {
-      color: #fff;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .left {
+      margin-right: 12px;
     }
-    .desc {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.4);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .right {
+      .title {
+        margin-bottom: 4px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .desc {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.45);
+        max-width: 235px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
   .map {
-    width: 240px;
-    height: 120px;
+    width: 320px;
+    height: 88px;
   }
 }
 </style>
