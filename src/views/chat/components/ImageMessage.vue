@@ -47,7 +47,7 @@ export default {
   position: relative;
   .receive-image {
     height: 100%;
-    max-width: 500px;
+    max-width: 460px; // win 宽度过小适配问题
     object-fit: contain;
   }
   .loading {
