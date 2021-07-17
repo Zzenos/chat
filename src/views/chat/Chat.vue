@@ -228,7 +228,15 @@
             </div>
             <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
             <div class="member-container">
-              <a-popover placement="left" trigger="click" overlayClassName="card-message-popover" v-for="item in groupInfo.members" :key="item.wechatId">
+              <a-popover
+                placement="left"
+                trigger="click"
+                :ref="'member' + item.wechatId"
+                v-model="GroupMebVisible[item.wechatId]"
+                overlayClassName="card-message-popover"
+                v-for="item in groupInfo.members"
+                :key="item.wechatId"
+              >
                 <template slot="content">
                   <div class="modal">
                     <div>
@@ -251,7 +259,7 @@
                       <div class="left"><i></i></div>
                       <span></span>
                     </div>
-                    <div class="addBtn" ref="addBtn" v-text="isFriend(item.wechatId)" @click="clickMeb(item.wechatId)">添加好友</div>
+                    <div class="addBtn" ref="addBtn" v-text="isFriend(item.wechatId)" @click="clickMeb(item)"></div>
                   </div>
                 </template>
                 <template slot="title">
@@ -272,6 +280,15 @@
                   <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
                 </div>
               </a-popover>
+              <a-modal v-model="addByGroupShow" wrapClassName="add-friends-modal" title="添加客户" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
+                <div class="add-cell">
+                  <div class="add-text">验证语：</div>
+                  <div>
+                    <textarea v-model="message" class="area-cus" name="" id="" rows="4"></textarea>
+                    <div class="send-text">你需要发送验证请求，对方通过后才能添加其为客户好友</div>
+                  </div>
+                </div>
+              </a-modal>
             </div>
           </div>
         </a-tab-pane>
@@ -400,7 +417,11 @@ export default {
       editNoticeShow: false,
       operateMebVisible: false,
       operateTitle: '添加群成员',
-      operateType: 'add'
+      operateType: 'add',
+      addByGroupShow: false,
+      message: '',
+      groupMemberId: '',
+      GroupMebVisible: {}
     }
   },
   mounted() {
@@ -605,9 +626,42 @@ export default {
       })
       return '添加为联系人'
     },
-    clickMeb(id) {
-      this.$refs.addBtn.innerText == '发送消息' ? '' : ''
-      console.log(this.userId, id)
+    clickMeb(item) {
+      this.groupMemberId = item.wechatId
+      console.log(this.$refs.addBtn[0].innerText, this.userId, item.wechatId)
+      if (this.$refs.addBtn[0].innerText == '发送消息') {
+        console.log(item, 1111111)
+        // const chatId = this.userId + '&' + item.wechatId
+        // this.$router.push({
+        //   path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
+        //   query: { ...item }
+        // })
+        // this[types.ADD_CHAT_LIST]({
+        //   tjId: this.$route.params.tjId,
+        //   chatList: [
+        //     {
+        //       chatId,
+        //       ...this.$route.query,
+        //       company: this.allInfo.company, // 解决通讯录成员新建会话@未显示公司问题
+        //       chatType: Number(this.type),
+        //       wechatAvatar: this.allInfo.wechatAvatar,
+        //       wechatName: this.allInfo.wechatName,
+        //       lastActiveTime: new Date().getTime()
+        //     }
+        //   ]
+        // })
+      } else {
+        this.addByGroupShow = true
+        this.GroupMebVisible[item.wechatId] = false
+      }
+    },
+    addFriends() {
+      this.addByGroupShow = false
+      console.log(this.$route.params.tjId, this.groupInfo.groupId, this.groupMemberId, this.message)
+      // this.$socket.emit('add_contact_by_group', { tj_id:'', group_id:'', group_member_id:'', message:'' }, ack => {
+      //   console.log(ack, 'add_contact_by_group-ack')
+      // })
+      this.message = ''
     }
   },
   watch: {
@@ -1247,6 +1301,81 @@ export default {
         &.ant-btn-primary {
           color: rgba(0, 0, 0, 0.65);
           margin-left: 20px;
+        }
+      }
+    }
+  }
+}
+/deep/ .add-friends-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.add-friends-modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  // .ant-modal-close-x {
+  //   display: none;
+  // }
+  .ant-modal-content {
+    width: 640px;
+    height: 406px;
+    .ant-modal-header {
+      font-size: 16px;
+      font-family: PingFangSC, PingFangSC-Medium;
+      font-weight: 500;
+      text-align: left;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      border-bottom: none;
+    }
+    .ant-modal-body {
+      padding: 60px;
+      font-size: 14px;
+      line-height: 22px;
+      .add-cell {
+        display: flex;
+        .add-text {
+          width: 84px;
+          height: 57px;
+          color: rgba(0, 0, 0, 0.85);
+        }
+        .search-cus {
+          width: 400px;
+          height: 32px;
+          padding-left: 12px;
+          border: 1px solid rgba(0, 0, 0, 0.15);
+          border-radius: 4px;
+          outline: none;
+          &::-webkit-input-placeholder {
+            color: rgba(0, 0, 0, 0.25);
+          }
+        }
+        .area-cus {
+          width: 400px;
+          padding-left: 12px;
+          border: 1px solid #d9d9d9;
+          border-radius: 4px;
+          outline: none;
+          resize: none;
+        }
+        .send-text {
+          width: 400px;
+          color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+    .ant-modal-footer {
+      border-top: none;
+      text-align: center;
+      .ant-btn {
+        width: 160px;
+        height: 40px;
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        color: #000;
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: #fff;
+          margin-left: 24px;
         }
       }
     }

@@ -81,11 +81,16 @@
       </div>
     </div>
     <div class="at-container" id="selectuser" v-show="atShow && chatType == 2">
-      <div class="at-item" v-for="item in atList" :key="item.wechatId" @click="choose(item.wechatName)">
-        <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+      <div class="at-all">
+        <img src="@/assets/icon_all.png" alt="" />
+        <div>所有人</div>
+      </div>
+      <div class="note">群成员</div>
+      <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item.wechatName)">
+        <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
         <span class="name"> {{ item.wechatName }} </span>
-        <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-        <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+        <!-- <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+        <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span> -->
       </div>
     </div>
     <a-modal
@@ -175,7 +180,8 @@ export default {
       replyShow: false,
       replyName: '',
       replyContent: '',
-      atShow: false
+      atShow: false,
+      filterAtList: []
     }
   },
   directives: {
@@ -196,7 +202,11 @@ export default {
     },
     keydownEvent(e) {
       if (e.code == 'Digit2' && e.shiftKey == true) {
-        this.atShow = true
+        setTimeout(() => {
+          if (this.$refs.messagInput.innerText[this.$refs.messagInput.innerText.length - 1] == '@') {
+            this.atShow = true
+          }
+        }, 0)
       }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
@@ -228,34 +238,34 @@ export default {
         }
         console.log(curTextList, imgList)
         // console.log(this.editorText, 'enter-down')
-        let { contactId, tjId } = this.$route.params
-        let { wechatName, wechatAvatar } = this.userInfo.info
-        let { chatType } = this.$route.query
-        let content = null
-        if (chatType == 1) {
-          content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
-        } else {
-          content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
-        }
-        let msg = {
-          msgType: 'text',
-          chatId: contactId,
-          chatType: chatType,
-          fromId: tjId,
-          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: content,
-          sender: {
-            wechatName: wechatName,
-            wechatAvatar: wechatAvatar
-          },
-          notResend: true
-        }
-        this[types.SEND_MSG](msg)
-        this.sendToBottom()
-        this.editorText = ''
-        this.replyContent = ''
-        this.$refs.messagInput.innerHTML = ''
-        this.closeReply()
+        // let { contactId, tjId } = this.$route.params
+        // let { wechatName, wechatAvatar } = this.userInfo.info
+        // let { chatType } = this.$route.query
+        // let content = null
+        // if (chatType == 1) {
+        //   content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
+        // } else {
+        //   content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+        // }
+        // let msg = {
+        //   msgType: 'text',
+        //   chatId: contactId,
+        //   chatType: chatType,
+        //   fromId: tjId,
+        //   toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+        //   content: content,
+        //   sender: {
+        //     wechatName: wechatName,
+        //     wechatAvatar: wechatAvatar
+        //   },
+        //   notResend: true
+        // }
+        // this[types.SEND_MSG](msg)
+        // this.sendToBottom()
+        // this.editorText = ''
+        // this.replyContent = ''
+        // this.$refs.messagInput.innerHTML = ''
+        // this.closeReply()
       }
     },
     // clear() {
@@ -329,6 +339,14 @@ export default {
     changeText() {
       const value = deepClone(this.$refs.messagInput.innerText)
       this.value = value
+      this.filterAtList = this.atList
+      if (this.atShow) {
+        this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
+      }
+      if (this.filterAtList.length == 0 || !this.value) {
+        this.atShow = false
+      }
+      console.log(2222, this.filterAtList.length)
     },
     editBlur() {
       this.isChange = true
@@ -422,25 +440,26 @@ export default {
     },
     choose(v) {
       this.atShow = false
-      // this.$refs.messagInput.innerText = this.$refs.messagInput.innerText + v
-      // const selection = getSelection()
-      // selection.removeAllRanges()
-      // selection.collapseToEnd()
-      if (!this.rangeOfInputBox) {
-        this.rangeOfInputBox = new Range()
-        this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
-        // 设为非折叠状态
-        this.rangeOfInputBox.collapse(false)
-      }
+      this.filterAtList = this.atList
+      this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
+      // if (!this.rangeOfInputBox) {
+      //   this.rangeOfInputBox = new Range()
+      //   this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      //   // 设为非折叠状态
+      //   this.rangeOfInputBox.collapse(false)
+      // }
+      this.rangeOfInputBox = new Range()
+      this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      // 设为非折叠状态
+      this.rangeOfInputBox.collapse(false)
       // let spanNode = document.createElement('span')
       // spanNode.style.color = '#409EFF'
       // spanNode.innerHTML = v
-      let spanNode = document.createTextNode(v)
-      // spanNode.style.color = '#409EFF'
       // spanNode.innerHTML = `@${name}&nbsp;`
       // spanNode.dataset.id = id
       // 将 contentEditable 设置为false后 富文本视为一个节点，就可以做到、一键删除了  ！！！！
-      spanNode.contentEditable = false
+      // spanNode.contentEditable = false
+      let spanNode = document.createTextNode(v)
       if (this.rangeOfInputBox.collapsed) {
         this.rangeOfInputBox.insertNode(spanNode)
       } else {
@@ -490,6 +509,12 @@ export default {
         // console.log(this.editorText, n)
         // container = null
         this.editorText = n
+      }
+    },
+    atList: {
+      immediate: true,
+      handler: function() {
+        this.filterAtList = this.atList
       }
     }
   }
@@ -620,22 +645,42 @@ export default {
   .at-container {
     position: absolute;
     left: 0;
-    top: -250px;
-    width: 220px;
-    height: 250px;
-    padding: 10px;
-    background: #e9eaeb;
+    top: -320px;
+    width: 320px;
+    height: 320px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 22px;
     overflow-y: auto;
-    .at-item {
+    .at-all {
       display: flex;
       cursor: pointer;
-      margin-bottom: 10px;
+      img {
+        margin-right: 12px;
+      }
+      &:hover {
+        background: #f0f1f2;
+      }
+    }
+    .note {
+      text-align: left;
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+    .at-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 8px;
       .name {
-        font-size: 14px;
         margin-left: 12px;
-        // margin-right: 8x;
-        max-width: 100px;
-        line-height: 36px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -664,6 +709,9 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+      &:hover {
+        background: #f0f1f2;
       }
     }
   }
