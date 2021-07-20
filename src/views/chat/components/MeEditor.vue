@@ -183,7 +183,8 @@ export default {
       replyContent: '',
       atShow: false,
       filterAtList: [],
-      atIds: []
+      atIds: [],
+      inputFlag: true
     }
   },
   directives: {
@@ -218,8 +219,8 @@ export default {
         let imgList = []
         for (let i = 0; i < allnodes.length; i++) {
           if (allnodes[i].nodeName !== 'IMG') {
-            //当前节点为文字节点
-            curText = curText + allnodes[i].wholeText
+            //当前节点为文字节点  textContent  wholeText
+            curText = curText + allnodes[i].textContent
           } else {
             // 当前节点为图片节点
             if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
@@ -264,42 +265,50 @@ export default {
           notResend: true
         }
         //发送文本消息
-        for (let i = 0; i < curTextList.length; i++) {
-          //引用消息只会发出第一条文本消息
-          if (i == 0) {
-            if (chatType == 1) {
-              //个微
-              content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
-            } else {
-              content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
-            }
-            msg.msgType = 'text'
-            msg.content = curTextList[i]
-            // 判断@id
-            if (chatType == 2) {
-              this.atIds.forEach(item => {
-                this.atList.forEach(i => {
-                  if (i.wechatId == item) {
-                    if (curTextList[i].indexOf(i.wechatName) == -1) {
-                      this.atIds.splice(this.atIds.indexOf(i.wechatId), 1)
+        if (curTextList.length > 0) {
+          for (let i = 0; i < curTextList.length; i++) {
+            //引用消息只会发出第一条文本消息
+            if (i == 0) {
+              if (chatType == 1) {
+                //个微
+                content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
+              } else {
+                content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
+              }
+              msg.msgType = 'text'
+              msg.content = curTextList[i]
+              // 判断@id
+              if (chatType == 2) {
+                this.atIds.forEach(item => {
+                  this.atList.forEach(val => {
+                    if (val.wechatId == item) {
+                      // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atIds.indexOf(val.wechatId))
+                      if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
+                        this.atIds.splice(this.atIds.indexOf(val.wechatId), 1)
+                      }
                     }
-                  }
+                  })
                 })
-              })
+              }
+              console.log(this.atIds, 'this.atIds')
+              // this[types.SEND_MSG](msg)
+              this.atIds = []
+            } else {
+              msg.msgType = 'text'
+              msg.content = curTextList[i]
+              // this[types.SEND_MSG](msg)
             }
-            this[types.SEND_MSG](msg)
-          } else {
-            msg.msgType = 'text'
-            msg.content = curTextList[i]
-            this[types.SEND_MSG](msg)
           }
         }
+
         //发送图片消息
-        imgList.forEach(item => {
-          msg.msgType = 'img'
-          msg.url = item
-          this[types.SEND_MSG](msg)
-        })
+        if (imgList.length > 0) {
+          imgList.forEach(item => {
+            msg.msgType = 'img'
+            msg.url = item
+            // this[types.SEND_MSG](msg)
+          })
+        }
         // this[types.SEND_MSG](msg)
         this.sendToBottom()
         this.editorText = ''
@@ -377,16 +386,19 @@ export default {
       this[types.SEND_MSG](sendData)
     },
     changeText() {
-      const value = deepClone(this.$refs.messagInput.innerText)
-      this.value = value
-      this.filterAtList = this.atList
-      if (this.atShow) {
-        this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
-      }
-      if (this.filterAtList.length == 0 || !this.value) {
-        this.atShow = false
-      }
-      console.log(2222, this.filterAtList.length)
+      setTimeout(() => {
+        if (!this.inputFlag) return
+        const value = deepClone(this.$refs.messagInput.innerText)
+        this.value = value
+        this.filterAtList = this.atList
+        if (this.atShow) {
+          this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
+        }
+        if (this.filterAtList.length == 0 || !this.value) {
+          this.atShow = false
+        }
+        // console.log(this.filterAtList.length, 'this.filterAtList.length')
+      }, 0)
     },
     editBlur() {
       this.isChange = true
@@ -515,6 +527,12 @@ export default {
         selection.removeAllRanges()
         selection.addRange(this.rangeOfInputBox)
       }
+    },
+    onCompositionStart() {
+      this.inputFlag = false
+    },
+    onCompositionEnd() {
+      this.inputFlag = true
     }
   },
   mounted() {
@@ -522,6 +540,8 @@ export default {
     this.parentNode = document.getElementById('emoji-parent')
     this.getEndFocus()
     this.value && this.insertEmoji(this.value, false)
+    this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
+    this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
   },
   watch: {
     $route: {
