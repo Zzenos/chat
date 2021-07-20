@@ -472,6 +472,14 @@ export default {
         font-size: 12px;
         font-weight: 400;
       }
+      /deep/ span {
+        font-family: PingFangSC-Regular, PingFang SC !important;
+        color: #2c3e50 !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        background-color: transparent !important;
+        font-weight: normal !important;
+      }
     }
     .reply {
       text-align: left;
