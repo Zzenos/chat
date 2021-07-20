@@ -166,6 +166,7 @@ export default {
     keydownEvent(e) {
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
+        if (!this.editorText) return
         // console.log(this.editorText, 'enter-down')
         let { contactId, tjId } = this.$route.params
         let { wechatName, wechatAvatar } = this.userInfo.info
@@ -267,6 +268,7 @@ export default {
     changeText() {
       const value = deepClone(this.$refs.messagInput.innerText)
       this.value = value
+      this.editorText = this.value
     },
     editBlur() {
       this.isChange = true
