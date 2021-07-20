@@ -459,6 +459,7 @@ export default {
       text-align: left;
       padding: 0 24px;
       // border: 1px solid #ccc;
+      word-break: break-word;
       position: relative;
       &:focus {
         outline: none;
