@@ -188,8 +188,29 @@
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
           <div>
-            <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
-            <span v-if="chatType == 2" class="edit-groupname">编辑</span>
+            <span class="nickname ellipsis" v-if="chatType == 1 || chatType == 3">{{ wechatName }}</span>
+            <span class="nickname ellipsis" v-if="chatType == 2">{{ groupInfo.groupName || '未命名' }}</span>
+            <a-popover
+              placement="rightBottom"
+              trigger="click"
+              overlayClassName="edit-groupname-modal"
+              v-model="editGroupNameVisible.meb"
+              :getPopupContainer="
+                triggerNode => {
+                  return triggerNode.parentNode
+                }
+              "
+            >
+              <template slot="content">
+                <div class="btn" @click="editGroupName('cal')">取消</div>
+                <div class="btn" @click="editGroupName('ok')">确认</div>
+              </template>
+              <template slot="title">
+                <input class="edit-groupname-ipt" type="text" v-model="groupInfo.groupName" />
+              </template>
+              <span v-if="chatType == 2" class="edit-groupname">编辑</span>
+            </a-popover>
+            <!-- <span v-if="chatType == 2" class="edit-groupname">编辑</span> -->
             <span>
               <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
               <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
@@ -206,11 +227,13 @@
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
             <div class="memberNotice">
               <div class="noticeTitle">群公告</div>
-              <div class="noticeEdit" @click="editNotice">点击设置群公告</div>
-              <div class="noticeContent">groupInfo.notice........</div>
-              <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" ok-text="完成" cancel-text="取消">
+              <div class="noticeContent">
+                <div class="nnoticeDetail">{{ groupInfo.notice || '暂无群公告' }}</div>
+                <div class="noticeEdit" @click="editNotice">></div>
+              </div>
+              <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
                 <div class="writeNotice">
-                  <textarea ref="groupNotice" placeholder=""></textarea>
+                  <textarea ref="groupNotice" placeholder="" v-model="groupInfo.notice"></textarea>
                 </div>
               </a-modal>
             </div>
@@ -397,8 +420,10 @@ export default {
       chatType: this.$route.query.chatType,
       allInfo: {},
       groupInfo: {
+        groupName: '',
         memberCount: '',
-        members: []
+        members: [],
+        notice: '这里是群公告这里是群公告这里是群公告这里是群公告这里是群公告'
       },
       modal2Visible: false,
       toRensendIndex: 0,
@@ -421,7 +446,10 @@ export default {
       addByGroupShow: false,
       message: '',
       groupMemberId: '',
-      GroupMebVisible: {}
+      GroupMebVisible: {},
+      copyNotice: '',
+      copyGroupName: '',
+      editGroupNameVisible: {}
     }
   },
   mounted() {
@@ -603,8 +631,16 @@ export default {
       })
     },
     completeEditNotice() {
-      console.log(1123)
+      console.log('completeEditNotice', this.groupInfo.notice)
       this.editNoticeShow = false
+      // this.$route.params.tjId, this.groupInfo.groupId this.groupInfo.notice
+      // this.$socket.emit('modify_group_notice', { tj_id:'', group_id:'', group_notice:'' }, ack => {
+      //   console.log(ack, 'modify_group_notice')
+      // })
+    },
+    cancelEditNotice() {
+      this.groupInfo.notice = this.copyNotice
+      console.log('cancelEditNotice', this.groupInfo.notice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -612,18 +648,23 @@ export default {
       this.operateType = type
     },
     operateMeb(list, type) {
+      //type: 'add' 1  'del' 0 this.$route.params.tjId, this.groupInfo.groupId, list item.wechatId  op_type: type == 'add' ? 1 : 0
       this.operateMebVisible = false
       console.log(list, type)
+      // this.$socket.emit('add_or_delete_group_member', { tj_id:'', group_id:'', target_id:'', op_type:1 }, ack => {
+      //   console.log(ack, 'add_or_delete_group_member')
+      // })
     },
     isFriend(targetId) {
       // console.log(this.$route.params.tjId, targetId)
       // const { tjId } = this.$route.params
-      this.$socket.emit('is_friend', { tj_id: this.userId, target_id: targetId }, ack => {
-        console.log(ack, 'isFriend-ack')
-        if (ack.code == 200) {
-          return ack.data.is_friend ? '发送消息' : '添加为联系人'
-        }
-      })
+      // this.$socket.emit('is_friend', { tj_id: this.userId, target_id: targetId }, ack => {
+      //   console.log(ack, 'isFriend-ack')
+      //   if (ack.code == 200) {
+      //     return ack.data.is_friend ? '发送消息' : '添加为联系人'
+      //   }
+      // })
+      targetId
       return '添加为联系人'
     },
     clickMeb(item) {
@@ -662,6 +703,18 @@ export default {
       //   console.log(ack, 'add_contact_by_group-ack')
       // })
       this.message = ''
+    },
+    editGroupName(type) {
+      this.editGroupNameVisible.meb = false
+      if (type == 'ok') {
+        console.log('ok')
+        // this.$socket.emit('modify_group_name', { tj_id:'', group_id:'', group_name:'' }, ack => {
+        //   console.log(ack, 'modify_group_name')
+        // })
+      } else {
+        console.log('cancel')
+        this.groupInfo.groupName = this.copyGroupName
+      }
     }
   },
   watch: {
@@ -709,6 +762,8 @@ export default {
           this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
             this.members = ack.data.members
+            this.copyNotice = ack.data.notice
+            this.copyGroupName = ack.data.groupName
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
           return
@@ -1118,19 +1173,41 @@ export default {
       overflow-y: auto;
       .memberNotice {
         // height: 50px;
-        border-bottom: 1px solid grey;
-        .noticeEdit {
-          color: rgba(0, 0, 0, 0.25);
-          cursor: pointer;
+        // border-bottom: 1px solid grey;
+        .noticeTitle {
+          font-family: PingFangSC, PingFangSC-Regular;
+          color: rgba(0, 0, 0, 0.45);
+          margin-bottom: 8px;
+        }
+        .noticeContent {
+          display: flex;
+          justify-content: space-between;
+          padding-right: 10px;
+          font-family: PingFangSC, PingFangSC-Regular;
+          color: rgba(0, 0, 0, 0.65);
+          .nnoticeDetail {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .noticeEdit {
+            color: rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+          }
         }
       }
       .memberCount {
         font-weight: 600;
         margin: 10px 0;
       }
-      // .search {
-      //     padding:16px 20px;
-      // }
+      .search {
+        // padding:16px 20px;
+        /deep/.ant-input-search.ant-input-affix-wrapper {
+          margin: 16px 10px !important;
+          width: 280px !important;
+        }
+      }
       .operate {
         height: 36px;
         margin-top: 20px;
@@ -1257,6 +1334,9 @@ export default {
   .ant-modal-close-x {
     display: none;
   }
+  .ant-modal {
+    width: 350px !important;
+  }
   .ant-modal-content {
     display: flex;
     flex-direction: column;
@@ -1376,6 +1456,31 @@ export default {
         &.ant-btn-primary {
           color: #fff;
           margin-left: 24px;
+        }
+      }
+    }
+  }
+}
+/deep/ .ant-popover.edit-groupname-modal.ant-popover-placement-leftTop {
+  color: rgba(0, 0, 0, 0.85);
+  .ant-popover-content {
+    color: rgba(0, 0, 0, 0.85);
+    .ant-popover-inner {
+      .ant-popover-title {
+        border-bottom: none;
+        .edit-groupname-ipt {
+          // border: 1px solid #d9d9d9;
+          border: none;
+          outline: none;
+        }
+      }
+      .ant-popover-inner-content {
+        display: flex;
+        justify-content: flex-end;
+        font-size: 12px;
+        .btn {
+          width: 30px;
+          cursor: pointer;
         }
       }
     }
