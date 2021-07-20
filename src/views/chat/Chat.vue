@@ -547,6 +547,20 @@ export default {
         })
       }
 
+      if (item.fromId == this.userId) {
+        let time = new Date().getTime() - item.time
+        if (Math.floor(time / 1000 / 60) < 2) {
+          menus.push({
+            label: '撤回',
+            icon: 'icon-s-flag',
+            customClass: 'cus-contextmenu-item',
+            onClick: () => {
+              this.revokeRecords(index, item)
+            }
+          })
+        }
+      }
+
       menus.push({
         label: '转发',
         icon: 'promotion',
@@ -599,6 +613,9 @@ export default {
         return
       }
       this.transmitMsgVisible = true
+    },
+    revokeRecords(index, item) {
+      console.log('撤回消息', index, item)
     },
     // 转发
     transmitMsg() {
