@@ -390,6 +390,7 @@ export default {
         if (!this.inputFlag) return
         const value = deepClone(this.$refs.messagInput.innerText)
         this.value = value
+        this.editorText = this.value
         this.filterAtList = this.atList
         if (this.atShow) {
           this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
@@ -662,6 +663,14 @@ export default {
         color: rgba(0, 0, 0, 0.25);
         font-size: 12px;
         font-weight: 400;
+      }
+      /deep/ span {
+        font-family: PingFangSC-Regular, PingFang SC !important;
+        color: #2c3e50 !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        background-color: transparent !important;
+        font-weight: normal !important;
       }
     }
     .reply {
