@@ -303,9 +303,9 @@
                   <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
                 </div>
               </a-popover>
-              <a-modal v-model="addByGroupShow" wrapClassName="add-friends-modal" title="添加客户" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
+              <a-modal v-model="addByGroupShow" wrapClassName="add-friends-modal" title="发送添加邀请" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
                 <div class="add-cell">
-                  <div class="add-text">验证语：</div>
+                  <div class="add-text">验证请求：</div>
                   <div>
                     <textarea v-model="message" class="area-cus" name="" id="" rows="4"></textarea>
                     <div class="send-text">你需要发送验证请求，对方通过后才能添加其为客户好友</div>

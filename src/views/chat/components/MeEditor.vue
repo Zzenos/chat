@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="at-container" id="selectuser" v-show="atShow && chatType == 2">
-      <div class="at-all">
+      <div class="at-all" @click="choose('all')">
         <img src="@/assets/icon_all.png" alt="" />
         <div>所有人</div>
       </div>
@@ -493,7 +493,11 @@ export default {
     },
     choose(v) {
       this.atShow = false
-      this.atIds.push(v.wechatId)
+      if (v == 'all') {
+        this.atIds.push('all')
+      } else {
+        this.atIds.push(v.wechatId)
+      }
       this.filterAtList = this.atList
       this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
       // if (!this.rangeOfInputBox) {
@@ -513,7 +517,8 @@ export default {
       // spanNode.dataset.id = id
       // 将 contentEditable 设置为false后 富文本视为一个节点，就可以做到、一键删除了  ！！！！
       // spanNode.contentEditable = false
-      let spanNode = document.createTextNode(v.wechatName)
+      let replaceText = v == 'all' ? '所有人' : v.wechatName
+      let spanNode = document.createTextNode(replaceText)
       if (this.rangeOfInputBox.collapsed) {
         this.rangeOfInputBox.insertNode(spanNode)
       } else {
