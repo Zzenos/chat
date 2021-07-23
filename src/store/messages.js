@@ -136,7 +136,8 @@ export default {
           if (state.chatMsgHash[msg.msgId]) return
           // 新会话，添加会话列表
           if (!state.chatMsgs[msg.chatId]) {
-            const info = msg.sender.tjId === tjId ? msg.to : msg.sender
+            // chatType: 2 群聊 群内其他人给群发消息，to是群的信息
+            const info = msg.chatType === 2 ? msg.to : msg.sender.tjId === tjId ? msg.to : msg.sender
             commit(types.ADD_CHAT_LIST, {
               tjId,
               chatList: [
