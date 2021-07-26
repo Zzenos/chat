@@ -241,76 +241,10 @@ export default {
         }
         console.log(curTextList, imgList)
         // console.log(this.editorText, 'enter-down')
-        let { contactId, tjId } = this.$route.params
-        let { wechatName, wechatAvatar } = this.userInfo.info
-        let { chatType } = this.$route.query
-        let content = null
-        // if (chatType == 1) {
-        //   //个微
-        //   content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
-        // } else {
-        //   content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
-        // }
-        let msg = {
-          msgType: 'text',
-          chatId: contactId,
-          chatType: chatType,
-          fromId: tjId,
-          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: content,
-          sender: {
-            wechatName: wechatName,
-            wechatAvatar: wechatAvatar
-          },
-          notResend: true
-        }
-        //发送文本消息
-        if (curTextList.length > 0) {
-          for (let i = 0; i < curTextList.length; i++) {
-            //引用消息只会发出第一条文本消息
-            if (i == 0) {
-              if (chatType == 1) {
-                //个微
-                content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
-              } else {
-                content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
-              }
-              msg.msgType = 'text'
-              msg.content = curTextList[i]
-              // 判断@id
-              if (chatType == 2) {
-                this.atIds.forEach(item => {
-                  this.atList.forEach(val => {
-                    if (val.wechatId == item) {
-                      // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atIds.indexOf(val.wechatId))
-                      if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
-                        this.atIds.splice(this.atIds.indexOf(val.wechatId), 1)
-                      }
-                    }
-                  })
-                })
-              }
-              console.log(this.atIds, 'this.atIds')
-              // this[types.SEND_MSG](msg)
-              this.atIds = []
-            } else {
-              msg.msgType = 'text'
-              msg.content = curTextList[i]
-              // this[types.SEND_MSG](msg)
-            }
-          }
-        }
-
-        //发送图片消息
-        if (imgList.length > 0) {
-          imgList.forEach(item => {
-            msg.msgType = 'img'
-            msg.url = item
-            // this[types.SEND_MSG](msg)
-          })
-        }
-        // this[types.SEND_MSG](msg)
+        this.sendTextMsg(curTextList)
+        this.sendImgMsg(imgList)
         this.sendToBottom()
+        this.atIds = []
         this.editorText = ''
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
@@ -499,24 +433,11 @@ export default {
         this.atIds.push(v.wechatId)
       }
       this.filterAtList = this.atList
-      this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
-      // if (!this.rangeOfInputBox) {
-      //   this.rangeOfInputBox = new Range()
-      //   this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
-      //   // 设为非折叠状态
-      //   this.rangeOfInputBox.collapse(false)
-      // }
+      // this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
+      this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML.replace(this.$refs.messagInput.innerHTML.split('@').pop(), '')
       this.rangeOfInputBox = new Range()
       this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
-      // 设为非折叠状态
       this.rangeOfInputBox.collapse(false)
-      // let spanNode = document.createElement('span')
-      // spanNode.style.color = '#409EFF'
-      // spanNode.innerHTML = v
-      // spanNode.innerHTML = `@${name}&nbsp;`
-      // spanNode.dataset.id = id
-      // 将 contentEditable 设置为false后 富文本视为一个节点，就可以做到、一键删除了  ！！！！
-      // spanNode.contentEditable = false
       let replaceText = v == 'all' ? '所有人' : v.wechatName
       let spanNode = document.createTextNode(replaceText)
       if (this.rangeOfInputBox.collapsed) {
@@ -539,6 +460,84 @@ export default {
     },
     onCompositionEnd() {
       this.inputFlag = true
+    },
+    sendTextMsg(curTextList) {
+      //发送文本消息
+      if (curTextList.length == 0) return
+      for (let i = 0; i < curTextList.length; i++) {
+        if (!curTextList[i]) return
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        let content = null
+        //引用消息只会发出第一条文本消息
+        if (i == 0) {
+          if (chatType == 1) {
+            //个微
+            content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
+          } else {
+            content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
+          }
+        } else {
+          content = curTextList[i]
+        }
+        // 判断@id
+        let copyIds = []
+        if (chatType == 2) {
+          this.atIds.forEach(item => {
+            if (item == 'all') copyIds.push('all')
+            this.atList.forEach(val => {
+              if (val.wechatId == item) {
+                // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atIds.indexOf(val.wechatId))
+                if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
+                  // this.atIds.splice(this.atIds.indexOf(val.wechatId), 1)
+                } else {
+                  copyIds.push(val.wechatId)
+                }
+              }
+            })
+          })
+        }
+        msg.msgType = 'text'
+        msg.content = content
+        msg.atIds = copyIds
+        console.log(msg, 'TextMsg', content)
+        // this[types.SEND_MSG](msg)
+      }
+    },
+    sendImgMsg(imgList) {
+      if (imgList.length == 0) return
+      for (let i = 0; i < imgList.length; i++) {
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        msg.msgType = 'img'
+        msg.url = imgList[i]
+        console.log(msg, 'ImgMsg')
+        // this[types.SEND_MSG](msg)
+      }
     }
   },
   mounted() {
