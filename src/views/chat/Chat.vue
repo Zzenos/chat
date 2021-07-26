@@ -68,6 +68,7 @@
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
+              <!-- <div v-if="isOpen"> v </div> -->
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />

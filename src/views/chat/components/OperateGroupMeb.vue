@@ -9,6 +9,8 @@
     :visible="visible"
     :loading="listLoading"
     :allCheckOptions="allCheckOptions || checkOptions"
+    :showAllCheck="showAllCheck"
+    :isRadio="isRadio"
     checkOptionKey="wechatId"
     @close="closeModal"
     @confirm="confirmSelect"
@@ -84,6 +86,12 @@ export default {
         item.disabled = [1, 3].includes(item.chatType) && [1, 3].includes(item.lost)
         return item
       })
+    },
+    showAllCheck() {
+      return this.operateType == 'add' ? true : false
+    },
+    isRadio() {
+      return this.operateType !== 'add'
     }
   },
   watch: {
@@ -96,7 +104,7 @@ export default {
   },
   methods: {
     onSearch() {
-      console.log(this.searchData.name, 'this.searchData.name', this.checkOptions)
+      // console.log(this.searchData.name, 'this.searchData.name', this.checkOptions)
       this.allCheckOptions = this.searchData.name ? this.checkOptions.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchData.name) > -1) : this.checkOptions
     },
     closeModal() {
