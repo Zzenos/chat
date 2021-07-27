@@ -203,7 +203,7 @@ export default {
     inputEvent() {
       // console.log('send', e)
     },
-    keydownEvent(e) {
+    async keydownEvent(e) {
       if (e.code == 'Digit2' && e.shiftKey == true) {
         setTimeout(() => {
           if (this.$refs.messagInput.innerText[this.$refs.messagInput.innerText.length - 1] == '@') {
@@ -226,9 +226,8 @@ export default {
             if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
               imgList.push(allnodes[i].src)
             } else {
-              downloadImg(allnodes[i].src).then(url => {
-                imgList.push(url)
-              })
+              let url = await downloadImg(allnodes[i].src)
+              imgList.push(url)
             }
             if (curText) {
               curTextList.push(curText)
@@ -653,7 +652,7 @@ export default {
       /deep/ img {
         max-width: 200px;
         width: auto;
-        height: 80px;
+        height: 60px;
         vertical-align: bottom;
       }
       &:focus {
