@@ -1,6 +1,10 @@
 <template>
   <div class="address-book_container">
     <div class="address-book_tab">
+      <div class="btn-sync" @click="syncAddressBook">
+        <a-icon type="sync" :spin="addressBookSyncStatus" />
+        <!-- <span v-show="addressBookSyncStatus">同步中...</span> -->
+      </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5">
         <a-tab-pane key="customer" tab="客户">
           <RecycleScroller class="list-wraper" :items="customerListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
@@ -53,6 +57,8 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import { mapMutations } from 'vuex'
+import * as types from '@/store/actionType'
 
 const ADDRESS_BOOK_CONFIG = {
   customer: '1',
@@ -64,6 +70,7 @@ export default {
   name: 'addressBook',
   data() {
     return {
+      addressBookSyncStatus: false, // 通讯录同步状态
       activeKey: 'customer', // 1 客户 2 群聊 3 成员 查询详情的时候使用
       curAddress: {},
       contactInfo: {},
@@ -84,6 +91,9 @@ export default {
     }
   },
   computed: {
+    accountData() {
+      return this.$store.getters.userDetailsById(this.tjId)
+    },
     contactData() {
       return this.$store.getters.contactByTjId(this.tjId)
     }
@@ -104,6 +114,13 @@ export default {
         n && this.handleData(n)
       }
     },
+    accountData: {
+      immediate: true,
+      handler: function(n) {
+        console.log('accountData:', n)
+        this.addressBookSyncStatus = n.info.addressBookSyncStatus || false
+      }
+    },
     searchText(n) {
       const list = `${this.activeKey}ListAry`
       this[list] = n ? this.contactInfo[list].filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.contactInfo[list]
@@ -119,6 +136,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([types.SET_ADDRESSBOOK_SYNC_STATUS]),
     handleItem(val, canJump = false) {
       console.log(val)
       const { wechatId, tjId } = val
@@ -157,6 +175,29 @@ export default {
           this[key] = contactData[key]
         }
       }
+    },
+    syncAddressBook() {
+      if (this.addressBookSyncStatus) {
+        this.$message.warn('数据同步中，请稍等...')
+        return
+      }
+      this.$confirm({
+        title: `确定同步【${this.accountData.info.wechatName}】的通讯录吗？`,
+        content: '数据较多时，同步耗时较长，请耐心等待～',
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          this.addressBookSyncStatus = true
+          this.$socket.emit('sync_contact', { tjId: this.tjId }, res => {
+            if (res.code === 200) {
+              console.log(res)
+              // 更新当前账号的通讯录同步状态
+              this[types.SET_ADDRESSBOOK_SYNC_STATUS](this.tjId)
+            }
+          })
+        },
+        onCancel() {}
+      })
     }
   }
 }
@@ -165,6 +206,24 @@ export default {
 <style lang="scss" scoped>
 .address-book_container {
   width: 100%;
+  .address-book_tab {
+    position: relative;
+    .btn-sync {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      z-index: 100;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      color: #000;
+      span {
+        margin-left: 5px;
+        font-size: 12px;
+      }
+    }
+  }
   .list-wraper {
     height: calc(100vh - 193px);
     overflow-y: scroll;

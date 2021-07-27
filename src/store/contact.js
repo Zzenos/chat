@@ -12,6 +12,8 @@ export default {
       const addressBookData = { ...contactsData[0], customerListAry, memberListAry, groupListAry }
       if (state[tjId]) {
         state[tjId] = addressBookData
+        // 更新当前账号的通讯录同步状态
+        this[types.SET_ADDRESSBOOK_SYNC_STATUS](tjId)
       } else {
         Vue.set(state, `${tjId}`, addressBookData)
       }
