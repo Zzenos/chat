@@ -35,6 +35,14 @@ export default {
       } else {
         state.chatList[tjId].splice(0, 0, ...filterLsit)
       }
+    },
+    [types.UPDATE_CHAT_TOP_STATUS](state, chatInfo) {
+      const tjId = chatInfo.tjId
+      // 找到索引，替换
+      const index = state.chatList[tjId].findIndex(i => {
+        return i.wechatId === chatInfo.chatList[0].wechatId
+      })
+      state.chatList[tjId].splice(index, 1, ...chatInfo.chatList)
     }
   },
   actions: {},
@@ -47,22 +55,27 @@ export default {
         if (chatList && chatList.length) {
           return orderBy(
             chatList,
-            function(i) {
-              const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
-              const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
-              const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
-              i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
-              i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
-              i.lastMsg = curChatMsgs.length
-                ? curChatMsgs[curChatMsgs.length - 1]
-                : {
-                    time: i.lastActiveTime,
-                    defaultContent: ''
-                  }
-              i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
-              return i.lastMsg.sortTime
-            },
-            ['desc']
+            [
+              function(i) {
+                return i.isTop
+              },
+              function(i) {
+                const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
+                const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
+                const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
+                i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
+                i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
+                i.lastMsg = curChatMsgs.length
+                  ? curChatMsgs[curChatMsgs.length - 1]
+                  : {
+                      time: i.lastActiveTime,
+                      defaultContent: ''
+                    }
+                i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
+                return i.lastMsg.sortTime
+              }
+            ],
+            ['desc', 'desc']
           )
         } else {
           Vue.set(state.chatList, `${tjId}`, [])
