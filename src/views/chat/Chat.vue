@@ -254,10 +254,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
-import Contextmenu from 'vue-contextmenujs'
 import { formateTime, parseTime } from '@/util/util'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -272,7 +270,6 @@ import ReplyMessage from '@/views/chat/components/ReplyMessage'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
 import TransmitMsgModal from './components/TransmitMsgModal'
-Vue.use(Contextmenu)
 import iframeMixin from '@/mixin/iframeMixin'
 
 const { state: overState } = overTimeModal()
