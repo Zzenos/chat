@@ -143,7 +143,7 @@ export default {
               ? item.chatType == '2'
                 ? content.replace(/\{用户昵称\}(,|，)?/g, '')
                 : content.replace(/\{用户昵称\}/g, item.wechatName)
-              : msgType == 'weapp'
+              : ['videoNum', 'weapp'].includes(msgType)
               ? JSON.stringify(content)
               : content),
           url,

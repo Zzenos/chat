@@ -142,6 +142,7 @@
                       :des="item.content.des"
                       :latitude="item.content.latitude"
                       :longitude="item.content.longitude"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
 
                     <!-- 视频号消息 -->
@@ -153,6 +154,7 @@
                       :des="item.desc"
                       :iconurl="item.content.icon"
                       :url="item.url"
+                      @contextmenu.native="onCopy(index, item, $event)"
                     />
 
                     <!-- !消息发送状态 
@@ -291,7 +293,7 @@
                       <div class="left"><i></i></div>
                       <span></span>
                     </div>
-                    <div class="addBtn" ref="addBtn" v-text="isFriend(item.wechatId)" @click="clickMeb(item)"></div>
+                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">{{ btnMebText[item.wechatId] }}</div>
                   </div>
                 </template>
                 <template slot="title">
@@ -305,11 +307,13 @@
                   <div v-if="item.department" class="department">{{ '@' + item.department }}</div>
                   <span v-else class="green">@微信</span>
                 </template>
-                <div class="memberInfo">
-                  <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-                  <span class="name"> {{ item.wechatName }} </span>
-                  <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-                  <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+                <div>
+                  <div class="memberInfo" @click="isFriend(item)">
+                    <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                    <span class="name"> {{ item.wechatName }} </span>
+                    <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                    <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+                  </div>
                 </div>
               </a-popover>
               <a-modal v-model="addByGroupShow" wrapClassName="add-friends-modal" title="发送添加邀请" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
@@ -458,7 +462,8 @@ export default {
       GroupMebVisible: {},
       copyNotice: '',
       copyGroupName: '',
-      editGroupNameVisible: {}
+      editGroupNameVisible: {},
+      btnMebText: {}
     }
   },
   mounted() {
@@ -617,7 +622,7 @@ export default {
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
       this.msgInfo = item
-      if (['link', 'card', 'weapp', 'voice'].includes(this.msgInfo.msgType)) {
+      if (['card', 'weapp', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
       }
@@ -681,17 +686,15 @@ export default {
       //   console.log(ack, 'add_or_delete_group_member')
       // })
     },
-    isFriend(targetId) {
-      // console.log(this.$route.params.tjId, targetId)
-      // const { tjId } = this.$route.params
-      // this.$socket.emit('is_friend', { tj_id: this.userId, target_id: targetId }, ack => {
-      //   console.log(ack, 'isFriend-ack')
-      //   if (ack.code == 200) {
-      //     return ack.data.is_friend ? '发送消息' : '添加为联系人'
-      //   }
-      // })
-      targetId
-      return '添加为联系人'
+    isFriend(item) {
+      const { tjId } = this.$route.params
+      this.$socket.emit('is_friend', { tj_id: tjId, target_id: item.wechatId }, ack => {
+        if (ack.code == 200) {
+          this.btnMebText[item.wechatId] = ack.data.is_friend ? '发送消息' : '添加为联系人'
+          // console.log(this.btnMebText[item.wechatId])
+          this.$forceUpdate()
+        }
+      })
     },
     clickMeb(item) {
       this.groupMemberId = item.wechatId
