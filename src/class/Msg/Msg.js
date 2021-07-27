@@ -194,12 +194,13 @@ export class mpMsg extends Msg {
 export class videoNumMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { icon, coverUrl, title, des, url } = options
+    let { icon, coverUrl, title, desc, href, content } = options
     this.icon = icon
     this.coverUrl = coverUrl
     this.title = title
-    this.desc = des
-    this.url = url
+    this.desc = desc
+    this.url = href
+    this.content = JSON.parse(content)
     this.defaultContent = `[视频号]`
   }
 }
@@ -211,7 +212,7 @@ export class locationMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
     let { content } = options
-    this.content = content // 解码
+    this.content = JSON.parse(content)
     this.defaultContent = `[位置]`
   }
 }

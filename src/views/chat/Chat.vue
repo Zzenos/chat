@@ -145,7 +145,15 @@
                     />
 
                     <!-- 视频号消息 -->
-                    <video-num-message v-else-if="item.msgType == 'videoNum'" :vid="item.msgId" :title="item.title" :coverurl="item.coverUrl" :des="item.des" :iconurl="item.icon" :url="item.url" />
+                    <video-num-message
+                      v-else-if="item.msgType == 'videoNum'"
+                      :vid="item.msgId"
+                      :title="item.title"
+                      :coverurl="item.coverUrl"
+                      :des="item.desc"
+                      :iconurl="item.content.icon"
+                      :url="item.url"
+                    />
 
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {

@@ -7,8 +7,7 @@
     <div class="video-content">
       <div class="title">
         <div class="left">
-          <!-- <img :src="iconurl" alt="" /> -->
-          <img class="icon" src="@/assets/icon_shipinhao.png" alt="" />
+          <img class="icon" :src="iconurl" alt="" />
           {{ title }}
         </div>
         <div class="right">
@@ -46,7 +45,7 @@ export default {
     },
     des: {
       type: String,
-      default: '角度犀利从前段时间王思聪...............'
+      default: ''
     },
     title: {
       type: String,
@@ -119,6 +118,7 @@ export default {
         .icon {
           width: 20px;
           height: 20px;
+          border-radius: 50%;
         }
       }
       .right {
@@ -144,6 +144,9 @@ export default {
     font-family: PingFangSC, PingFangSC-Regular;
     font-weight: 400;
     text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: rgba(0, 0, 0, 0.45);
     line-height: 18px;
     border-top: 1px solid #e4e5e7;
