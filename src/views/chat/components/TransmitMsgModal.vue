@@ -144,7 +144,7 @@ export default {
                 ? content.replace(/\{用户昵称\}(,|，)?/g, '')
                 : content.replace(/\{用户昵称\}/g, item.wechatName)
               : ['videoNum', 'weapp'].includes(msgType)
-              ? JSON.stringify(content)
+              ? JSON.stringify(JSON.stringify(content))
               : content),
           url,
           coverUrl,

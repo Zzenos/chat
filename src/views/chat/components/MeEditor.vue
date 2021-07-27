@@ -512,7 +512,7 @@ export default {
         msg.content = content
         msg.atIds = copyIds
         console.log(msg, 'TextMsg', content)
-        // this[types.SEND_MSG](msg)
+        this[types.SEND_MSG](msg)
       }
     },
     sendImgMsg(imgList) {

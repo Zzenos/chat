@@ -90,9 +90,9 @@ export default {
     addFriends() {
       this.addModal = false
       console.log(this.$route.params.tjId, this.phoneNumber, this.message)
-      // this.$socket.emit('add_wechat_via_phone_number', { tj_id: '', phone_number: '', message: '' }, ack => {
-      //   console.log(ack, 'add_wechat_via_phone_number-ack')
-      // })
+      this.$socket.emit('add_wechat_via_phone_number', { tj_id: this.$route.params.tjId, phone_number: this.phoneNumber, message: this.message }, ack => {
+        console.log(ack, 'add_wechat_via_phone_number-ack')
+      })
       this.phoneNumber = ''
       this.message = ''
     }

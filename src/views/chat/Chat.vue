@@ -622,7 +622,7 @@ export default {
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
       this.msgInfo = item
-      if (['card', 'weapp', 'voice', 'location'].includes(this.msgInfo.msgType)) {
+      if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
       }
@@ -682,9 +682,20 @@ export default {
       //type: 'add' 1  'del' 0 this.$route.params.tjId, this.groupInfo.groupId, list item.wechatId  op_type: type == 'add' ? 1 : 0
       this.operateMebVisible = false
       console.log(list, type)
-      // this.$socket.emit('add_or_delete_group_member', { tj_id:'', group_id:'', target_id:'', op_type:1 }, ack => {
+      // let opType = type == 'add' ? 1 : 0
+      // this.$socket.emit('add_or_delete_group_member', { tj_id: this.$route.params.tjId, group_id: this.groupInfo.groupId, target_id: ids, op_type: opType }, ack => {
       //   console.log(ack, 'add_or_delete_group_member')
       // })
+      if (type == 'add') {
+        let ids = list.map(item => item.wechatId)
+        this.$socket.emit('inviter_join_group', { tj_id: this.$route.params.tjId, group_id: this.groupInfo.groupId, member_ids: ids }, ack => {
+          console.log(ack, 'inviter_join_group')
+        })
+      } else {
+        this.$socket.emit('remove_member', { tj_id: this.$route.params.tjId, group_id: this.groupInfo.groupId, member_id: list[0].wechatId }, ack => {
+          console.log(ack, 'inviter_join_group')
+        })
+      }
     },
     isFriend(item) {
       const { tjId } = this.$route.params
@@ -728,18 +739,18 @@ export default {
     addFriends() {
       this.addByGroupShow = false
       console.log(this.$route.params.tjId, this.groupInfo.groupId, this.groupMemberId, this.message)
-      // this.$socket.emit('add_contact_by_group', { tj_id:'', group_id:'', group_member_id:'', message:'' }, ack => {
-      //   console.log(ack, 'add_contact_by_group-ack')
-      // })
+      this.$socket.emit('add_contact_by_group', { tj_id: this.$route.params.tjId, group_id: this.groupInfo.groupId, group_member_id: this.groupMemberId, message: this.message }, ack => {
+        console.log(ack, 'add_contact_by_group-ack')
+      })
       this.message = ''
     },
     editGroupName(type) {
       this.editGroupNameVisible.meb = false
       if (type == 'ok') {
         console.log('ok')
-        // this.$socket.emit('modify_group_name', { tj_id:'', group_id:'', group_name:'' }, ack => {
-        //   console.log(ack, 'modify_group_name')
-        // })
+        this.$socket.emit('modify_group_name', { tj_id: this.$route.params.tjId, group_id: this.groupInfo.groupId, group_name: this.groupInfo.groupName }, ack => {
+          console.log(ack, 'modify_group_name')
+        })
       } else {
         console.log('cancel')
         this.groupInfo.groupName = this.copyGroupName
