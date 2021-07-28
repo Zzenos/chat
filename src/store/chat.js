@@ -64,7 +64,6 @@ export default {
                 const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
                 const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
                 i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
-                i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
                 i.lastMsg = curChatMsgs.length
                   ? curChatMsgs[curChatMsgs.length - 1]
                   : {
@@ -73,8 +72,9 @@ export default {
                     }
                 i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
                 if (curContactInfo) {
-                  i = { ...curContactInfo, ...i }
+                  i = { ...i, ...curContactInfo }
                 }
+                i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
                 return i.lastMsg.sortTime
               }
             ],
