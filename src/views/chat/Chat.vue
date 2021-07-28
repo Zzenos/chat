@@ -35,6 +35,7 @@
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
+            <a-icon v-show="loadingHistory" type="sync" :spin="true" />
             <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
           <!-- 网络中断 -->
@@ -450,7 +451,8 @@ export default {
       editGroupNameVisible: {},
       btnMebText: {},
       editableGroupName: false,
-      curMebInfo: []
+      curMebInfo: [],
+      loadingHistory: false
     }
   },
   mounted() {
@@ -488,9 +490,11 @@ export default {
     },
     loadChatRecords() {
       if (this.loadRecord == 2) return
+      this.loadingHistory = true
       this.loadRecord = 2
       this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
         this.changeloadRocrd()
+        this.loadingHistory = false
       })
     },
     changeloadRocrd() {
@@ -596,7 +600,7 @@ export default {
     },
     revokeRecords(index, item) {
       console.log('撤回消息', index, item)
-      // this.$socket.emit('recall_msg', { tjId: this.$route.params.tjId, seq: '' }, ack => {
+      // this.$socket.emit('recall_msg', { tjId: this.$route.params.tjId, seq: item.seq }, ack => {
       //   console.log(ack, 'recall_msg')
       // })
     },
@@ -669,8 +673,9 @@ export default {
     },
     clickMeb(item) {
       this.groupMemberId = item.wechatId
-      console.log(this.$refs.addBtn[0].innerText, this.userId, item.wechatId)
+      // console.log(this.$refs.addBtn[0].innerText, this.userId, item.wechatId)
       if (this.$refs.addBtn[0].innerText == '发送消息') {
+        this.GroupMebVisible[item.wechatId] = false
         const chatId = this.userId + '&' + item.wechatId
         this.$router.push({
           path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,

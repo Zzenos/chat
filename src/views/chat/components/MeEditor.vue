@@ -492,8 +492,8 @@ export default {
           content = curTextList[i]
         }
         // 判断@id
-        let copyIds = []
         if (chatType == 2) {
+          let copyIds = []
           this.atIds.forEach(item => {
             if (item == 'all') copyIds.push('all')
             this.atList.forEach(val => {
@@ -507,10 +507,12 @@ export default {
               }
             })
           })
+          msg.atLocation = 0
+          msg.atIds = copyIds
+          msg.at = copyIds.length == 0 ? 0 : copyIds.includes('all') ? 1 : 2
         }
         msg.msgType = 'text'
         msg.content = content
-        msg.atIds = copyIds
         console.log(msg, 'TextMsg', content)
         this[types.SEND_MSG](msg)
       }
