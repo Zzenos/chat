@@ -239,12 +239,12 @@
             <div class="memberNotice">
               <div class="noticeTitle">群公告</div>
               <div class="noticeContent">
-                <div class="nnoticeDetail">{{ groupInfo.notice || '暂无群公告' }}</div>
+                <div class="nnoticeDetail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
                 <div class="noticeEdit" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
                 <div class="writeNotice">
-                  <textarea ref="groupNotice" placeholder="" v-model="groupInfo.notice"></textarea>
+                  <textarea ref="groupNotice" placeholder="" v-model="groupInfo.groupNotice"></textarea>
                 </div>
               </a-modal>
             </div>
@@ -436,7 +436,7 @@ export default {
         groupName: '',
         memberCount: '',
         members: [],
-        notice: '这里是群公告这里是群公告这里是群公告这里是群公告这里是群公告'
+        groupNotice: ''
       },
       modal2Visible: false,
       toRensendIndex: 0,
@@ -476,7 +476,7 @@ export default {
     window.removeEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
-    ...mapActions([types.SEND_MSG]),
+    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -504,7 +504,6 @@ export default {
         return
       }
     },
-    ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
       // ('去请求更多聊天记录')
       if (this.loadRecord == 2) return
@@ -630,6 +629,9 @@ export default {
     },
     revokeRecords(index, item) {
       console.log('撤回消息', index, item)
+      // this.$socket.emit('recall_msg', { tjId: this.$route.params.tjId, seq: '' }, ack => {
+      //   console.log(ack, 'recall_msg')
+      // })
     },
     // 转发
     transmitMsg() {
@@ -662,7 +664,7 @@ export default {
       })
     },
     completeEditNotice() {
-      console.log('completeEditNotice', this.groupInfo.notice)
+      console.log('completeEditNotice', this.groupInfo.groupNotice)
       this.editNoticeShow = false
       // this.$route.params.tjId, this.groupInfo.groupId this.groupInfo.notice
       // this.$socket.emit('modify_group_notice', { tjId:'', groupId:'', groupNotice:'' }, ack => {
@@ -670,8 +672,8 @@ export default {
       // })
     },
     cancelEditNotice() {
-      this.groupInfo.notice = this.copyNotice
-      console.log('cancelEditNotice', this.groupInfo.notice)
+      this.groupInfo.groupNotice = this.copyNotice
+      console.log('cancelEditNotice', this.groupInfo.groupNotice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -802,7 +804,7 @@ export default {
           this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
             this.members = ack.data.members
-            this.copyNotice = ack.data.notice
+            this.copyNotice = ack.data.groupNotice
             this.copyGroupName = ack.data.groupName
             // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
@@ -1415,12 +1417,17 @@ export default {
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         border: none;
-        color: lightgreen;
-        background-color: #f0f1f2;
+        // color: lightgreen;
+        // background-color: #f0f1f2;
+        background: #ffffff;
+        color: rgba(0, 0, 0, 0.65);
+        border: 1px solid #d9d9d9;
         line-height: 22px;
         &.ant-btn-primary {
-          color: rgba(0, 0, 0, 0.65);
+          // color: rgba(0, 0, 0, 0.65);
           margin-left: 20px;
+          background: #1d61ef;
+          color: #ffffff;
         }
       }
     }
