@@ -200,28 +200,11 @@
         <div class="info">
           <div>
             <span class="nickname ellipsis" v-if="chatType == 1 || chatType == 3">{{ wechatName }}</span>
-            <span class="nickname ellipsis" v-if="chatType == 2">{{ groupInfo.groupName || '未命名' }}</span>
-            <a-popover
-              placement="rightBottom"
-              trigger="click"
-              overlayClassName="edit-groupname-modal"
-              v-model="editGroupNameVisible.meb"
-              :getPopupContainer="
-                triggerNode => {
-                  return triggerNode.parentNode
-                }
-              "
-            >
-              <template slot="content">
-                <div class="btn" @click="editGroupName('cal')">取消</div>
-                <div class="btn" @click="editGroupName('ok')">确认</div>
-              </template>
-              <template slot="title">
-                <input class="edit-groupname-ipt" type="text" v-model="groupInfo.groupName" />
-              </template>
-              <span v-if="chatType == 2" class="edit-groupname">编辑</span>
-            </a-popover>
-            <!-- <span v-if="chatType == 2" class="edit-groupname">编辑</span> -->
+            <a-input v-if="chatType == 2 && editableGroupName" v-model="groupInfo.groupName" placeholder="" style="width: 150px; height: 24px;padding-left: 8px;" />
+            <span v-if="chatType == 2 && !editableGroupName" class="nickname ellipsis">{{ groupInfo.groupName || '未命名' }}</span>
+            <span v-if="chatType == 2 && !editableGroupName" class="edit-groupname" @click="openEditGroupName">编辑</span>
+            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname confirm" @click="editGroupName('ok')">确认</span>
+            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname" @click="editGroupName('cal')">取消</span>
             <span>
               <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
               <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
@@ -463,7 +446,8 @@ export default {
       copyNotice: '',
       copyGroupName: '',
       editGroupNameVisible: {},
-      btnMebText: {}
+      btnMebText: {},
+      editableGroupName: false
     }
   },
   mounted() {
@@ -541,7 +525,7 @@ export default {
 
       if (item.fromId == this.userId) {
         let time = new Date().getTime() - item.time
-        if (Math.floor(time / 1000 / 60) < 2) {
+        if (Math.floor(time / 1000 / 60) < 2 && item.seq !== 0) {
           menus.push({
             label: '撤回',
             icon: 'icon-s-flag',
@@ -721,6 +705,7 @@ export default {
     },
     editGroupName(type) {
       this.editGroupNameVisible.meb = false
+      this.editableGroupName = false
       if (type == 'ok') {
         console.log('ok')
         this.$socket.emit('modify_group_name', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
@@ -730,6 +715,9 @@ export default {
         console.log('cancel')
         this.groupInfo.groupName = this.copyGroupName
       }
+    },
+    openEditGroupName() {
+      this.editableGroupName = true
     }
   },
   watch: {
@@ -1111,6 +1099,9 @@ export default {
           right: 50px;
           font-size: 12px;
           cursor: pointer;
+          &.confirm {
+            right: 20px;
+          }
         }
         .source {
           text-align: left;
@@ -1335,13 +1326,14 @@ export default {
   .ant-modal-content {
     display: flex;
     flex-direction: column;
-    width: 350px;
-    height: 450px;
-    padding-top: 10px;
+    width: 480px;
+    height: 400px;
+    padding: 24px;
     border-radius: 4px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
     .ant-modal-header {
       border-bottom: none;
-      text-align: center;
+      // text-align: center;
       font-size: 16px;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
@@ -1351,10 +1343,11 @@ export default {
     }
     .ant-modal-body {
       flex: 1 1 0;
+      padding: 24px 0px 0px;
       .writeNotice {
         textarea {
-          width: 300px;
-          height: 300px;
+          width: 432px;
+          height: 248px;
           border: none;
           outline: none;
           resize: none;
@@ -1365,19 +1358,16 @@ export default {
       border-top: none;
       text-align: center;
       .ant-btn {
-        width: 80px;
+        width: 120px;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         border: none;
-        // color: lightgreen;
-        // background-color: #f0f1f2;
         background: #ffffff;
         color: rgba(0, 0, 0, 0.65);
         border: 1px solid #d9d9d9;
         line-height: 22px;
         &.ant-btn-primary {
-          // color: rgba(0, 0, 0, 0.65);
           margin-left: 20px;
           background: #1d61ef;
           color: #ffffff;
@@ -1456,31 +1446,6 @@ export default {
         &.ant-btn-primary {
           color: #fff;
           margin-left: 24px;
-        }
-      }
-    }
-  }
-}
-/deep/ .ant-popover.edit-groupname-modal.ant-popover-placement-leftTop {
-  color: rgba(0, 0, 0, 0.85);
-  .ant-popover-content {
-    color: rgba(0, 0, 0, 0.85);
-    .ant-popover-inner {
-      .ant-popover-title {
-        border-bottom: none;
-        .edit-groupname-ipt {
-          // border: 1px solid #d9d9d9;
-          border: none;
-          outline: none;
-        }
-      }
-      .ant-popover-inner-content {
-        display: flex;
-        justify-content: flex-end;
-        font-size: 12px;
-        .btn {
-          width: 30px;
-          cursor: pointer;
         }
       }
     }
