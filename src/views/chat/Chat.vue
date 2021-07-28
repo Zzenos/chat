@@ -254,6 +254,10 @@
                 :autoAdjustOverflow="true"
                 v-for="item in groupInfo.members"
                 :key="item.wechatId"
+                :overlayStyle="{
+                  width: '360px', // 估算好的大小
+                  height: '400px' // 高度也应该是132px，另外2px是底部小三角箭头的高度
+                }"
               >
                 <template slot="content">
                   <div class="modal">
