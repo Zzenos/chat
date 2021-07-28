@@ -79,7 +79,10 @@ export default {
       return this.contactByTjId(this.$route.params.tjId).customerListAry
     },
     checkedList() {
-      return this.operateType == 'add' ? this.customerList : this.groupList
+      return this.operateType == 'add' ? this.customerList.filter(item => !this.groupListIds.includes(item.wechatId)) : this.groupList
+    },
+    groupListIds() {
+      return this.groupList.map(item => item.wechatId)
     },
     checkOptions() {
       return this.checkedList.map(item => {
