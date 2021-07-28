@@ -72,6 +72,9 @@ export default {
                       defaultContent: ''
                     }
                 i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
+                if (curContactInfo) {
+                  i = { ...curContactInfo, ...i }
+                }
                 return i.lastMsg.sortTime
               }
             ],
