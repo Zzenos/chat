@@ -251,6 +251,7 @@
                 :ref="'member' + item.wechatId"
                 v-model="GroupMebVisible[item.wechatId]"
                 overlayClassName="card-message-popover"
+                :autoAdjustOverflow="true"
                 v-for="item in groupInfo.members"
                 :key="item.wechatId"
               >
