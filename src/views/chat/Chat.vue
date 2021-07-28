@@ -360,7 +360,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
 import iframeMixin from '@/mixin/iframeMixin'
@@ -445,7 +445,8 @@ export default {
       copyGroupName: '',
       editGroupNameVisible: {},
       btnMebText: {},
-      editableGroupName: false
+      editableGroupName: false,
+      curMebInfo: []
     }
   },
   mounted() {
@@ -458,6 +459,7 @@ export default {
     window.removeEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
+    ...mapMutations([types.ADD_CHAT_LIST]),
     ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG]),
     parseTime,
     sendTime: formateTime,
@@ -658,8 +660,9 @@ export default {
       const { tjId } = this.$route.params
       this.$socket.emit('is_friend', { tjId: tjId, targetId: item.wechatId }, ack => {
         if (ack.code == 200) {
-          this.btnMebText[item.wechatId] = ack.data.is_friend ? '发送消息' : '添加为联系人'
+          this.btnMebText[item.wechatId] = ack.data[0].isFriend ? '发送消息' : '添加为联系人'
           // console.log(this.btnMebText[item.wechatId])
+          this.curMebInfo = ack.data[0]
           this.$forceUpdate()
         }
       })
@@ -668,26 +671,25 @@ export default {
       this.groupMemberId = item.wechatId
       console.log(this.$refs.addBtn[0].innerText, this.userId, item.wechatId)
       if (this.$refs.addBtn[0].innerText == '发送消息') {
-        console.log(item, 1111111)
-        // const chatId = this.userId + '&' + item.wechatId
-        // this.$router.push({
-        //   path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
-        //   query: { ...item }
-        // })
-        // this[types.ADD_CHAT_LIST]({
-        //   tjId: this.$route.params.tjId,
-        //   chatList: [
-        //     {
-        //       chatId,
-        //       ...this.$route.query,
-        //       company: this.allInfo.company, // 解决通讯录成员新建会话@未显示公司问题
-        //       chatType: Number(this.type),
-        //       wechatAvatar: this.allInfo.wechatAvatar,
-        //       wechatName: this.allInfo.wechatName,
-        //       lastActiveTime: new Date().getTime()
-        //     }
-        //   ]
-        // })
+        const chatId = this.userId + '&' + item.wechatId
+        this.$router.push({
+          path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
+          query: { ...this.curMebInfo }
+        })
+        this[types.ADD_CHAT_LIST]({
+          tjId: this.$route.params.tjId,
+          chatList: [
+            {
+              chatId,
+              ...this.curMebInfo,
+              company: this.curMebInfo.company, // 解决通讯录成员新建会话@未显示公司问题
+              chatType: Number(this.curMebInfo.chatType),
+              wechatAvatar: this.curMebInfo.wechatAvatar,
+              wechatName: this.curMebInfo.wechatName,
+              lastActiveTime: new Date().getTime()
+            }
+          ]
+        })
       } else {
         this.addByGroupShow = true
         this.GroupMebVisible[item.wechatId] = false
