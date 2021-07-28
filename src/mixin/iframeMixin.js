@@ -112,7 +112,7 @@ export default {
               data.content.weappiconurl = data.avatar
               data.content.title = data.appTitle
               data.content.pagepath = data.path
-              data.content = JSON.stringify(data.content)
+              // data.content = JSON.stringify(data.content)
               data.title = data.appTitle
               break
             default:

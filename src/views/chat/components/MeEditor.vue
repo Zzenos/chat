@@ -81,6 +81,19 @@
         </div>
       </div>
     </div>
+    <div class="at-container" id="selectuser" v-show="atShow && chatType == 2">
+      <div class="at-all" @click="choose('all')">
+        <img src="@/assets/icon_all.png" alt="" />
+        <div>所有人</div>
+      </div>
+      <div class="note">群成员</div>
+      <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
+        <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
+        <span class="name"> {{ item.wechatName }} </span>
+        <!-- <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+        <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span> -->
+      </div>
+    </div>
     <a-modal
       v-model="noValidVisible"
       wrapClassName="send-status-modal"
@@ -104,11 +117,34 @@ import Upload from './Upload.vue'
 import filesLibrary from '@/apis/library'
 import { emojiList } from '@/util/emojiList'
 import { wheel } from '@/util/wheel.js'
+import { downloadImg } from '@/util/util'
 
 export default {
   components: { Upload },
   name: 'MeEditor',
-  props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
+  // props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
+  props: {
+    sendToBottom: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordModal: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordClick: {
+      type: Boolean,
+      default: true
+    },
+    chatType: {
+      type: String,
+      default: '1'
+    },
+    atList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
@@ -144,7 +180,11 @@ export default {
       timer: null,
       replyShow: false,
       replyName: '',
-      replyContent: ''
+      replyContent: '',
+      atShow: false,
+      filterAtList: [],
+      atIds: [],
+      inputFlag: true
     }
   },
   directives: {
@@ -163,34 +203,47 @@ export default {
     inputEvent() {
       // console.log('send', e)
     },
-    keydownEvent(e) {
+    async keydownEvent(e) {
+      if (e.code == 'Digit2' && e.shiftKey == true) {
+        setTimeout(() => {
+          if (this.$refs.messagInput.innerText[this.$refs.messagInput.innerText.length - 1] == '@') {
+            this.atShow = true
+          }
+        }, 0)
+      }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
-        if (!this.editorText) return
-        // console.log(this.editorText, 'enter-down')
-        let { contactId, tjId } = this.$route.params
-        let { wechatName, wechatAvatar } = this.userInfo.info
-        let { chatType } = this.$route.query
-        let content = null
-        if (chatType == 1) {
-          content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
-        } else {
-          content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+        let allnodes = [...this.$refs.messagInput.childNodes]
+        let curText = ''
+        let curTextList = []
+        let imgList = []
+        for (let i = 0; i < allnodes.length; i++) {
+          if (allnodes[i].nodeName !== 'IMG') {
+            //当前节点为文字节点  textContent  wholeText
+            curText = curText + allnodes[i].textContent
+          } else {
+            // 当前节点为图片节点
+            if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
+              imgList.push(allnodes[i].src)
+            } else {
+              let url = await downloadImg(allnodes[i].src)
+              imgList.push(url)
+            }
+            if (curText) {
+              curTextList.push(curText)
+              curText = ''
+            }
+          }
+          if (i == allnodes.length - 1 && curText) {
+            curTextList.push(curText)
+          }
         }
-        this[types.SEND_MSG]({
-          msgType: 'text',
-          chatId: contactId,
-          chatType: chatType,
-          fromId: tjId,
-          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: content,
-          sender: {
-            wechatName: wechatName,
-            wechatAvatar: wechatAvatar
-          },
-          notResend: true
-        })
+        console.log(curTextList, imgList)
+        // console.log(this.editorText, 'enter-down')
+        this.sendTextMsg(curTextList)
+        this.sendImgMsg(imgList)
         this.sendToBottom()
+        this.atIds = []
         this.editorText = ''
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
@@ -266,9 +319,20 @@ export default {
       this[types.SEND_MSG](sendData)
     },
     changeText() {
-      const value = deepClone(this.$refs.messagInput.innerText)
-      this.value = value
-      this.editorText = this.value
+      setTimeout(() => {
+        if (!this.inputFlag) return
+        const value = deepClone(this.$refs.messagInput.innerText)
+        this.value = value
+        this.editorText = this.value
+        this.filterAtList = this.atList
+        if (this.atShow) {
+          this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
+        }
+        if (this.filterAtList.length == 0 || !this.value) {
+          this.atShow = false
+        }
+        // console.log(this.filterAtList.length, 'this.filterAtList.length')
+      }, 0)
     },
     editBlur() {
       this.isChange = true
@@ -359,6 +423,120 @@ export default {
       this.replyShow = true
       this.replyName = name
       this.replyContent = content
+    },
+    choose(v) {
+      this.atShow = false
+      if (v == 'all') {
+        this.atIds.push('all')
+      } else {
+        this.atIds.push(v.wechatId)
+      }
+      this.filterAtList = this.atList
+      // this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
+      this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML.replace(this.$refs.messagInput.innerHTML.split('@').pop(), '')
+      this.rangeOfInputBox = new Range()
+      this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      this.rangeOfInputBox.collapse(false)
+      let replaceText = v == 'all' ? '所有人' : v.wechatName
+      let spanNode = document.createTextNode(replaceText)
+      if (this.rangeOfInputBox.collapsed) {
+        this.rangeOfInputBox.insertNode(spanNode)
+      } else {
+        this.rangeOfInputBox.deleteContents()
+        this.rangeOfInputBox.insertNode(spanNode)
+      }
+      this.changeText()
+      this.rangeOfInputBox.collapse(false)
+      // 光标选中当前插入位置
+      if (this.rangeOfInputBox) {
+        const selection = getSelection()
+        selection.removeAllRanges()
+        selection.addRange(this.rangeOfInputBox)
+      }
+    },
+    onCompositionStart() {
+      this.inputFlag = false
+    },
+    onCompositionEnd() {
+      this.inputFlag = true
+    },
+    sendTextMsg(curTextList) {
+      //发送文本消息
+      if (curTextList.length == 0) return
+      for (let i = 0; i < curTextList.length; i++) {
+        if (!curTextList[i]) return
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        let content = null
+        //引用消息只会发出第一条文本消息
+        if (i == 0) {
+          if (chatType == 1) {
+            //个微
+            content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
+          } else {
+            content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
+          }
+        } else {
+          content = curTextList[i]
+        }
+        // 判断@id
+        let copyIds = []
+        if (chatType == 2) {
+          this.atIds.forEach(item => {
+            if (item == 'all') copyIds.push('all')
+            this.atList.forEach(val => {
+              if (val.wechatId == item) {
+                // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atIds.indexOf(val.wechatId))
+                if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
+                  // this.atIds.splice(this.atIds.indexOf(val.wechatId), 1)
+                } else {
+                  copyIds.push(val.wechatId)
+                }
+              }
+            })
+          })
+        }
+        msg.msgType = 'text'
+        msg.content = content
+        msg.atIds = copyIds
+        console.log(msg, 'TextMsg', content)
+        this[types.SEND_MSG](msg)
+      }
+    },
+    sendImgMsg(imgList) {
+      if (imgList.length == 0) return
+      for (let i = 0; i < imgList.length; i++) {
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        msg.msgType = 'img'
+        msg.url = imgList[i]
+        console.log(msg, 'ImgMsg')
+        // this[types.SEND_MSG](msg)
+      }
     }
   },
   mounted() {
@@ -366,6 +544,8 @@ export default {
     this.parentNode = document.getElementById('emoji-parent')
     this.getEndFocus()
     this.value && this.insertEmoji(this.value, false)
+    this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
+    this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
   },
   watch: {
     $route: {
@@ -376,6 +556,7 @@ export default {
         this.replyContent = ''
         this.replyName = ''
         this.replyShow = false
+        this.atShow = false
         this.$nextTick(() => {
           this.$refs.messagInput.innerHTML = ''
         })
@@ -394,6 +575,12 @@ export default {
         // container = null
         this.editorText = n
       }
+    },
+    atList: {
+      immediate: true,
+      handler: function() {
+        this.filterAtList = this.atList
+      }
     }
   }
 }
@@ -402,6 +589,7 @@ export default {
 .meEditor {
   width: 100%;
   height: 160px;
+  position: relative;
   display: flex;
   flex-direction: column;
 
@@ -459,8 +647,14 @@ export default {
       text-align: left;
       padding: 0 24px;
       // border: 1px solid #ccc;
-      word-break: break-word;
       position: relative;
+      word-break: break-word;
+      /deep/ img {
+        max-width: 200px;
+        width: auto;
+        height: 60px;
+        vertical-align: bottom;
+      }
       &:focus {
         outline: none;
       }
@@ -518,6 +712,79 @@ export default {
           width: 14px;
           height: 14px;
         }
+      }
+    }
+  }
+  .at-container {
+    position: absolute;
+    left: 0;
+    top: -320px;
+    width: 320px;
+    height: 320px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 22px;
+    overflow-y: auto;
+    .at-all {
+      display: flex;
+      cursor: pointer;
+      img {
+        margin-right: 12px;
+      }
+      &:hover {
+        background: #f0f1f2;
+      }
+    }
+    .note {
+      text-align: left;
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+    .at-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 8px;
+      .name {
+        margin-left: 12px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-department {
+        color: #ff8000;
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 400;
+        margin-left: 8px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        max-width: 45px;
+        line-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-wechat {
+        color: #0ead63;
+        font-size: 12px;
+        margin-left: 8px;
+        line-height: 18px;
+        margin-top: 9px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      &:hover {
+        background: #f0f1f2;
       }
     }
   }

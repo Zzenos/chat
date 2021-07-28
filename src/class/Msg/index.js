@@ -1,4 +1,4 @@
-import { systemMsg, textMsg, imgMsg, voiceMsg, videoMsg, hyperLinkMsg, contactMsg, fileMsg, mpMsg } from './Msg'
+import { systemMsg, textMsg, imgMsg, voiceMsg, videoMsg, hyperLinkMsg, contactMsg, fileMsg, mpMsg, videoNumMsg, locationMsg } from './Msg'
 
 // 支持的消息类型
 const MsgType = {
@@ -10,7 +10,9 @@ const MsgType = {
   link: hyperLinkMsg, // h5 2005
   card: contactMsg, // 名片 2006
   file: fileMsg, // 文件 2010
-  weapp: mpMsg // 小程序 2013
+  weapp: mpMsg, // 小程序 2013
+  videoNum: videoNumMsg, // 视频号
+  location: locationMsg // 位置
 }
 
 // 数据返回消息

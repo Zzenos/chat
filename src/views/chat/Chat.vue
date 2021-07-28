@@ -31,7 +31,7 @@
         </div>
       </header>
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+        <div class="talk-container" id="chatScrollbar" ref="list">
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
@@ -68,6 +68,7 @@
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
+              <!-- <div v-if="isOpen"> v </div> -->
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
@@ -134,6 +135,28 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
+                    <!-- 位置消息 -->
+                    <location-message
+                      v-else-if="item.msgType == 'location'"
+                      :title="item.content.title"
+                      :des="item.content.des"
+                      :latitude="item.content.latitude"
+                      :longitude="item.content.longitude"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
+
+                    <!-- 视频号消息 -->
+                    <video-num-message
+                      v-else-if="item.msgType == 'videoNum'"
+                      :vid="item.msgId"
+                      :title="item.title"
+                      :coverurl="item.coverUrl"
+                      :des="item.desc"
+                      :iconurl="item.content.icon"
+                      :url="item.url"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
+
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
@@ -144,7 +167,6 @@
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
                     </div>
-                    <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
                   <reply-message v-if="item.msgType == 'text' && item.content != item.defaultContent" :float="item.float" :content="dealContent(item.content)" />
@@ -164,7 +186,7 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
+          <me-editor :chatType="chatType" :atList="groupInfo.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -177,7 +199,12 @@
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
           <div>
-            <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
+            <span class="nickname ellipsis" v-if="chatType == 1 || chatType == 3">{{ wechatName }}</span>
+            <a-input v-if="chatType == 2 && editableGroupName" v-model="groupInfo.groupName" placeholder="" style="width: 150px; height: 24px;padding-left: 8px;" />
+            <span v-if="chatType == 2 && !editableGroupName" class="nickname ellipsis">{{ groupInfo.groupName || '未命名' }}</span>
+            <span v-if="chatType == 2 && !editableGroupName" class="edit-groupname" @click="openEditGroupName">编辑</span>
+            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname confirm" @click="editGroupName('ok')">确认</span>
+            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname" @click="editGroupName('cal')">取消</span>
             <span>
               <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
               <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
@@ -192,22 +219,101 @@
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
           <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
-            <!-- <div class="search">
-              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-            </div> -->
-            <div class="member-container">
-              <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-                <span class="name"> {{ item.wechatName }} </span>
-                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+            <div class="memberNotice">
+              <div class="noticeTitle">群公告</div>
+              <div class="noticeContent">
+                <div class="nnoticeDetail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
+                <div class="noticeEdit" @click="editNotice">></div>
               </div>
+              <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
+                <div class="writeNotice">
+                  <textarea ref="groupNotice" placeholder="" v-model="groupInfo.groupNotice"></textarea>
+                </div>
+              </a-modal>
+            </div>
+            <div class="search">
+              <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+            </div>
+            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
+            <div class="operate" @click="changeMembers('add')">
+              <img src="@/assets/icon_addmembers.png" alt="" />
+              <span>添加成员</span>
+            </div>
+            <div class="operate last" @click="changeMembers('del')">
+              <img src="@/assets/icon_deletemembers.png" alt="" />
+              <span>删除成员</span>
+            </div>
+            <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
+            <div class="member-container">
+              <a-popover
+                placement="left"
+                trigger="click"
+                :ref="'member' + item.wechatId"
+                v-model="GroupMebVisible[item.wechatId]"
+                overlayClassName="card-message-popover"
+                :autoAdjustOverflow="true"
+                v-for="item in groupInfo.members"
+                :key="item.wechatId"
+              >
+                <template slot="content">
+                  <div class="modal">
+                    <div>
+                      <div class="left">群昵称<i></i></div>
+                      <span>{{ item.wechatName }}</span>
+                    </div>
+                    <div>
+                      <div class="left">备注<i></i></div>
+                      <span>{{ item.alias }}</span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div>
+                      <div class="left"><i></i></div>
+                      <span></span>
+                    </div>
+                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">{{ btnMebText[item.wechatId] }}</div>
+                  </div>
+                </template>
+                <template slot="title">
+                  <a-avatar :src="item.wechatAvatar" />
+                  <div class="bigname">
+                    <div style="max-width:170px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{ item.wechatName }}</div>
+                    <img v-if="item.gender == 1" src="@/assets/icon_man.png" alt="" />
+                    <img v-if="item.gender == 2" src="@/assets/icon_woman.png" alt="" />
+                  </div>
+                  <br />
+                  <div v-if="item.department" class="department">{{ '@' + item.department }}</div>
+                  <span v-else class="green">@微信</span>
+                </template>
+                <div>
+                  <div class="memberInfo" @click="isFriend(item)">
+                    <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
+                    <span class="name"> {{ item.wechatName }} </span>
+                    <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
+                    <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+                  </div>
+                </div>
+              </a-popover>
+              <a-modal v-model="addByGroupShow" wrapClassName="add-friends-modal" title="发送添加邀请" centered @ok="addFriends" ok-text="发送" cancel-text="取消">
+                <div class="add-cell">
+                  <div class="add-text">验证请求：</div>
+                  <div>
+                    <textarea v-model="message" class="area-cus" name="" id="" rows="4"></textarea>
+                    <div class="send-text">你需要发送验证请求，对方通过后才能添加其为客户好友</div>
+                  </div>
+                </div>
+              </a-modal>
             </div>
           </div>
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
-          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
@@ -235,7 +341,7 @@
     <header></header>
     <div class="noRecords">
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)" style="position:relative">
+        <div class="talk-container" id="chatScrollbar" ref="list" style="position:relative">
           <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
             <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
           </div>
@@ -257,6 +363,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
+import iframeMixin from '@/mixin/iframeMixin'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
@@ -267,10 +374,12 @@ import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
 import ReplyMessage from '@/views/chat/components/ReplyMessage'
+import LocationMessage from '@/views/chat/components/LocationMessage'
+import VideoNumMessage from '@/views/chat/components/VideoNumMessage'
 import overTimeModal from '@/util/overTime'
 import ChatRecordModal from './components/ChatRecordModal'
 import TransmitMsgModal from './components/TransmitMsgModal'
-import iframeMixin from '@/mixin/iframeMixin'
+import OperateGroupMeb from './components/OperateGroupMeb'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -288,7 +397,10 @@ export default {
     WebappMessage,
     ReplyMessage,
     ChatRecordModal,
-    TransmitMsgModal
+    TransmitMsgModal,
+    LocationMessage,
+    VideoNumMessage,
+    OperateGroupMeb
   },
   data() {
     return {
@@ -302,8 +414,10 @@ export default {
       chatType: this.$route.query.chatType,
       allInfo: {},
       groupInfo: {
+        groupName: '',
         memberCount: '',
-        members: []
+        members: [],
+        groupNotice: ''
       },
       modal2Visible: false,
       toRensendIndex: 0,
@@ -316,7 +430,22 @@ export default {
       infoData: null,
       transmitMsgVisible: false,
       msgInfo: {}, // 消息体
-      defaultList: []
+      defaultList: [],
+      searchMember: '',
+      members: [],
+      editNoticeShow: false,
+      operateMebVisible: false,
+      operateTitle: '添加群成员',
+      operateType: 'add',
+      addByGroupShow: false,
+      message: '',
+      groupMemberId: '',
+      GroupMebVisible: {},
+      copyNotice: '',
+      copyGroupName: '',
+      editGroupNameVisible: {},
+      btnMebText: {},
+      editableGroupName: false
     }
   },
   mounted() {
@@ -329,7 +458,7 @@ export default {
     window.removeEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
-    ...mapActions([types.SEND_MSG]),
+    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -351,15 +480,7 @@ export default {
     sendToBottom() {
       setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     },
-    talkScroll(e) {
-      if (e.target.scrollTop == 0 && this.loadRecord == 1) {
-        // console.log('到达顶部需要请求更多消息')
-        return
-      }
-    },
-    ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
-      // ('去请求更多聊天记录')
       if (this.loadRecord == 2) return
       this.loadRecord = 2
       this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
@@ -371,7 +492,6 @@ export default {
     },
     toResendMsg() {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
-      // console.log('to-resend')
       this.modal2Visible = false
       this.records[this.toRensendIndex].notResend = false
       this[types.SEND_MSG](this.records[this.toRensendIndex])
@@ -379,30 +499,17 @@ export default {
     clickStatus(index) {
       //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
-      // console.log(index)
       this.toRensendIndex = index
     },
     updateOnlineStatus(e) {
       const { type } = e
       this.onLine = type === 'online'
-      // console.log(this.onLine, 'this.onLine-this.onLine')
-    },
-    changeAudioIndex(index) {
-      if (typeof this.playingAudioIndex != 'number') {
-        this.playingAudioIndex = index
-        console.log(this.playingAudioIndex, 'first')
-        return
-      }
-      this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
-      this.playingAudioIndex = index
-      console.log(this.playingAudioIndex, 'last')
     },
     closeOverModal() {
       overState.show = false
     },
     onCopy(index, item, event) {
       let menus = []
-      // console.log(index, item, 'oncopy')
       if (item.msgType == 'voice') {
         menus.push({
           label: '转为文字',
@@ -412,6 +519,20 @@ export default {
             this.translateText(index, item)
           }
         })
+      }
+
+      if (item.fromId == this.userId) {
+        let time = new Date().getTime() - item.time
+        if (Math.floor(time / 1000 / 60) < 2 && item.seq !== 0) {
+          menus.push({
+            label: '撤回',
+            icon: 'icon-s-flag',
+            customClass: 'cus-contextmenu-item',
+            onClick: () => {
+              this.revokeRecords(index, item)
+            }
+          })
+        }
       }
 
       menus.push({
@@ -461,26 +582,31 @@ export default {
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
       this.msgInfo = item
-      if (['link', 'card', 'weapp', 'voice'].includes(this.msgInfo.msgType)) {
+      if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
       }
       this.transmitMsgVisible = true
     },
+    revokeRecords(index, item) {
+      console.log('撤回消息', index, item)
+      // this.$socket.emit('recall_msg', { tjId: this.$route.params.tjId, seq: '' }, ack => {
+      //   console.log(ack, 'recall_msg')
+      // })
+    },
     // 转发
     transmitMsg() {
       this.transmitMsgVisible = false
     },
+    //聊天记录传入数据infoData
     showRecordModal() {
-      //聊天记录传入数据infoData
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
       let info =
         chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
       this.infoData = {
         ...info,
-        wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
+        wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
-      console.log(this.infoData, 'this.infoData')
       this.chatRecordVisible = true
     },
     translateText(index, item) {
@@ -490,6 +616,106 @@ export default {
     closeTranslateText(index) {
       this.records[index].translateShow = false
       this.$forceUpdate()
+    },
+    editNotice() {
+      this.editNoticeShow = true
+      this.$nextTick(() => {
+        this.$refs.groupNotice.innerText = ''
+      })
+    },
+    completeEditNotice() {
+      console.log('completeEditNotice', this.groupInfo.groupNotice)
+      this.editNoticeShow = false
+      // this.$route.params.tjId, this.groupInfo.groupId this.groupInfo.notice
+      // this.$socket.emit('modify_group_notice', { tjId:'', groupId:'', groupNotice:'' }, ack => {
+      //   console.log(ack, 'modify_group_notice')
+      // })
+    },
+    cancelEditNotice() {
+      this.groupInfo.groupNotice = this.copyNotice
+      console.log('cancelEditNotice', this.groupInfo.groupNotice)
+    },
+    changeMembers(type) {
+      this.operateMebVisible = true
+      this.operateTitle = type == 'add' ? '添加群成员' : '删除群成员'
+      this.operateType = type
+    },
+    operateMeb(list, type) {
+      console.log(list, type)
+      this.operateMebVisible = false
+      if (type == 'add') {
+        let ids = list.map(item => item.wechatId)
+        this.$socket.emit('inviter_join_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberIds: ids }, ack => {
+          console.log(ack, 'inviter_join_group')
+        })
+      } else {
+        this.$socket.emit('remove_member', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId }, ack => {
+          console.log(ack, 'inviter_join_group')
+        })
+      }
+    },
+    isFriend(item) {
+      const { tjId } = this.$route.params
+      this.$socket.emit('is_friend', { tjId: tjId, targetId: item.wechatId }, ack => {
+        if (ack.code == 200) {
+          this.btnMebText[item.wechatId] = ack.data.is_friend ? '发送消息' : '添加为联系人'
+          // console.log(this.btnMebText[item.wechatId])
+          this.$forceUpdate()
+        }
+      })
+    },
+    clickMeb(item) {
+      this.groupMemberId = item.wechatId
+      console.log(this.$refs.addBtn[0].innerText, this.userId, item.wechatId)
+      if (this.$refs.addBtn[0].innerText == '发送消息') {
+        console.log(item, 1111111)
+        // const chatId = this.userId + '&' + item.wechatId
+        // this.$router.push({
+        //   path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
+        //   query: { ...item }
+        // })
+        // this[types.ADD_CHAT_LIST]({
+        //   tjId: this.$route.params.tjId,
+        //   chatList: [
+        //     {
+        //       chatId,
+        //       ...this.$route.query,
+        //       company: this.allInfo.company, // 解决通讯录成员新建会话@未显示公司问题
+        //       chatType: Number(this.type),
+        //       wechatAvatar: this.allInfo.wechatAvatar,
+        //       wechatName: this.allInfo.wechatName,
+        //       lastActiveTime: new Date().getTime()
+        //     }
+        //   ]
+        // })
+      } else {
+        this.addByGroupShow = true
+        this.GroupMebVisible[item.wechatId] = false
+      }
+    },
+    addFriends() {
+      this.addByGroupShow = false
+      console.log(this.$route.params.tjId, this.groupInfo.groupId, this.groupMemberId, this.message)
+      this.$socket.emit('add_contact_by_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupMemberId: this.groupMemberId, message: this.message }, ack => {
+        console.log(ack, 'add_contact_by_group-ack')
+      })
+      this.message = ''
+    },
+    editGroupName(type) {
+      this.editGroupNameVisible.meb = false
+      this.editableGroupName = false
+      if (type == 'ok') {
+        console.log('ok')
+        this.$socket.emit('modify_group_name', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
+          console.log(ack, 'modify_group_name')
+        })
+      } else {
+        console.log('cancel')
+        this.groupInfo.groupName = this.copyGroupName
+      }
+    },
+    openEditGroupName() {
+      this.editableGroupName = true
     }
   },
   watch: {
@@ -536,7 +762,9 @@ export default {
           this.activeKey = 'groupInfo'
           this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
             this.groupInfo = ack.data || {}
-            // console.log(this.groupInfo, 'ack-data-groupinfo')
+            this.members = ack.data.members
+            this.copyNotice = ack.data.groupNotice
+            this.copyGroupName = ack.data.groupName
           })
           return
         }
@@ -544,7 +772,6 @@ export default {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
-            // console.log(this.allInfo, 'ack-data-allInfo')
           })
         }
         if (chatType == 3) {
@@ -559,7 +786,6 @@ export default {
     },
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
-      // console.log(newVal, 'chat-lost-newVal', this.isLost)
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
           newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
@@ -573,7 +799,6 @@ export default {
     onLine: {
       immediate: true,
       handler(newVal) {
-        // console.log(newVal, 'onLine')
         if (!newVal) {
           this.$nextTick(() => {
             this.$refs.editor.netLost()
@@ -602,6 +827,12 @@ export default {
     },
     showOverModal(n) {
       console.log(n, 'showOverModal')
+    },
+    searchMember: {
+      immediate: true,
+      handler(n) {
+        this.groupInfo.members = n ? this.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.members
+      }
     }
   },
   computed: {
@@ -627,7 +858,6 @@ export default {
 <style lang="scss" scoped>
 .chatCotainer {
   display: flex;
-  // flex-direction: column;
   height: 100vh;
   font-family: PingFangSC-Regular, PingFang SC;
 
@@ -736,7 +966,6 @@ export default {
 
         .sysInfo {
           width: 300px;
-          // height: 18px;
           font-size: 12px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
@@ -854,14 +1083,23 @@ export default {
         flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
+        // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
-        // margin-bottom: 25px;
         .nickname {
           margin-right: 8px;
           max-width: 150px;
           display: block;
           float: left;
+        }
+        .edit-groupname {
+          position: absolute;
+          right: 50px;
+          font-size: 12px;
+          cursor: pointer;
+          &.confirm {
+            right: 20px;
+          }
         }
         .source {
           text-align: left;
@@ -883,7 +1121,6 @@ export default {
           margin: 0 !important;
           font-size: 14px;
           padding: 0px 15px;
-          // line-height: 32px;
           &:nth-of-type(1) {
             border-radius: 4px 0px 0px 4px;
           }
@@ -918,82 +1155,112 @@ export default {
     }
     iframe {
       width: 100%;
-      // height: calc(100vh - 113px);
       height: calc(100vh - 190px);
     }
-
-    // .search {
-    //     padding:16px 20px;
-    // }
 
     .memberList {
       display: flex;
       flex-direction: column;
       height: calc(100vh - 190px);
-      padding-left: 20px;
-      padding-top: 20px;
+      padding: 20px;
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
+      .memberNotice {
+        // height: 50px;
+        // border-bottom: 1px solid grey;
+        .noticeTitle {
+          font-family: PingFangSC, PingFangSC-Regular;
+          color: rgba(0, 0, 0, 0.45);
+          margin-bottom: 8px;
+        }
+        .noticeContent {
+          display: flex;
+          justify-content: space-between;
+          padding-right: 10px;
+          font-family: PingFangSC, PingFangSC-Regular;
+          color: rgba(0, 0, 0, 0.65);
+          .nnoticeDetail {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .noticeEdit {
+            color: rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+          }
+        }
+      }
       .memberCount {
         font-weight: 600;
         margin: 10px 0;
       }
+      .search {
+        // padding:16px 20px;
+        /deep/.ant-input-search.ant-input-affix-wrapper {
+          margin: 16px 10px !important;
+          width: 280px !important;
+        }
+      }
+      .operate {
+        height: 36px;
+        margin-top: 20px;
+        cursor: pointer;
+        span {
+          margin-left: 12px;
+        }
+      }
+      .last {
+        margin-bottom: 10px;
+      }
       .member-container {
         flex: 1 1 0;
         overflow-y: auto;
-      }
-      .memberInfo {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        .name {
-          font-size: 14px;
-          margin-left: 12px;
-          // margin-right: 8x;
-          max-width: 110px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-department {
-          color: #ff8000;
-          font-size: 12px;
-          line-height: 18px;
-          font-weight: 400;
-          margin-left: 8px;
-          font-family: PingFangSC-Regular, PingFang SC;
-          max-width: 95px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-wechat {
-          color: #0ead63;
-          font-size: 12px;
-          margin-left: 8px;
-          line-height: 18px;
-          margin-top: 9px;
-          font-weight: 400;
-          font-family: PingFangSC-Regular, PingFang SC;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+        .memberInfo {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          display: flex;
+          cursor: pointer;
+          .name {
+            font-size: 14px;
+            margin-left: 12px;
+            // margin-right: 8x;
+            max-width: 110px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-department {
+            color: #ff8000;
+            font-size: 12px;
+            line-height: 18px;
+            font-weight: 400;
+            margin-left: 8px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            max-width: 95px;
+            line-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .member-wechat {
+            color: #0ead63;
+            font-size: 12px;
+            margin-left: 8px;
+            line-height: 18px;
+            margin-top: 9px;
+            font-weight: 400;
+            font-family: PingFangSC-Regular, PingFang SC;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
       }
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 
 /deep/ .send-status-modal.ant-modal-mask {
@@ -1006,8 +1273,6 @@ export default {
     display: none;
   }
   .ant-modal-content {
-    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-    // border: 1px solid rgba(0, 0, 0, 0.45);
     width: 480px;
     height: 200px;
     padding-top: 60px;
@@ -1040,6 +1305,145 @@ export default {
         line-height: 22px;
         &.ant-btn-primary {
           color: #fff;
+        }
+      }
+    }
+  }
+}
+/deep/ .edit-notice-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.edit-notice-modal {
+  background-color: transparent;
+  .ant-modal-close-x {
+    display: none;
+  }
+  .ant-modal {
+    width: 350px !important;
+  }
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 480px;
+    height: 400px;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+    .ant-modal-header {
+      border-bottom: none;
+      // text-align: center;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      padding: 0;
+    }
+    .ant-modal-body {
+      flex: 1 1 0;
+      padding: 24px 0px 0px;
+      .writeNotice {
+        textarea {
+          width: 432px;
+          height: 248px;
+          border: none;
+          outline: none;
+          resize: none;
+        }
+      }
+    }
+    .ant-modal-footer {
+      border-top: none;
+      text-align: center;
+      .ant-btn {
+        width: 120px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        border: none;
+        background: #ffffff;
+        color: rgba(0, 0, 0, 0.65);
+        border: 1px solid #d9d9d9;
+        line-height: 22px;
+        &.ant-btn-primary {
+          margin-left: 20px;
+          background: #1d61ef;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
+/deep/ .add-friends-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.add-friends-modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  // .ant-modal-close-x {
+  //   display: none;
+  // }
+  .ant-modal-content {
+    width: 640px;
+    height: 406px;
+    .ant-modal-header {
+      font-size: 16px;
+      font-family: PingFangSC, PingFangSC-Medium;
+      font-weight: 500;
+      text-align: left;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      border-bottom: none;
+    }
+    .ant-modal-body {
+      padding: 60px;
+      font-size: 14px;
+      line-height: 22px;
+      .add-cell {
+        display: flex;
+        .add-text {
+          width: 84px;
+          height: 57px;
+          color: rgba(0, 0, 0, 0.85);
+        }
+        .search-cus {
+          width: 400px;
+          height: 32px;
+          padding-left: 12px;
+          border: 1px solid rgba(0, 0, 0, 0.15);
+          border-radius: 4px;
+          outline: none;
+          &::-webkit-input-placeholder {
+            color: rgba(0, 0, 0, 0.25);
+          }
+        }
+        .area-cus {
+          width: 400px;
+          padding-left: 12px;
+          border: 1px solid #d9d9d9;
+          border-radius: 4px;
+          outline: none;
+          resize: none;
+        }
+        .send-text {
+          width: 400px;
+          color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+    .ant-modal-footer {
+      border-top: none;
+      text-align: center;
+      .ant-btn {
+        width: 160px;
+        height: 40px;
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        color: #000;
+        line-height: 22px;
+        &.ant-btn-primary {
+          color: #fff;
+          margin-left: 24px;
         }
       }
     }

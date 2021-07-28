@@ -79,10 +79,10 @@ export class systemMsg extends Msg {
 export class textMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content } = options
+    let { content, atIds, chatId } = options
     this.content = content
     this.defaultContent =
-      content.split('\n------\n').length > 1
+      atIds && (atIds.includes('all') ? '@全体成员' : atIds.includes(chatId.split('&')[0]) ? '有人@我' : '') + content.split('\n------\n').length > 1
         ? content.split('\n------\n').pop()
         : content.split('\n- - - - - - - - - - - - - - -\n').length > 1
         ? content.split('\n- - - - - - - - - - - - - - -\n').pop()
@@ -185,5 +185,34 @@ export class mpMsg extends Msg {
     if (isSendMsg) {
       this.id = id
     }
+  }
+}
+/**
+ * 视频号
+ */
+
+export class videoNumMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { icon, coverUrl, title, desc, href, content } = options
+    this.icon = icon
+    this.coverUrl = coverUrl
+    this.title = title
+    this.desc = desc
+    this.url = href
+    this.content = JSON.parse(content)
+    this.defaultContent = `[视频号]`
+  }
+}
+/**
+ * 位置
+ */
+
+export class locationMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content } = options
+    this.content = JSON.parse(content)
+    this.defaultContent = `[位置]`
   }
 }
