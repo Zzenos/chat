@@ -68,7 +68,12 @@ export default {
       })
       // 通讯录
       this.$socket.on('contacts', res => {
-        this[types.ADD_CONTACT](res.data)
+        if (res.code === 200) {
+          this[types.ADD_CONTACT](res.data)
+          if (res.data[0].contactEventType === 1) {
+            this[types.SET_ADDRESSBOOK_SYNC_STATUS](res.data[0].tjId)
+          }
+        }
       })
       // 添加会话列表
       this.$socket.on('chat_list', res => {
@@ -111,7 +116,16 @@ export default {
       })
     },
     ...mapActions([types.DISTRIBUTE_MSG, types.SEND_MSG]),
-    ...mapMutations([types.ADD_CHAT_LIST, types.ADD_ACCOUNT, types.ADD_CONTACT, types.ADD_CUSTOMER_DETAILS, types.ADD_MEMBER_DETAILS, types.ADD_GROUP_DETAILS, types.SET_CHATLIST_INIT_STATUS])
+    ...mapMutations([
+      types.ADD_CHAT_LIST,
+      types.ADD_ACCOUNT,
+      types.ADD_CONTACT,
+      types.ADD_CUSTOMER_DETAILS,
+      types.ADD_MEMBER_DETAILS,
+      types.ADD_GROUP_DETAILS,
+      types.SET_CHATLIST_INIT_STATUS,
+      types.SET_ADDRESSBOOK_SYNC_STATUS
+    ])
   },
   created() {
     this.initSocket()

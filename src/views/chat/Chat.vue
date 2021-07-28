@@ -647,13 +647,9 @@ export default {
       this.operateMebVisible = false
       if (type == 'add') {
         let ids = list.map(item => item.wechatId)
-        this.$socket.emit('inviter_join_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberIds: ids }, ack => {
-          console.log(ack, 'inviter_join_group')
-        })
+        this.$socket.emit('inviter_join_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
       } else {
-        this.$socket.emit('remove_member', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId }, ack => {
-          console.log(ack, 'inviter_join_group')
-        })
+        this.$socket.emit('remove_member', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
       }
     },
     isFriend(item) {
