@@ -31,7 +31,7 @@
         </div>
       </header>
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+        <div class="talk-container" id="chatScrollbar" ref="list">
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
@@ -357,7 +357,7 @@
     <header></header>
     <div class="noRecords">
       <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)" style="position:relative">
+        <div class="talk-container" id="chatScrollbar" ref="list" style="position:relative">
           <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
             <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
           </div>
@@ -498,14 +498,7 @@ export default {
     sendToBottom() {
       setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     },
-    talkScroll(e) {
-      if (e.target.scrollTop == 0 && this.loadRecord == 1) {
-        // console.log('到达顶部需要请求更多消息')
-        return
-      }
-    },
     loadChatRecords() {
-      // ('去请求更多聊天记录')
       if (this.loadRecord == 2) return
       this.loadRecord = 2
       this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
@@ -517,7 +510,6 @@ export default {
     },
     toResendMsg() {
       //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
-      // console.log('to-resend')
       this.modal2Visible = false
       this.records[this.toRensendIndex].notResend = false
       this[types.SEND_MSG](this.records[this.toRensendIndex])
@@ -525,30 +517,17 @@ export default {
     clickStatus(index) {
       //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
-      // console.log(index)
       this.toRensendIndex = index
     },
     updateOnlineStatus(e) {
       const { type } = e
       this.onLine = type === 'online'
-      // console.log(this.onLine, 'this.onLine-this.onLine')
-    },
-    changeAudioIndex(index) {
-      if (typeof this.playingAudioIndex != 'number') {
-        this.playingAudioIndex = index
-        console.log(this.playingAudioIndex, 'first')
-        return
-      }
-      this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
-      this.playingAudioIndex = index
-      console.log(this.playingAudioIndex, 'last')
     },
     closeOverModal() {
       overState.show = false
     },
     onCopy(index, item, event) {
       let menus = []
-      // console.log(index, item, 'oncopy')
       if (item.msgType == 'voice') {
         menus.push({
           label: '转为文字',
@@ -637,16 +616,15 @@ export default {
     transmitMsg() {
       this.transmitMsgVisible = false
     },
+    //聊天记录传入数据infoData
     showRecordModal() {
-      //聊天记录传入数据infoData
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
       let info =
         chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
       this.infoData = {
         ...info,
-        wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
+        wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
-      console.log(this.infoData, 'this.infoData')
       this.chatRecordVisible = true
     },
     translateText(index, item) {
@@ -681,13 +659,8 @@ export default {
       this.operateType = type
     },
     operateMeb(list, type) {
-      //type: 'add' 1  'del' 0 this.$route.params.tjId, this.groupInfo.groupId, list item.wechatId  op_type: type == 'add' ? 1 : 0
-      this.operateMebVisible = false
       console.log(list, type)
-      // let opType = type == 'add' ? 1 : 0
-      // this.$socket.emit('add_or_delete_group_member', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, targetId: ids, opType: opType }, ack => {
-      //   console.log(ack, 'add_or_delete_group_member')
-      // })
+      this.operateMebVisible = false
       if (type == 'add') {
         let ids = list.map(item => item.wechatId)
         this.$socket.emit('inviter_join_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, memberIds: ids }, ack => {
@@ -806,7 +779,6 @@ export default {
             this.members = ack.data.members
             this.copyNotice = ack.data.groupNotice
             this.copyGroupName = ack.data.groupName
-            // console.log(this.groupInfo, 'ack-data-groupinfo')
           })
           return
         }
@@ -814,7 +786,6 @@ export default {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
-            // console.log(this.allInfo, 'ack-data-allInfo')
           })
         }
         if (chatType == 3) {
@@ -829,7 +800,6 @@ export default {
     },
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
-      // console.log(newVal, 'chat-lost-newVal', this.isLost)
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
           newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
@@ -843,7 +813,6 @@ export default {
     onLine: {
       immediate: true,
       handler(newVal) {
-        // console.log(newVal, 'onLine')
         if (!newVal) {
           this.$nextTick(() => {
             this.$refs.editor.netLost()
@@ -903,7 +872,6 @@ export default {
 <style lang="scss" scoped>
 .chatCotainer {
   display: flex;
-  // flex-direction: column;
   height: 100vh;
   font-family: PingFangSC-Regular, PingFang SC;
 
@@ -1012,7 +980,6 @@ export default {
 
         .sysInfo {
           width: 300px;
-          // height: 18px;
           font-size: 12px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
@@ -1133,7 +1100,6 @@ export default {
         // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
-        // margin-bottom: 25px;
         .nickname {
           margin-right: 8px;
           max-width: 150px;
@@ -1166,7 +1132,6 @@ export default {
           margin: 0 !important;
           font-size: 14px;
           padding: 0px 15px;
-          // line-height: 32px;
           &:nth-of-type(1) {
             border-radius: 4px 0px 0px 4px;
           }
@@ -1201,7 +1166,6 @@ export default {
     }
     iframe {
       width: 100%;
-      // height: calc(100vh - 113px);
       height: calc(100vh - 190px);
     }
 
@@ -1310,15 +1274,6 @@ export default {
   }
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
 /deep/ .send-status-modal.ant-modal-mask {
   display: none;
 }
@@ -1329,8 +1284,6 @@ export default {
     display: none;
   }
   .ant-modal-content {
-    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-    // border: 1px solid rgba(0, 0, 0, 0.45);
     width: 480px;
     height: 200px;
     padding-top: 60px;
