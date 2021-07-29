@@ -534,10 +534,14 @@ export default {
           },
           notResend: true
         }
-        msg.msgType = 'img'
-        msg.url = imgList[i]
-        console.log(msg, 'ImgMsg')
-        // this[types.SEND_MSG](msg)
+        msg.msgType = 'image'
+        filesLibrary.getImgUrl({ base64_image: imgList[i] }).then(res => {
+          if (res.code == 200) {
+            msg.url = res.data.url
+            console.log(msg, 'ImgMsg')
+            this[types.SEND_MSG](msg)
+          }
+        })
       }
     }
   },

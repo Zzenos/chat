@@ -32,9 +32,18 @@ const audioText = query =>
     data: query
   })
 
+//语音转文本
+const getImgUrl = query =>
+  axios.request({
+    url: `${PREFIX_API}/image/upload`,
+    method: 'POST',
+    data: query
+  })
+
 export default {
   getOssToken,
   notifyOssCheck,
   uploadOss,
-  audioText
+  audioText,
+  getImgUrl
 }
