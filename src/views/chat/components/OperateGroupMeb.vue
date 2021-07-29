@@ -18,9 +18,12 @@
   >
     <div slot="modalTop">
       <div style="margin-bottom: 10px;">
-        <a-radio-group v-if="operateType == 'add'" default-value="customer" button-style="solid">
+        <a-radio-group v-if="operateType == 'add'" v-model="curSource" button-style="solid">
           <a-radio-button value="customer">
             我的客户
+          </a-radio-button>
+          <a-radio-button value="member">
+            成员
           </a-radio-button>
         </a-radio-group>
       </div>
@@ -65,12 +68,14 @@ export default {
       searchData: {
         name: ''
       },
+      curSource: '',
       // 可勾选群聊列表
       allCheckOptions: [],
       // 勾选列表数据加载loading
       listLoading: false,
       // 搜索防抖定时器
-      timer: null
+      timer: null,
+      checkedList: []
     }
   },
   computed: {
@@ -78,9 +83,12 @@ export default {
     customerList() {
       return this.contactByTjId(this.$route.params.tjId).customerListAry
     },
-    checkedList() {
-      return this.operateType == 'add' ? this.customerList.filter(item => !this.groupListIds.includes(item.wechatId)) : this.groupList
+    memberList() {
+      return this.contactByTjId(this.$route.params.tjId).memberListAry
     },
+    // checkedList() {
+    //   return this.operateType == 'add' ? (this.curSource == 'customer' ? this.customerList.filter(item => !this.groupListIds.includes(item.wechatId)) : this.memberList) : this.groupList
+    // },
     groupListIds() {
       return this.groupList.map(item => item.wechatId)
     },
@@ -98,9 +106,10 @@ export default {
     }
   },
   watch: {
-    operateType: {
+    curSource: {
       immediate: true,
       handler: function() {
+        this.checkedList = this.operateType == 'add' ? (this.curSource == 'customer' ? this.customerList.filter(item => !this.groupListIds.includes(item.wechatId)) : this.memberList) : this.groupList
         this.allCheckOptions = this.checkOptions
       }
     }
@@ -118,7 +127,9 @@ export default {
       this.$emit('confirmSelect', checkedList, this.operateType)
     }
   },
-  mounted() {}
+  mounted() {
+    this.curSource = 'customer'
+  }
 }
 </script>
 
