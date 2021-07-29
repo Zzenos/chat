@@ -368,6 +368,7 @@
 </template>
 
 <script>
+import deepClone from 'lodash/cloneDeep'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
@@ -449,8 +450,6 @@ export default {
       message: '',
       groupMemberId: '',
       GroupMebVisible: {},
-      copyNotice: '',
-      copyGroupName: '',
       editGroupNameVisible: {},
       btnMebText: {},
       editableGroupName: false,
@@ -643,8 +642,8 @@ export default {
       })
     },
     cancelEditNotice() {
-      this.groupInfo.groupNotice = this.groupInfoI.groupNotice
-      // console.log('cancelEditNotice', this.groupInfo.groupNotice)
+      this.groupInfo.groupNotice = this.all.groupNotice
+      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.all.groupNotice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -666,7 +665,6 @@ export default {
       this.$socket.emit('is_friend', { tjId: tjId, targetId: item.wechatId }, ack => {
         if (ack.code == 200) {
           this.btnMebText[item.wechatId] = ack.data[0].isFriend ? '发送消息' : '添加为联系人'
-          // console.log(this.btnMebText[item.wechatId])
           this.curMebInfo = ack.data[0]
           this.$forceUpdate()
         }
@@ -703,7 +701,6 @@ export default {
     },
     addFriends() {
       this.addByGroupShow = false
-      console.log(this.$route.params.tjId, this.groupInfo.groupId, this.groupMemberId, this.message)
       this.$socket.emit('add_contact_by_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupMemberId: this.groupMemberId, message: this.message }, ack => {
         console.log(ack, 'add_contact_by_group-ack')
       })
@@ -713,13 +710,11 @@ export default {
       this.editGroupNameVisible.meb = false
       this.editableGroupName = false
       if (type == 'ok') {
-        console.log('ok')
         this.$socket.emit('modify_group_name', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
           console.log(ack, 'modify_group_name')
         })
       } else {
-        console.log('cancel')
-        this.groupInfo.groupName = this.copyGroupName
+        this.groupInfo.groupName = this.all.groupName
       }
     },
     openEditGroupName() {
@@ -760,21 +755,7 @@ export default {
         }
         // 获取群资料
         if (chatType == 2) {
-          // if (!this.wechatId) {
-          //   this.groupInfo = {
-          //     memberCount: '',
-          //     members: []
-          //   }
-          //   return
-          // }
           this.activeKey = 'groupInfo'
-          // this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
-          //   this.groupInfo = ack.data || {}
-          //   this.members = ack.data.members
-          //   this.copyNotice = ack.data.groupNotice
-          //   this.copyGroupName = ack.data.groupName
-          // })
-          // return
         }
         if (chatType == 1) {
           this.activeKey = 'customerInfo'
@@ -875,15 +856,12 @@ export default {
         if (!res) {
           this.$socket.emit(`group_info`, { tjId: this.userId, groupId: this.wechatId }, ack => {
             res = ack.data
-            this.all = res
+            this.all = deepClone(res)
             return res
           })
         }
-        // return res
       }
-      // console.log(res)
       return res
-      // return this.chatType == 2 ? this.groupDetailsById(this.wechatId) : { groupName: '', memberCount: '', members: [], groupNotice: '' }
     }
   }
 }
