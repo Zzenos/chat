@@ -243,15 +243,15 @@ export default {
      * @param {Object} msg 消息
      */
     [types.RECALL_MSG]: {
-      handler: ({ commit }, tjId, msg) => {
-        const { seq } = msg
+      handler: ({ commit }, data) => {
+        const { seq } = data.msg
         return new Promise(resolve => {
-          Zsocket.emit('recall_msg', { tjId, seq }, res => {
+          Zsocket.emit('recall_msg', { tjId: data.tjId, seq }, res => {
             if (res.code === 200) {
               // 清除本地缓存的消息
-              commit(types.ClEAR_CACHED_MSG, msg)
+              commit(types.ClEAR_CACHED_MSG, data.msg)
               // 清除会话里的消息
-              commit(types.CLEAR_HISTORY_MSG, msg)
+              commit(types.CLEAR_HISTORY_MSG, data.msg)
               resolve(res.data)
             }
           })

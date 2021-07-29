@@ -13,7 +13,7 @@
             </span>
             <!-- 群聊名称 -->
             <span v-if="$route.query.chatType == 2" class="groupName">
-              {{ $route.query.wechatName }}
+              {{ groupInfo.groupName }}
               <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
             </span>
             <span v-if="$route.query.chatType == 3" class="memberName">
@@ -282,7 +282,10 @@
                       <div class="left"><i></i></div>
                       <span></span>
                     </div>
-                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">{{ btnMebText[item.wechatId] }}</div>
+                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">
+                      <a-icon v-show="!btnMebText[item.wechatId]" type="sync" :spin="true" />
+                      {{ btnMebText[item.wechatId] }}
+                    </div>
                   </div>
                 </template>
                 <template slot="title">
@@ -365,6 +368,7 @@
 </template>
 
 <script>
+import deepClone from 'lodash/cloneDeep'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
@@ -446,13 +450,12 @@ export default {
       message: '',
       groupMemberId: '',
       GroupMebVisible: {},
-      copyNotice: '',
-      copyGroupName: '',
       editGroupNameVisible: {},
       btnMebText: {},
       editableGroupName: false,
       curMebInfo: [],
-      loadingHistory: false
+      loadingHistory: false,
+      all: ''
     }
   },
   mounted() {
@@ -466,7 +469,7 @@ export default {
   },
   methods: {
     ...mapMutations([types.ADD_CHAT_LIST]),
-    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG]),
+    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG, types.RECALL_MSG]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -600,9 +603,7 @@ export default {
     },
     revokeRecords(index, item) {
       console.log('撤回消息', index, item)
-      // this.$socket.emit('recall_msg', { tjId: this.$route.params.tjId, seq: item.seq }, ack => {
-      //   console.log(ack, 'recall_msg')
-      // })
+      this[types.RECALL_MSG]({ tjId: this.$route.params.tjId, msg: item })
     },
     // 转发
     transmitMsg() {
@@ -634,16 +635,15 @@ export default {
       })
     },
     completeEditNotice() {
-      console.log('completeEditNotice', this.groupInfo.groupNotice)
+      // console.log('completeEditNotice', this.groupInfo.groupNotice)
       this.editNoticeShow = false
-      // this.$route.params.tjId, this.groupInfo.groupId this.groupInfo.notice
-      // this.$socket.emit('modify_group_notice', { tjId:'', groupId:'', groupNotice:'' }, ack => {
-      //   console.log(ack, 'modify_group_notice')
-      // })
+      this.$socket.emit('modify_group_notice', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.notice }, ack => {
+        console.log(ack, 'modify_group_notice')
+      })
     },
     cancelEditNotice() {
-      this.groupInfo.groupNotice = this.copyNotice
-      console.log('cancelEditNotice', this.groupInfo.groupNotice)
+      this.groupInfo.groupNotice = this.all.groupNotice
+      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.all.groupNotice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -665,7 +665,6 @@ export default {
       this.$socket.emit('is_friend', { tjId: tjId, targetId: item.wechatId }, ack => {
         if (ack.code == 200) {
           this.btnMebText[item.wechatId] = ack.data[0].isFriend ? '发送消息' : '添加为联系人'
-          // console.log(this.btnMebText[item.wechatId])
           this.curMebInfo = ack.data[0]
           this.$forceUpdate()
         }
@@ -702,7 +701,6 @@ export default {
     },
     addFriends() {
       this.addByGroupShow = false
-      console.log(this.$route.params.tjId, this.groupInfo.groupId, this.groupMemberId, this.message)
       this.$socket.emit('add_contact_by_group', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupMemberId: this.groupMemberId, message: this.message }, ack => {
         console.log(ack, 'add_contact_by_group-ack')
       })
@@ -712,13 +710,11 @@ export default {
       this.editGroupNameVisible.meb = false
       this.editableGroupName = false
       if (type == 'ok') {
-        console.log('ok')
         this.$socket.emit('modify_group_name', { tjId: this.$route.params.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
           console.log(ack, 'modify_group_name')
         })
       } else {
-        console.log('cancel')
-        this.groupInfo.groupName = this.copyGroupName
+        this.groupInfo.groupName = this.all.groupName
       }
     },
     openEditGroupName() {
@@ -759,21 +755,7 @@ export default {
         }
         // 获取群资料
         if (chatType == 2) {
-          if (!this.wechatId) {
-            this.groupInfo = {
-              memberCount: '',
-              members: []
-            }
-            return
-          }
           this.activeKey = 'groupInfo'
-          this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
-            this.groupInfo = ack.data || {}
-            this.members = ack.data.members
-            this.copyNotice = ack.data.groupNotice
-            this.copyGroupName = ack.data.groupName
-          })
-          return
         }
         if (chatType == 1) {
           this.activeKey = 'customerInfo'
@@ -838,7 +820,17 @@ export default {
     searchMember: {
       immediate: true,
       handler(n) {
-        this.groupInfo.members = n ? this.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.members
+        if (this.chatType != 2) return
+        this.groupInfo.members = n ? this.groupInfo.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.all.members
+        // console.log(n, this.groupInfo.members, this.groupInfoI.members, this.all)
+      }
+    },
+    groupInfoI: {
+      immediate: true,
+      handler(n) {
+        this.groupInfo = n || { groupName: '', memberCount: '', members: [], groupNotice: '' }
+        // this.$forceUpdate()
+        // console.log(n, this.groupInfo)
       }
     }
   },
@@ -850,12 +842,26 @@ export default {
         return item
       })
     },
-    ...mapGetters(['contactInfoByWechatId', 'userDetailsById']),
+    ...mapGetters(['contactInfoByWechatId', 'userDetailsById', 'groupDetailsById']),
     isLostRequest() {
       return this.contactInfoByWechatId(this.userId, this.wechatId)
     },
     showOverModal() {
       return overState.show
+    },
+    groupInfoI() {
+      let res
+      if (this.chatType == 2) {
+        res = this.groupDetailsById(this.wechatId)
+        if (!res) {
+          this.$socket.emit(`group_info`, { tjId: this.userId, groupId: this.wechatId }, ack => {
+            res = ack.data
+            this.all = deepClone(res)
+            return res
+          })
+        }
+      }
+      return res
     }
   }
 }
