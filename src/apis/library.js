@@ -32,7 +32,7 @@ const audioText = query =>
     data: query
   })
 
-//语音转文本
+//获取图片base64的url
 const getImgUrl = query =>
   axios.request({
     url: `${PREFIX_API}/image/upload`,
