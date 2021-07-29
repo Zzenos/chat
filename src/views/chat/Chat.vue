@@ -469,7 +469,7 @@ export default {
   },
   methods: {
     ...mapMutations([types.ADD_CHAT_LIST]),
-    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG, types.RECALL_MSG]),
+    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG, types.RECALL_MSG, types.PULL_GROUP_DETAILS]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -719,6 +719,9 @@ export default {
     },
     openEditGroupName() {
       this.editableGroupName = true
+    },
+    getGroupDetail() {
+      this[types.PULL_GROUP_DETAILS]({ tjId: this.userId, groupId: this.wechatId })
     }
   },
   watch: {
@@ -756,6 +759,9 @@ export default {
         // 获取群资料
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
+          if (!this.groupInfoI) {
+            this.getGroupDetail()
+          }
         }
         if (chatType == 1) {
           this.activeKey = 'customerInfo'
@@ -828,9 +834,8 @@ export default {
     groupInfoI: {
       immediate: true,
       handler(n) {
-        this.groupInfo = n || { groupName: '', memberCount: '', members: [], groupNotice: '' }
-        // this.$forceUpdate()
-        // console.log(n, this.groupInfo)
+        this.groupInfo = n
+        this.all = deepClone(n)
       }
     }
   },
@@ -850,18 +855,7 @@ export default {
       return overState.show
     },
     groupInfoI() {
-      let res
-      if (this.chatType == 2) {
-        res = this.groupDetailsById(this.wechatId)
-        if (!res) {
-          this.$socket.emit(`group_info`, { tjId: this.userId, groupId: this.wechatId }, ack => {
-            res = ack.data
-            this.all = deepClone(res)
-            return res
-          })
-        }
-      }
-      return res
+      return this.groupDetailsById(this.wechatId) || ''
     }
   }
 }

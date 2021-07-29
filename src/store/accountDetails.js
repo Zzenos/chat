@@ -45,9 +45,9 @@ export default {
      * @param {String} groupId 群ID
      */
     [types.PULL_GROUP_DETAILS]: {
-      handler: ({ commit }, tjId, groupId) => {
+      handler: ({ commit }, data) => {
         return new Promise(resolve => {
-          Zsocket.emit('group_info', { tjId, groupId }, res => {
+          Zsocket.emit('group_info', { tjId: data.tjId, groupId: data.groupId }, res => {
             if (res.code === 200) {
               commit(types.ADD_GROUP_DETAILS, res.data)
               resolve(res.data)
