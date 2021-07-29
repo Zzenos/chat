@@ -74,13 +74,26 @@ export default {
         state.chatMsgs[msg.chatId].splice(state.chatMsgs[msg.chatId].length, 0, msg)
       }
     },
-    // 历史消息
+    // 添加历史消息
     [types.ADD_HISTORY_MSG](state, payload) {
       if (state.chatMsgs[payload.chatId]) {
         state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
       } else {
         Vue.set(state.chatMsgs, payload.chatId, [])
         state.chatMsgs[payload.chatId].splice(0, 0, ...payload.msgs)
+      }
+    },
+    // 清除历史消息
+    [types.CLEAR_HISTORY_MSG](state, msg) {
+      if (state.chatMsgs[msg.chatId]) {
+        // 找到需要清除的消息
+        const index = state.chatMsgs[msg.chatId].findIndex(i => {
+          return msg.clientMsgId && i.clientMsgId === msg.clientMsgId
+        })
+        if (index >= 0) {
+          state.chatMsgs[msg.chatId].splice(index, 1)
+          console.log('找到消息并移除')
+        }
       }
     },
     // 消息设为已读
@@ -104,10 +117,12 @@ export default {
         Vue.set(state.chatMsgs, `${chatId}`, state.chatMsgs[chatId])
       }
     },
+    // 缓存发送的消息
     [types.CACHE_SENDING_MSG](state, msg) {
       if (state.sendingMsgHash[msg.clientMsgId]) return
       Vue.set(state.sendingMsgHash, `${msg.clientMsgId}`, msg)
     },
+    // 清除发送的消息
     [types.CLEAR_SENDING_MSG](state, msg) {
       if (state.sendingMsgHash[msg.clientMsgId]) {
         Vue.delete(state.sendingMsgHash, `${msg.clientMsgId}`, msg)
@@ -117,6 +132,12 @@ export default {
     [types.CACHE_MSG](state, msg) {
       if (state.chatMsgHash[msg.msgId]) return
       Vue.set(state.chatMsgHash, `${msg.msgId}`, msg)
+    },
+    // 清除缓存的消息
+    [types.ClEAR_CACHED_MSG](state, msg) {
+      if (state.chatMsgHash[msg.msgId]) {
+        Vue.delete(state.chatMsgHash, `${msg.msgId}`, msg)
+      }
     }
   },
   actions: {
@@ -214,6 +235,27 @@ export default {
           }
           commit(types.ADD_MSG_LOCAL, newMsg)
         }
+      }
+    },
+    /**
+     *撤回消息
+     * @param {String} tjId 当前账号
+     * @param {Object} msg 消息
+     */
+    [types.RECALL_MSG]: {
+      handler: ({ commit }, tjId, msg) => {
+        const { seq } = msg
+        return new Promise(resolve => {
+          Zsocket.emit('recall_msg', { tjId, seq }, res => {
+            if (res.code === 200) {
+              // 清除本地缓存的消息
+              commit(types.ClEAR_CACHED_MSG, msg)
+              // 清除会话里的消息
+              commit(types.CLEAR_HISTORY_MSG, msg)
+              resolve(res.data)
+            }
+          })
+        })
       }
     }
   },
