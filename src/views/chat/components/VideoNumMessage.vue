@@ -87,9 +87,11 @@ export default {
   .video-num-cover {
     position: relative;
     height: 220px;
+    width: 224px;
     .cover {
       width: 100%;
-      max-height: 220px;
+      height: 100%;
+      // max-height: 220px;
     }
     .video_icon_play {
       position: absolute;

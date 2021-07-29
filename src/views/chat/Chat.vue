@@ -282,7 +282,10 @@
                       <div class="left"><i></i></div>
                       <span></span>
                     </div>
-                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">{{ btnMebText[item.wechatId] }}</div>
+                    <div class="addBtn" ref="addBtn" @click="clickMeb(item)">
+                      <a-icon v-show="!btnMebText[item.wechatId]" type="sync" :spin="true" />
+                      {{ btnMebText[item.wechatId] }}
+                    </div>
                   </div>
                 </template>
                 <template slot="title">
