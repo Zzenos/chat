@@ -57,8 +57,6 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
-import { mapMutations } from 'vuex'
-import * as types from '@/store/actionType'
 
 const ADDRESS_BOOK_CONFIG = {
   customer: '1',
@@ -91,34 +89,28 @@ export default {
     }
   },
   computed: {
-    accountData() {
-      return this.$store.getters.userDetailsById(this.tjId)
-    },
     contactData() {
       return this.$store.getters.contactByTjId(this.tjId)
+    },
+    accountData() {
+      return this.$store.getters.userDetailsById(this.tjId)
     }
   },
   watch: {
-    tjId: {
-      immediate: true,
-      handler: function(n) {
-        console.log('AddressBook tjId:', n)
-        this.activeKey = 'customer'
-        this.curAddress = {}
-      }
+    tjId(n) {
+      console.log('AddressBook tjId:', n)
+      this.activeKey = 'customer'
+      this.curAddress = {}
     },
     contactData: {
       immediate: true,
+      deep: true,
       handler: function(n) {
         console.log('contactData:', n)
         n && this.handleData(n)
-      }
-    },
-    accountData: {
-      immediate: true,
-      handler: function(n) {
-        console.log('accountData:', n)
-        this.addressBookSyncStatus = n.info.addressBookSyncStatus || false
+        if (n.contactEventType === 3) {
+          this.addressBookSyncStatus = false
+        }
       }
     },
     searchText(n) {
@@ -136,7 +128,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([types.SET_ADDRESSBOOK_SYNC_STATUS]),
     handleItem(val, canJump = false) {
       console.log(val)
       const { wechatId, tjId } = val
@@ -187,12 +178,10 @@ export default {
         okText: '确定',
         cancelText: '取消',
         onOk: () => {
-          this.addressBookSyncStatus = true
           this.$socket.emit('sync_contact', { tjId: this.tjId }, res => {
             if (res.code === 200) {
               console.log(res)
-              // 更新当前账号的通讯录同步状态
-              this[types.SET_ADDRESSBOOK_SYNC_STATUS](this.tjId)
+              this.addressBookSyncStatus = true
             }
           })
         },

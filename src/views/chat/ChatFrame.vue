@@ -69,10 +69,10 @@ export default {
       // 通讯录
       this.$socket.on('contacts', res => {
         if (res.code === 200) {
-          this[types.ADD_CONTACT](res.data)
           if (res.data[0].contactEventType === 3) {
             this[types.SET_ADDRESSBOOK_SYNC_STATUS](res.data[0].tjId)
           }
+          this[types.ADD_CONTACT](res.data)
         }
       })
       // 添加会话列表
