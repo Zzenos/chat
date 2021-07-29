@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import * as types from './actionType'
+import Zsocket from '@/class/ZSocket'
+
 // 探鲸账号
 export default {
   state: {
@@ -36,7 +38,25 @@ export default {
       }
     }
   },
-  actions: {},
+  actions: {
+    /**
+     *拉取群信息
+     * @param {String} tjId 当前账号
+     * @param {String} groupId 群ID
+     */
+    [types.PULL_GROUP_DETAILS]: {
+      handler: ({ commit }, tjId, groupId) => {
+        return new Promise(resolve => {
+          Zsocket.emit('group_info', { tjId, groupId }, res => {
+            if (res.code === 200) {
+              commit(types.ADD_GROUP_DETAILS, res.data)
+              resolve(res.data)
+            }
+          })
+        })
+      }
+    }
+  },
   getters: {
     customerDetailsById: state => {
       return wechatId => {
