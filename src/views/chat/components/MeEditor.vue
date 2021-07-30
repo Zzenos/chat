@@ -14,7 +14,6 @@
                 </div>
               </a-carousel>
             </div>
-            <!-- <a-icon type="smile" :class="['icon-emoji', disabled && 'icon-emoji_disabled']" /> -->
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
         </li>
@@ -72,7 +71,6 @@
         rows="6"
       ></div>
       <div class="reply" v-show="replyShow">
-        <!-- <span class="close-reply" @click="closeReply">&times;</span> -->
         <div class="reply-content">
           <div class="meditor-reply-content">{{ replyName }}:{{ replyContent }}</div>
         </div>
@@ -122,7 +120,6 @@ import { downloadImg } from '@/util/util'
 export default {
   components: { Upload },
   name: 'MeEditor',
-  // props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
   props: {
     sendToBottom: {
       type: Function,
@@ -331,7 +328,6 @@ export default {
         if (this.filterAtList.length == 0 || !this.value) {
           this.atShow = false
         }
-        // console.log(this.filterAtList.length, 'this.filterAtList.length')
       }, 0)
     },
     editBlur() {
@@ -342,12 +338,10 @@ export default {
       this.$refs.emojiCarousel[isNext ? 'next' : 'prev']()
     },
     changeEnd() {
-      // this.emojiCarouselDisabled = false
       clearTimeout(this.timer)
       this.timer = setTimeout(() => {
         this.$refs.emojiBox.setAttribute('wheel-disabled', '0')
       }, 300)
-      // this.emojiCarouselDisabled = false
     },
     insertSpecialText(text) {
       if (this.disabled) return
@@ -432,7 +426,6 @@ export default {
         this.atIds.push(v.wechatId)
       }
       this.filterAtList = this.atList
-      // this.$refs.messagInput.innerText = this.$refs.messagInput.innerText.replace(this.$refs.messagInput.innerText.split('@').pop(), '')
       this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML.replace(this.$refs.messagInput.innerHTML.split('@').pop(), '')
       this.rangeOfInputBox = new Range()
       this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
@@ -557,7 +550,6 @@ export default {
     $route: {
       immediate: true,
       handler() {
-        // console.log('value-1')
         this.editorText = ''
         this.replyContent = ''
         this.replyName = ''
