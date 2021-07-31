@@ -176,7 +176,7 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :chatType="chatType" :atList="groupInfo.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
+          <me-editor :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -686,7 +686,8 @@ export default {
       immediate: true,
       handler(n) {
         if (this.chatType != 2) return
-        this.groupInfo.members = n ? this.groupInfo.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.groupData.members
+        this.groupInfo.members = n ? this.groupData.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.groupData.members
+        console.log(n, this.groupInfo.members)
       }
     },
     groupInfoI: {
