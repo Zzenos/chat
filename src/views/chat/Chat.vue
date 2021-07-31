@@ -687,7 +687,6 @@ export default {
       handler(n) {
         if (this.chatType != 2) return
         this.groupInfo.members = n ? this.groupData.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.groupData.members
-        console.log(n, this.groupInfo.members)
       }
     },
     groupInfoI: {
