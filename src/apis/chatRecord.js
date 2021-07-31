@@ -53,10 +53,19 @@ const exportChatRecord = data =>
     responseType: 'blob'
   })
 
+// 语音转文字
+const voiceToText = data =>
+  api({
+    url: '/voice/convert',
+    method: 'POST',
+    data
+  })
+
 export default {
   getPrivateChatList,
   getGroupChatList,
   getChatRecordList,
   searchChatRecord,
-  exportChatRecord
+  exportChatRecord,
+  voiceToText
 }
