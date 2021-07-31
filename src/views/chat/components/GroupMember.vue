@@ -114,13 +114,13 @@ export default {
           this.btnMebText[item.wechatId] = ack.data[0].isFriend ? '发送消息' : '添加为联系人'
           this.curMebInfo = ack.data[0]
           this.$forceUpdate()
-          console.log(this.btnMebText[item.wechatId], 'ack-text', this.$refs.addBtn[0].innerText, '---')
+          // console.log(this.btnMebText[item.wechatId], 'ack-text', this.$refs.addBtn[0].innerText, '---')
         }
       })
     },
     clickMeb(item) {
       this.groupMemberId = item.wechatId
-      console.log(this.$refs.addBtn[0].innerText, 'this.$refs.addBtn[0].innerText', this.btnMebText[item.wechatId])
+      // console.log(this.$refs.addBtn[0].innerText, 'this.$refs.addBtn[0].innerText', this.btnMebText[item.wechatId])
       if (!this.btnMebText[item.wechatId]) return
       if (this.btnMebText[item.wechatId] == '发送消息') {
         this.GroupMebVisible[item.wechatId] = false

@@ -190,14 +190,18 @@
         <div class="info">
           <div>
             <span class="nickname ellipsis" v-if="chatType == 1 || chatType == 3">{{ wechatName }}</span>
-            <a-input v-if="chatType == 2 && editableGroupName" v-model="groupInfo.groupName" placeholder="" style="width: 150px; height: 24px;padding-left: 8px;" />
-            <span v-if="chatType == 2 && !editableGroupName" class="nickname ellipsis">{{ groupInfo.groupName || '未命名' }}</span>
-            <span v-if="chatType == 2 && !editableGroupName" class="edit-groupname" @click="openEditGroupName">编辑</span>
-            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname confirm" @click="editGroupName('ok')">确认</span>
-            <span v-if="chatType == 2 && editableGroupName" class="edit-groupname" @click="editGroupName('cal')">取消</span>
-            <span>
-              <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
-              <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
+            <span v-if="chatType == 1">
+              <img v-if="allInfo.gender == 1" src="@/assets/icon_man.png" alt="" />
+              <img v-else src="@/assets/icon_woman.png" alt="" />
+            </span>
+            <span v-if="chatType == 2 && editableGroupName">
+              <a-input v-model="groupInfo.groupName" placeholder="" style="width: 150px; height: 24px;padding-left: 8px;" />
+              <span class="edit-groupname confirm" @click="editGroupName('ok')">确认</span>
+              <span class="edit-groupname" @click="editGroupName('cal')">取消</span>
+            </span>
+            <span v-if="chatType == 2 && !editableGroupName">
+              <span class="nickname ellipsis">{{ groupInfo.groupName || '未命名' }}</span>
+              <span class="edit-groupname" @click="openEditGroupName">编辑</span>
             </span>
           </div>
           <div class="source" v-if="chatType == 1 || chatType == 3">
@@ -208,15 +212,15 @@
       </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
-          <div class="member-list" v-if="chatType == 2 && groupInfo.memberCount">
-            <div class="member-notice">
+          <div class="group-container" v-if="groupInfo.memberCount">
+            <div class="notice-container">
               <div class="title">群公告</div>
               <div class="content">
                 <div class="detail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
                 <div class="edit" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
-                <div class="writeNotice">
+                <div class="write-notice">
                   <textarea ref="groupNotice" placeholder="" v-model="groupInfo.groupNotice"></textarea>
                 </div>
               </a-modal>
@@ -245,7 +249,7 @@
           </iframe>
         </a-tab-pane>
       </a-tabs>
-      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 1 || chatType == 3">
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-else>
         <a-tab-pane key="customerInfo" tab="客户画像">
           <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
@@ -299,10 +303,10 @@ import ReplyMessage from '@/views/chat/components/ReplyMessage'
 import LocationMessage from '@/views/chat/components/LocationMessage'
 import VideoNumMessage from '@/views/chat/components/VideoNumMessage'
 import overTimeModal from '@/util/overTime'
-import ChatRecordModal from './components/ChatRecordModal'
-import TransmitMsgModal from './components/TransmitMsgModal'
-import OperateGroupMeb from './components/OperateGroupMeb'
-import GroupMember from './components/GroupMember'
+import ChatRecordModal from '@/views/chat/components/ChatRecordModal'
+import TransmitMsgModal from '@/views/chat/components/TransmitMsgModal'
+import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
+import GroupMember from '@/views/chat/components/GroupMember'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -336,7 +340,7 @@ export default {
       wechatName: '',
       chatType: '',
       company: '',
-      allInfo: {},
+      allInfo: {}, //客户信息 gender图标
       groupInfo: {
         groupName: '',
         memberCount: '',
@@ -362,7 +366,7 @@ export default {
       editGroupNameVisible: {},
       editableGroupName: false,
       loadingHistory: false,
-      all: ''
+      groupData: ''
     }
   },
   mounted() {
@@ -546,8 +550,8 @@ export default {
       })
     },
     cancelEditNotice() {
-      this.groupInfo.groupNotice = this.all.groupNotice
-      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.all.groupNotice)
+      this.groupInfo.groupNotice = this.groupData.groupNotice
+      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.groupData.groupNotice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -572,7 +576,7 @@ export default {
           console.log(ack, 'modify_group_name')
         })
       } else {
-        this.groupInfo.groupName = this.all.groupName
+        this.groupInfo.groupName = this.groupData.groupName
       }
     },
     openEditGroupName() {
@@ -682,14 +686,14 @@ export default {
       immediate: true,
       handler(n) {
         if (this.chatType != 2) return
-        this.groupInfo.members = n ? this.groupInfo.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.all.members
+        this.groupInfo.members = n ? this.groupInfo.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.groupData.members
       }
     },
     groupInfoI: {
       immediate: true,
       handler(n) {
         this.groupInfo = n
-        this.all = deepClone(n)
+        this.groupData = deepClone(n)
       }
     }
   },
@@ -1024,7 +1028,7 @@ export default {
       height: calc(100vh - 190px);
     }
 
-    .member-list {
+    .group-container {
       display: flex;
       flex-direction: column;
       height: calc(100vh - 190px);
@@ -1032,7 +1036,7 @@ export default {
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
-      .member-notice {
+      .notice-container {
         font-family: PingFangSC, PingFangSC-Regular;
         .title {
           color: rgba(0, 0, 0, 0.45);
@@ -1175,7 +1179,7 @@ export default {
     .ant-modal-body {
       flex: 1 1 0;
       padding: 24px 0px 0px;
-      .writeNotice {
+      .write-notice {
         textarea {
           width: 432px;
           height: 248px;

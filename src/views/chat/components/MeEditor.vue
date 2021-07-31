@@ -88,30 +88,15 @@
       <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
         <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
         <span class="name"> {{ item.wechatName }} </span>
-        <!-- <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-        <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span> -->
       </div>
     </div>
-    <a-modal
-      v-model="noValidVisible"
-      wrapClassName="send-status-modal"
-      getPopupContainer="triggerNode => {
-        return triggerNode.parentNode
-      }"
-      :title="noValidTitle"
-      centered
-      @ok="() => (noValidVisible = false)"
-      ok-text="确认"
-      cancel-text="取消"
-    >
-    </a-modal>
   </div>
 </template>
 <script>
 import deepClone from 'lodash/cloneDeep'
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
-import Upload from './Upload.vue'
+import Upload from '@/views/chat/components/Upload.vue'
 import filesLibrary from '@/apis/library'
 import { emojiList } from '@/util/emojiList'
 import { wheel } from '@/util/wheel.js'
@@ -148,11 +133,8 @@ export default {
       editorText: '',
       readonly: false,
       lost: false,
-      noValidVisible: false,
-      noValidTitle: '',
       // 上传素材
       uploadFile: {
-        // loading: false,
         getOssTokenApi: filesLibrary.getOssToken,
         notifyCheckApi: filesLibrary.notifyOssCheck
       },
@@ -173,7 +155,6 @@ export default {
       // emoji分页列表
       emojiPageList: [],
       rangeOfInputBox: null,
-      // emojiCarouselDisabled: false,
       timer: null,
       replyShow: false,
       replyName: '',
@@ -334,7 +315,6 @@ export default {
       this.isChange = true
     },
     changeEmojiList(isNext) {
-      // this.emojiCarouselDisabled = true
       this.$refs.emojiCarousel[isNext ? 'next' : 'prev']()
     },
     changeEnd() {
@@ -356,7 +336,6 @@ export default {
         this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
         // 设为非折叠状态
         this.rangeOfInputBox.collapse(false)
-        // return this.$refs.inputBox.appendChild(emojiEl)
       }
       // 判断是否折叠状态
       if (this.rangeOfInputBox.collapsed) {
@@ -392,7 +371,6 @@ export default {
       if (target.tagName.toLowerCase() === 'img') {
         const range = new Range()
         range.setStartBefore(target)
-        // range.setStartAfter(target);
         range.collapse(true)
         document.getSelection().removeAllRanges()
         document.getSelection().addRange(range)
@@ -563,13 +541,9 @@ export default {
     value: {
       immediate: true,
       handler(n) {
-        // console.log('value-change', n)
         // let container = document.createElement('div')
-        // n = n + ''
-        // n = n.replace(/<br>/, '')
         // container.innerHTML = n
         // this.editorText = container.innerText
-        // console.log(this.editorText, n)
         // container = null
         this.editorText = n
       }
@@ -639,12 +613,9 @@ export default {
     .message-input {
       width: 100%;
       max-width: 100%;
-      // flex: 1 1 0;
-      // overflow-y: auto;
       min-height: 21px;
       text-align: left;
       padding: 0 24px;
-      // border: 1px solid #ccc;
       position: relative;
       word-break: break-word;
       /deep/ img {
@@ -788,8 +759,6 @@ export default {
   }
 }
 /deep/ .ant-modal-content {
-  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  // border: 1px solid rgba(0, 0, 0, 0.45);
   width: 480px;
   height: 200px;
   padding-top: 60px;
@@ -845,8 +814,6 @@ export default {
   padding-bottom: 10px;
 }
 .emoji-content {
-  // background-color: #3a4d76;
-  // width: 400px;
   width: 360px;
   height: 340px;
   overflow: hidden;
@@ -867,9 +834,6 @@ export default {
   display: inline-block;
   width: 40px;
   height: 40px;
-  // width: 30px;
-  // height: 30px;
-  // margin: 5px;
   line-height: 40px;
   text-align: center;
   font-size: 22px;
@@ -880,11 +844,5 @@ export default {
   &:hover {
     background-color: #efefef;
   }
-  // img {
-  //   display: inline-block;
-  //   width: 25px;
-  //   height: 25px;
-  //   vertical-align: middle;
-  // }
 }
 </style>
