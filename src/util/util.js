@@ -29,7 +29,7 @@ export function formateTime(datetime) {
   //   outTime = new Date(parseInt(datetime) * 1000)
   // }
 
-  if (time.getTime() < outTime.getTime() || time.getFullYear() != outTime.getFullYear()) {
+  if (time.getFullYear() != outTime.getFullYear()) {
     return parseTime(outTime, '{y}-{m}-{d} {h}:{i}')
   }
 
