@@ -11,7 +11,7 @@ const MSG_SEND_STATUS = {
  */
 class Msg {
   constructor(options, isSendMsg) {
-    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, atIds, msgTime, sender, to, unread = false, seq, clientMsgId } = options
+    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, atContactSerialNos, msgTime, sender, to, unread = false, seq, clientMsgId } = options
     this.msgId = msgId // 发出的消息id为uuid
     this.clientMsgId = clientMsgId
     this.sender = sender // 发送人信息
@@ -29,7 +29,7 @@ class Msg {
     this.time = msgTime || new Date().getTime() // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at
-    this.atIds = atIds // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
+    this.atContactSerialNos = atContactSerialNos // 被@人员的id列表，若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.unread = unread // 是否已读
     this.status = navigator.onLine ? (isSendMsg ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS) : MSG_SEND_STATUS.FAILED // 是否已发送成功
     //消息未成功再执行判断

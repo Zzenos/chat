@@ -161,7 +161,7 @@ export default {
       replyContent: '',
       atShow: false,
       filterAtList: [],
-      atIds: [],
+      atContactSerialNos: [],
       inputFlag: true
     }
   },
@@ -221,7 +221,7 @@ export default {
         this.sendTextMsg(curTextList)
         this.sendImgMsg(imgList)
         this.sendToBottom()
-        this.atIds = []
+        this.atContactSerialNos = []
         this.editorText = ''
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
@@ -399,9 +399,9 @@ export default {
     choose(v) {
       this.atShow = false
       if (v == 'all') {
-        this.atIds.push('all')
+        this.atContactSerialNos.unshift('all')
       } else {
-        this.atIds.push(v.wechatId)
+        this.atContactSerialNos.push(v.tjId)
       }
       this.filterAtList = this.atList
       this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML.replace(this.$refs.messagInput.innerHTML.split('@').pop(), '')
@@ -465,22 +465,28 @@ export default {
         // 判断@id
         if (chatType == 2) {
           let copyIds = []
-          this.atIds.forEach(item => {
-            if (item == 'all') copyIds.push('all')
+          this.atContactSerialNos.forEach(item => {
+            if (item == 'all') copyIds.unshift('all')
             this.atList.forEach(val => {
-              if (val.wechatId == item) {
-                // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atIds.indexOf(val.wechatId))
+              if (val.tjId == item) {
+                // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atContactSerialNos.indexOf(val.tjId))
                 if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
-                  // this.atIds.splice(this.atIds.indexOf(val.wechatId), 1)
+                  // this.atContactSerialNos.splice(this.atContactSerialNos.indexOf(val.tjId), 1)
                 } else {
-                  copyIds.push(val.wechatId)
+                  copyIds.push(val.tjId)
                 }
               }
             })
           })
           msg.atLocation = 0
-          msg.atIds = copyIds
-          msg.at = copyIds.length == 0 ? 0 : copyIds.includes('all') ? 1 : 2
+          if (copyIds.includes('all')) {
+            copyIds.shift()
+            msg.atContactSerialNos = copyIds
+            msg.at = 1
+          } else {
+            msg.atContactSerialNos = copyIds
+            msg.at = copyIds.length == 0 ? 0 : 2
+          }
         }
         msg.msgType = 'text'
         msg.content = content
