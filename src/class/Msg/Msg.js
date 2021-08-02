@@ -79,10 +79,12 @@ export class systemMsg extends Msg {
 export class textMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content, atIds, chatId } = options
+    let { content, at, atContactSerialNos, chatId } = options
     this.content = content
     this.defaultContent =
-      atIds && (atIds.includes('all') ? '@全体成员' : atIds.includes(chatId.split('&')[0]) ? '有人@我' : '') + content.split('\n------\n').length > 1
+      at == 1
+        ? '@全体成员'
+        : atContactSerialNos && (atContactSerialNos.includes(chatId.split('&')[0]) ? '有人@我' : '') + content.split('\n------\n').length > 1
         ? content.split('\n------\n').pop()
         : content.split('\n- - - - - - - - - - - - - - -\n').length > 1
         ? content.split('\n- - - - - - - - - - - - - - -\n').pop()

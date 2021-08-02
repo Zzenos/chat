@@ -151,7 +151,7 @@ export default {
     },
     addFriends() {
       this.addByGroupShow = false
-      this.$socket.emit('add_contact_by_group', { tjId: this.tjId, groupId: this.groupId, groupMemberId: this.groupMemberId, message: this.message }, ack => {
+      this.$socket.emit('add_contact_by_group', { tjId: this.tjId, groupId: this.groupId, memberId: this.groupMemberId, message: this.message }, ack => {
         console.log(ack, 'add_contact_by_group-ack')
       })
       this.message = ''
