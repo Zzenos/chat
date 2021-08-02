@@ -545,7 +545,7 @@ export default {
     },
     completeEditNotice() {
       this.editNoticeShow = false
-      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.notice }, ack => {
+      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice }, ack => {
         console.log(ack, 'modify_group_notice')
       })
     },
