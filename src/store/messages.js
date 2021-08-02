@@ -230,7 +230,7 @@ export default {
         })
         //小程序先发送 再json.parse添加本地 发送时不会出现空白
         if (data.notResend) {
-          if (newMsg.msgType == 'weapp') {
+          if (['videoNum', 'weapp'].includes(newMsg.msgType)) {
             newMsg.content = JSON.parse(newMsg.content)
           }
           commit(types.ADD_MSG_LOCAL, newMsg)
