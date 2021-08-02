@@ -545,6 +545,10 @@ export default {
     },
     completeEditNotice() {
       this.editNoticeShow = false
+      if (!this.groupInfo.groupNotice) {
+        this.$message.warning('群公告不能为空！')
+        return
+      }
       this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice }, ack => {
         console.log(ack, 'modify_group_notice')
       })
