@@ -239,7 +239,7 @@ export default {
                 : newMsg.grpContent
             newMsg.content = newMsg.grpContent
           }
-          console.log(newMsg, 'ADD_MSG_LOCAL')
+          // console.log(newMsg, 'ADD_MSG_LOCAL')
           commit(types.ADD_MSG_LOCAL, newMsg)
         }
         // 发送消息不需要放到hash

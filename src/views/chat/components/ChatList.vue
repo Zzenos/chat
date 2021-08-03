@@ -19,7 +19,10 @@
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
           <!-- 需要根据消息类型，处理显示的内容 -->
-          <div class="msg ellipsis" v-html="handleAt(item.lastMsg)"></div>
+          <div class="msg ellipsis">
+            <span v-show="item.lastMsg.unread" v-html="handleAt(item.lastMsg)"></span>
+            <span v-html="item.lastMsg.defaultContent"></span>
+          </div>
         </div>
       </div>
     </RecycleScroller>
@@ -177,11 +180,11 @@ export default {
     },
     handleAt(item) {
       if (item.at == 1) {
-        return '<span style="color:red">@所有人</span> ' + item.defaultContent
+        return '<span style="color:red">@所有人</span> '
       } else if (item.at == 2 && item.atList && item.atList.includes(item.chatId.split('&')[0])) {
-        return '<span style="color:red">有人@我</span> ' + item.defaultContent
+        return '<span style="color:red">有人@我</span> '
       } else {
-        return item.defaultContent
+        return ''
       }
     }
   }
