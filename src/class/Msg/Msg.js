@@ -11,7 +11,7 @@ const MSG_SEND_STATUS = {
  */
 class Msg {
   constructor(options, isSendMsg) {
-    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, atList, atContactSerialNos, msgTime, sender, to, unread = false, seq, clientMsgId } = options
+    let { msgId, chatId, chatType, fromId, toId, msgType, atLocation, at, atList, atContactSerialNos, grpContent, msgTime, sender, to, unread = false, seq, clientMsgId } = options
     this.msgId = msgId // 发出的消息id为uuid
     this.clientMsgId = clientMsgId
     this.sender = sender // 发送人信息
@@ -28,9 +28,10 @@ class Msg {
     this.atLocation = atLocation // @人的位置 0 头 1 尾
     this.time = msgTime || new Date().getTime() // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
-    this.at = at
-    this.atList = atList && atList.split(';') // 接收的@列表 若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
+    this.at = at || 0
+    this.atList = (atList && atList.split(';')) || [] // 接收的@列表 若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.atContactSerialNos = atContactSerialNos // 发送的@列表 被@人员的id列表
+    this.grpContent = grpContent
     this.unread = unread // 是否已读
     this.status = navigator.onLine ? (isSendMsg ? MSG_SEND_STATUS.PENDING : MSG_SEND_STATUS.SUCCESS) : MSG_SEND_STATUS.FAILED // 是否已发送成功
     //消息未成功再执行判断
@@ -80,17 +81,17 @@ export class systemMsg extends Msg {
 export class textMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content, at, atList, atContactSerialNos, chatId } = options
+    let { content, grpContent } = options
     this.content = content
-    this.atList = atList && atList.split(';')
+    this.grpContent = grpContent
     this.defaultContent =
-      at == 1
-        ? '@全体成员'
-        : atContactSerialNos && (atContactSerialNos.includes(chatId.split('&')[0]) ? '有人@我' : '') + content.split('\n------\n').length > 1
+      content &&
+      (content.split('\n------\n').length > 1
         ? content.split('\n------\n').pop()
         : content.split('\n- - - - - - - - - - - - - - -\n').length > 1
         ? content.split('\n- - - - - - - - - - - - - - -\n').pop()
-        : content
+        : content)
+    // this.defaultContent = grpContent ? grpContent : content
   }
 }
 

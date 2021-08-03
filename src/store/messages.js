@@ -219,9 +219,6 @@ export default {
       // root: true,
       handler: ({ commit, dispatch }, data) => {
         const newMsg = getSendMsg(data, data.notResend)
-        // // 发送消息不需要放到hash
-        commit(types.ADD_CHAT, newMsg.chatId)
-        commit(types.CACHE_SENDING_MSG, newMsg)
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
@@ -233,8 +230,21 @@ export default {
           if (['videoNum', 'weapp'].includes(newMsg.msgType)) {
             newMsg.content = JSON.parse(newMsg.content)
           }
+          if (newMsg.grpContent) {
+            newMsg.defaultContent =
+              newMsg.grpContent.split('\n------\n').length > 1
+                ? newMsg.grpContent.split('\n------\n').pop()
+                : newMsg.grpContent.split('\n- - - - - - - - - - - - - - -\n').length > 1
+                ? newMsg.grpContent.split('\n- - - - - - - - - - - - - - -\n').pop()
+                : newMsg.grpContent
+            newMsg.content = newMsg.grpContent
+          }
+          console.log(newMsg, 'ADD_MSG_LOCAL')
           commit(types.ADD_MSG_LOCAL, newMsg)
         }
+        // 发送消息不需要放到hash
+        commit(types.ADD_CHAT, newMsg.chatId)
+        commit(types.CACHE_SENDING_MSG, newMsg)
       }
     },
     /**

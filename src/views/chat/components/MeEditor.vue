@@ -162,7 +162,8 @@ export default {
       atShow: false,
       filterAtList: [],
       atContactSerialNos: [],
-      inputFlag: true
+      inputFlag: true,
+      arr: []
     }
   },
   directives: {
@@ -222,6 +223,7 @@ export default {
         this.sendImgMsg(imgList)
         this.sendToBottom()
         this.atContactSerialNos = []
+        this.arr = []
         this.editorText = ''
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
@@ -304,7 +306,7 @@ export default {
         this.editorText = this.value
         this.filterAtList = this.atList
         if (this.atShow) {
-          this.filterAtList = this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
+          this.filterAtList = this.value && this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
         }
         if (this.filterAtList.length == 0 || !this.value) {
           this.atShow = false
@@ -409,6 +411,8 @@ export default {
       this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
       this.rangeOfInputBox.collapse(false)
       let replaceText = v == 'all' ? '所有人' : v.wechatName
+      let b = '@' + replaceText
+      this.arr.push(b)
       let spanNode = document.createTextNode(replaceText)
       if (this.rangeOfInputBox.collapsed) {
         this.rangeOfInputBox.insertNode(spanNode)
@@ -462,6 +466,7 @@ export default {
         } else {
           content = curTextList[i]
         }
+        msg.content = content
         // 判断@id
         if (chatType == 2) {
           let copyIds = []
@@ -481,16 +486,21 @@ export default {
           msg.atLocation = 0
           if (copyIds.includes('all')) {
             copyIds.shift()
-            msg.atContactSerialNos = copyIds
+            msg.atContactSerialNos = copyIds.reverse()
             msg.at = 1
           } else {
-            msg.atContactSerialNos = copyIds
+            msg.atContactSerialNos = copyIds.reverse()
             msg.at = copyIds.length == 0 ? 0 : 2
           }
+          msg.grpContent = content
+          this.arr.forEach(val => {
+            content = content.replace(val, '')
+          })
+          msg.content = content
         }
         msg.msgType = 'text'
-        msg.content = content
-        console.log(msg, 'TextMsg', content)
+        // console.log(msg.grpContent, msg.content, msg.atContactSerialNos)
+        console.log(msg)
         this[types.SEND_MSG](msg)
       }
     },
