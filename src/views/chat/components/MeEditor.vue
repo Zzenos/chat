@@ -486,10 +486,10 @@ export default {
           msg.atLocation = 0
           if (copyIds.includes('all')) {
             copyIds.shift()
-            msg.atContactSerialNos = copyIds.reverse()
+            msg.atContactSerialNos = copyIds
             msg.at = 1
           } else {
-            msg.atContactSerialNos = copyIds.reverse()
+            msg.atContactSerialNos = copyIds
             msg.at = copyIds.length == 0 ? 0 : 2
           }
           msg.grpContent = content
