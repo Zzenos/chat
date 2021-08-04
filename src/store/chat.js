@@ -53,33 +53,29 @@ export default {
 
         // 获取当前会话消息，计算未读消息数量，获取最后一条消息，并排序
         if (chatList && chatList.length) {
-          return orderBy(
-            chatList,
-            [
-              function(i) {
-                return i.isTop
-              },
-              function(i) {
-                const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
-                const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
-                const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
-                i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
-                i.lastMsg = curChatMsgs.length
-                  ? curChatMsgs[curChatMsgs.length - 1]
-                  : {
-                      time: i.lastActiveTime,
-                      defaultContent: ''
-                    }
-                i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
-                if (curContactInfo) {
-                  i = { ...i, ...curContactInfo }
-                }
-                i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
-                return i.lastMsg.sortTime
+          chatList = chatList.map(i => {
+            try {
+              const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
+              const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId, i.chatType)
+              const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
+              i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
+              i.lastMsg = curChatMsgs.length
+                ? curChatMsgs[curChatMsgs.length - 1]
+                : {
+                    time: i.lastActiveTime,
+                    defaultContent: ''
+                  }
+              i.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
+              if (curContactInfo) {
+                i = { ...i, ...curContactInfo }
               }
-            ],
-            ['desc', 'desc']
-          )
+              i.lost = curContactInfo && curContactInfo.lost ? curContactInfo.lost : 0 // 0-未流失，1-流失
+              return i
+            } catch (error) {
+              console.log(error)
+            }
+          })
+          return orderBy(chatList, ['isTop', 'sortTime'], ['desc', 'desc'])
         } else {
           Vue.set(state.chatList, `${tjId}`, [])
           return state.chatList[tjId]

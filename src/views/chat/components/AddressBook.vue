@@ -108,7 +108,7 @@ export default {
       handler: function(n) {
         console.log('contactData:', n)
         n && this.handleData(n)
-        if (n.contactEventType === 3 && this.addressBookSyncStatus) {
+        if (n && n.contactEventType === 3 && this.addressBookSyncStatus) {
           this.addressBookSyncStatus = false
           this.$message.success(`【${this.accountData.info.wechatName}】的通讯录同步完成`)
         }
