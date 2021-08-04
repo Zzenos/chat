@@ -1070,7 +1070,7 @@ export default {
       }
       .search {
         /deep/.ant-input-search.ant-input-affix-wrapper {
-          margin: 16px 10px !important;
+          margin: 16px 0px !important;
           width: 280px !important;
         }
       }
