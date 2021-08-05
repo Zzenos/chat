@@ -445,7 +445,8 @@ export default {
 
       if (item.fromId == this.tjId) {
         let time = new Date().getTime() - item.time
-        if (Math.floor(time / 1000 / 60) < 2 && item.seq !== 0) {
+        // 115s 以内支持撤回
+        if (Math.floor(time / 1000) < 115 && item.seq !== 0) {
           menus.push({
             label: '撤回',
             icon: 'icon-s-flag',
