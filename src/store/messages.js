@@ -88,7 +88,7 @@ export default {
       if (state.chatMsgs[msg.chatId]) {
         // 找到需要清除的消息
         const index = state.chatMsgs[msg.chatId].findIndex(i => {
-          return msg.clientMsgId && i.clientMsgId === msg.clientMsgId
+          return msg.msgId && i.msgId === msg.msgId
         })
         if (index >= 0) {
           state.chatMsgs[msg.chatId].splice(index, 1)
@@ -154,6 +154,13 @@ export default {
         data.forEach(msgItem => {
           const msg = MsgGen(msgItem)
           const tjId = msg.chatId.split('&')[0]
+          // 其他平台撤回消息， 需要删除已有消息
+          if (!msg.clientMsgId && msg.msgType === 'system') {
+            // 清除本地缓存的消息
+            commit(types.ClEAR_CACHED_MSG, msg)
+            // 清除会话里的消息
+            commit(types.CLEAR_HISTORY_MSG, msg)
+          }
           if (state.chatMsgHash[msg.msgId]) return
           // 新会话，添加会话列表
           if (!state.chatMsgs[msg.chatId]) {
