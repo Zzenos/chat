@@ -41,7 +41,7 @@
           >
           </upload>
         </li>
-        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord">
+        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord($event)">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
         <!-- 客户流失显示 -->
@@ -267,7 +267,8 @@ export default {
       // this.readonly = false
       // console.log('当前网络链接成功')
     },
-    showRecord() {
+    showRecord(e) {
+      console.log('showRecordModal', e)
       this.showRecordModal()
     },
     uploaded(e, type) {
@@ -483,7 +484,7 @@ export default {
               }
             })
           })
-          msg.atLocation = 0
+          msg.atLocation = 1
           if (copyIds.includes('all')) {
             copyIds.shift()
             msg.atContactSerialNos = copyIds
@@ -494,6 +495,8 @@ export default {
           }
           msg.grpContent = content
           this.arr.forEach(val => {
+            //content.indexOf(val) == 0  content.length == content.indexOf(val) + val.length
+            if (content.indexOf(val) == 0) msg.atLocation = 0
             content = content.replace(val, '')
           })
           msg.content = content
