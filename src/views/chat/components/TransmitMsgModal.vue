@@ -148,7 +148,7 @@ export default {
               : content),
           url,
           coverUrl,
-          title,
+          title: msgType == 'link' ? (title ? title : desc) : title,
           voiceTime,
           href,
           desc,
