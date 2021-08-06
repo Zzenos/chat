@@ -7,21 +7,16 @@
     </div>
     <div class="video-content">
       <div class="title">
-        <div class="left">
-          <img class="icon" :src="iconurl" alt="" />
-          {{ title }}
-        </div>
-        <div class="right">
-          <img class="videoIcon" src="@/assets/icon_shipinhao.png" alt="" />
-          视频号
-        </div>
+        <img class="icon" :src="iconurl" alt="" />
+        {{ title }}
       </div>
       <div class="content">
         {{ des }}
       </div>
     </div>
     <div class="video-num-bottom">
-      {{ des }}
+      <img class="videoIcon" src="@/assets/icon_shipinhao.png" alt="" />
+      视频号
     </div>
   </div>
 </template>
@@ -89,10 +84,13 @@ export default {
     position: relative;
     height: 220px;
     width: 224px;
+    overflow: hidden;
     .cover {
-      width: 100%;
+      width: auto;
       height: 100%;
-      // max-height: 220px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
     .video_icon_play {
       position: absolute;
@@ -109,23 +107,18 @@ export default {
     color: #fff;
     .title {
       display: flex;
-      justify-content: space-between;
       margin-bottom: 9px;
-      .left {
-        font-size: 12px;
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: left;
-        color: rgba(0, 0, 0, 0.65);
-        line-height: 18px;
-        .icon {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-        }
-      }
-      .right {
-        color: rgba(0, 0, 0, 0.45);
+      font-size: 12px;
+      font-family: PingFangSC, PingFangSC-Regular;
+      font-weight: 400;
+      text-align: left;
+      color: rgba(0, 0, 0, 0.65);
+      line-height: 18px;
+      .icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 8px;
       }
     }
     .content {
@@ -147,9 +140,6 @@ export default {
     font-family: PingFangSC, PingFangSC-Regular;
     font-weight: 400;
     text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     color: rgba(0, 0, 0, 0.45);
     line-height: 18px;
     border-top: 1px solid #e4e5e7;
