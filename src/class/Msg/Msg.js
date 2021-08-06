@@ -207,7 +207,7 @@ export class videoNumMsg extends Msg {
     this.url = href
     this.content = JSON.parse(content)
     this.msgSerialNo = msgSerialNo
-    this.defaultContent = `[视频号]`
+    this.defaultContent = `[视频号] ${title}的动态`
   }
 }
 /**
@@ -219,6 +219,6 @@ export class locationMsg extends Msg {
     super(options, isSendMsg)
     let { content } = options
     this.content = JSON.parse(content)
-    this.defaultContent = `[位置]`
+    this.defaultContent = `[位置] ${JSON.parse(content).title}`
   }
 }
