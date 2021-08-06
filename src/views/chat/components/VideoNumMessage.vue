@@ -1,7 +1,8 @@
 <template>
   <div class="video-num-message">
-    <div class="video-num-cover" @click="toshow">
-      <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" />
+    <div class="video-num-cover">
+      <!--  @click="toshow" -->
+      <!-- <img class="video_icon_play" src="@/assets/video_icon_play.png" alt="" /> -->
       <img class="cover" :src="coverurl" alt="" />
     </div>
     <div class="video-content">
