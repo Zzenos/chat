@@ -78,6 +78,8 @@ export default {
     padding: 40px;
   }
 
+  &.ant-popover.ant-popover-placement-topLeft,
+  &.ant-popover.ant-popover-placement-topRight,
   &.ant-popover.ant-popover-placement-right,
   &.ant-popover.ant-popover-placement-left {
     // position: absolute;
