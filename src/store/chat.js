@@ -69,6 +69,7 @@ export default {
               if (curContactInfo) {
                 i = { ...i, ...curContactInfo }
               }
+              i.isTop = i.isTop ? 1 : 0
               i.lost = curContactInfo && curContactInfo.lost ? curContactInfo.lost : 0 // 0-未流失，1-流失
               return i
             } catch (error) {
