@@ -3,7 +3,16 @@
     <div class="emoj">
       <ul>
         <li v-if="!lost" ref="emojiBox" v-wheel="changeEmojiList" id="emoji-parent" wheel-disabled="0">
-          <a-popover v-model="emojiVisible" :getPopupContainer="() => parentNode" trigger="click" @visibleChange="hideEmojiSelect">
+          <a-popover
+            v-model="emojiVisible"
+            :getPopupContainer="
+              triggerNode => {
+                return triggerNode.parentNode
+              }
+            "
+            trigger="click"
+            @visibleChange="hideEmojiSelect"
+          >
             <div slot="content" class="emoji-content">
               <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
                 <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
@@ -637,6 +646,7 @@ export default {
       padding: 0 24px;
       position: relative;
       word-break: break-word;
+      letter-spacing: 1px;
       /deep/ img {
         max-width: 200px;
         width: auto;
