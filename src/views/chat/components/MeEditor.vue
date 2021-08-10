@@ -542,6 +542,10 @@ export default {
           }
         })
       }
+    },
+    paste(e) {
+      console.log(e, 111)
+      console.table(e.clipboardData.items)
     }
   },
   mounted() {
@@ -551,6 +555,7 @@ export default {
     this.value && this.insertEmoji(this.value, false)
     this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
     this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
+    this.$refs.messagInput.addEventListener('paste', this.paste)
   },
   watch: {
     $route: {
