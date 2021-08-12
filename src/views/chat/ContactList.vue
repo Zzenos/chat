@@ -14,10 +14,14 @@
         </div>
         <div class="input-container">
           <a-input-search v-model="searchText" placeholder="搜索" />
+          <div class="addByPhone" @click="addModal = true" v-if="curTab === 'ContactInfo'">
+            <img src="@/assets/icon_add_phonenumber.png" alt="" />
+          </div>
+          <add-friend-modal :tjId="tjId" :name="$route.query.accountName" :show="addModal" @close="closeAddModal" />
         </div>
         <div>
           <chat-list :selected="curTab === 'Chat'" :searchText="searchText" v-show="curTab === 'Chat'" :tjId="tjId" />
-          <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-if="curTab === 'ContactInfo'" :tjId="tjId" />
+          <address-book :selected="curTab === 'ContactInfo'" :searchText="searchText" v-show="curTab === 'ContactInfo'" :tjId="tjId" />
         </div>
       </a-col>
       <a-col flex="1 1 0">
@@ -30,10 +34,11 @@
 <script>
 import ChatList from './components/ChatList'
 import AddressBook from './components/AddressBook'
+import AddFriendModal from './components/AddFriendModal'
 
 export default {
   name: 'contactList',
-  components: { ChatList, AddressBook },
+  components: { ChatList, AddressBook, AddFriendModal },
   props: {
     // 探鲸id
     tjId: {
@@ -56,13 +61,17 @@ export default {
     return {
       tabOptions: [],
       curTab: 'Chat',
-      searchText: ''
+      searchText: '',
+      addModal: false
     }
   },
   methods: {
     handleTab(val) {
       this.curTab = val
       this.searchText = ''
+    },
+    closeAddModal() {
+      this.addModal = false
     }
   }
 }
@@ -103,10 +112,15 @@ export default {
   }
   .input-container {
     padding: 16px;
+    display: flex;
     // border-bottom: 1px solid #e4e5e7;
     /deep/.ant-input {
       border-radius: 0;
       font-size: 12px;
+    }
+    .addByPhone {
+      width: 50px;
+      cursor: pointer;
     }
   }
 }

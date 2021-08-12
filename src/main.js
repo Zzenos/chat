@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import VueVirtualScroller from 'vue-virtual-scroller'
+import Contextmenu from 'vue-contextmenujs'
 import './assets/scss/index.scss'
 import './config/icon.config'
 import './config/antd.config'
@@ -14,6 +15,7 @@ import './util/filters'
 Vue.component('no-data', NoData)
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 Vue.use(VueVirtualScroller)
+Vue.use(Contextmenu)
 Vue.config.productionTip = false
 Vue.prototype.$socket = ZSocket
 

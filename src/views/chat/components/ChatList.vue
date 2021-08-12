@@ -2,7 +2,7 @@
   <div class="chat-list_container">
     <a-spin size="large" tip="数据加载中..." :spinning="spinning"></a-spin>
     <RecycleScroller class="scroller" :items="chats" :emitUpdate="true" :item-size="72" key-field="chatId" v-slot="{ item }">
-      <div class="item" :class="{ active: curChat.chatId === item.chatId }" @click="handleItem(item)">
+      <div class="item" :class="{ active: curChat.chatId === item.chatId, isTop: item.isTop === 1 }" @contextmenu="onRightClick(item, $event)" @click="handleItem(item)">
         <a-badge :offset="[-18, 0]" :count="item.unreadCount" :overflow-count="99">
           <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon>
           <img v-else class="avatar" :src="item.wechatAvatar" alt="" />
@@ -19,7 +19,10 @@
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
           <!-- 需要根据消息类型，处理显示的内容 -->
-          <div class="msg ellipsis" v-html="item.lastMsg.defaultContent"></div>
+          <div class="msg ellipsis">
+            <span v-show="item.lastMsg.unread" v-html="handleAt(item.lastMsg)"></span>
+            <span v-html="item.lastMsg.defaultContent"></span>
+          </div>
         </div>
       </div>
     </RecycleScroller>
@@ -126,7 +129,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST]),
+    ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST, types.UPDATE_CHAT_TOP_STATUS]),
     handleItem(val, canJump = false) {
       console.log('click chat', val)
       const { chatId } = val
@@ -144,6 +147,45 @@ export default {
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
         query: { ...this.curChat, accountId, accountName }
       })
+    },
+    onRightClick(item, event) {
+      let menus = []
+      console.log(item, 'onRightClick')
+      menus.push({
+        label: item.isTop ? '取消置顶' : '置顶',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          console.log(item, '置顶')
+          this.handleChatTop(item)
+        }
+      })
+      this.$contextmenu({
+        items: menus,
+        event,
+        customClass: 'cus-contextmenu',
+        zIndex: 3,
+        minWidth: 120
+      })
+      event.preventDefault()
+    },
+    handleChatTop(item) {
+      this.$socket.emit('top_chat', { chatId: item.chatId, isTop: item.isTop ? 0 : 1 }, res => {
+        if (res.code === 200) {
+          this[types.UPDATE_CHAT_TOP_STATUS]({
+            tjId: this.tjId,
+            chatList: [{ ...item, isTop: item.isTop ? 0 : 1 }]
+          })
+        }
+      })
+    },
+    handleAt(item) {
+      if (item.at == 1) {
+        return '<span style="color:red">@所有人</span> '
+      } else if (item.at == 2 && item.atList && item.atList.includes(item.chatId.split('&')[0])) {
+        return '<span style="color:red">有人@我</span> '
+      } else {
+        return ''
+      }
     }
   }
 }
@@ -172,6 +214,9 @@ export default {
     font-size: 14px;
     font-family: PingFangSC-Regular, PingFang SC;
     cursor: pointer;
+    &.isTop {
+      background-color: #f1f7fe;
+    }
     &.active {
       background-color: #e9eaeb;
     }

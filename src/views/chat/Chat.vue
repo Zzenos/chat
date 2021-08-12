@@ -1,40 +1,37 @@
 <template>
-  <div class="chatCotainer" v-if="chatId != 0">
-    <main class="mainContainer">
-      <header>
-        <!-- title -->
-        <div class="title" style="height: 100%">
-          <div>
-            <!-- 好友名字 -->
-            <span v-if="$route.query.chatType == 1" class="friendName ellipsis">
-              {{ $route.query.alias || $route.query.wechatName }}
-              <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
-              <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
-            </span>
-            <!-- 群聊名称 -->
-            <span v-if="$route.query.chatType == 2" class="groupName">
-              {{ $route.query.wechatName }}
-              <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
-            </span>
-            <span v-if="$route.query.chatType == 3" class="memberName">
-              {{ $route.query.wechatName }}
-              <span style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ $route.query.company }}</span>
-            </span>
-            <!-- 流失状态显示 -->
-            <span class="lost-customer-title" v-if="isLost == '1'">
-              <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">流失客户</span>
-            </span>
-            <span class="lost-customer-title" v-if="isLost == '3'">
-              <span style="color: #1D61EF;font-size: 11px; line-height: 16px; font-weight: 400;">删除客户</span>
-            </span>
-          </div>
-        </div>
-      </header>
-      <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)">
+  <div class="chat-cotainer" v-if="chatId != 0">
+    <div class="main-container">
+      <div class="wrap-title">
+        <!-- 客户名称 -->
+        <span v-if="chatType == 1" class="friend ellipsis">
+          {{ wechatName }}
+          <span v-if="company" class="company">{{ company }}</span>
+          <span v-else class="we-chat"> @微信</span>
+        </span>
+        <!-- 群聊名称 -->
+        <span v-if="chatType == 2" class="group ellipsis">
+          {{ groupInfo.groupName }}
+          <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
+        </span>
+        <!-- 成员名称 -->
+        <span v-if="chatType == 3" class="member ellipsis">
+          {{ wechatName }}
+          <span class="company">{{ company }}</span>
+        </span>
+        <!-- 流失状态显示 -->
+        <span class="lost-customer-title" v-if="isLost == '1'">
+          <span class="text">流失客户</span>
+        </span>
+        <span class="lost-customer-title" v-if="isLost == '3'">
+          <span class="text">删除客户</span>
+        </span>
+      </div>
+      <div class="wrap-body">
+        <div class="talk-container" id="chatScrollbar" ref="list">
           <!-- 数据加载状态栏 -->
           <div class="loading-toolbar">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
+            <a-icon v-show="loadingHistory" type="sync" :spin="true" />
             <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
           <!-- 网络中断 -->
@@ -56,24 +53,21 @@
           </a-modal>
           <!-- 消息主体 -->
           <div v-for="(item, index) in records" :key="item.msgId">
-            <!-- 群消息 加入退出群聊-->
-            <!-- <div v-if="item.msg_type == 2" class="message-box"></div> -->
-
             <!-- 消息时间 -->
-
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sysInfo" v-if="item.msgType == 'system'" v-text="item.content"></div>
+            <div class="sys-info" v-if="item.msgType == 'system'" v-text="item.content"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
+              <!-- <div v-if="isOpen"> v </div> -->
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
               </div>
               <div class="main-column">
-                <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边盒子-->
+                <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边-->
                 <div class="talk-title" :class="{ show: item.chatType == 2 && item.float == 'left' }">
                   <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.wechatName"></span>
                 </div>
@@ -134,6 +128,28 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
+                    <!-- 位置消息 -->
+                    <location-message
+                      v-else-if="item.msgType == 'location'"
+                      :title="item.content.title"
+                      :des="item.content.des"
+                      :latitude="item.content.latitude"
+                      :longitude="item.content.longitude"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
+
+                    <!-- 视频号消息 -->
+                    <video-num-message
+                      v-else-if="item.msgType == 'videoNum'"
+                      :vid="item.msgId"
+                      :title="item.title"
+                      :coverurl="item.coverUrl"
+                      :des="item.desc"
+                      :iconurl="item.content.icon"
+                      :url="item.url"
+                      @contextmenu.native="onCopy(index, item, $event)"
+                    />
+
                     <!-- !消息发送状态 
                       getPopupContainer="triggerNode => {
                         return triggerNode.parentNode
@@ -144,16 +160,12 @@
                         <img src="@/assets/icon_resend.png" alt="" />
                       </div>
                     </div>
-                    <!--<a-modal v-model="modal2Visible" wrapClassName="send-status-modal" title="确认要重发这条信息吗？" centered @ok="toResendMsg" ok-text="确认" cancel-text="取消"> </a-modal> -->
                   </div>
                   <!-- 引用消息 -->
                   <reply-message v-if="item.msgType == 'text' && item.content != item.defaultContent" :float="item.float" :content="dealContent(item.content)" />
                 </div>
               </div>
             </div>
-
-            <!-- 网络不可用 -->
-            <!-- <div class="sysInfo" v-if="item.status == 2">消息发送失败,当前网络不可用,请检查网络</div> -->
           </div>
         </div>
         <!-- 客户流失 -->
@@ -164,55 +176,80 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!$route.query.company" ref="editor" />
+          <me-editor :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
-      <chat-record-modal v-if="!$route.query.company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
+      <chat-record-modal v-if="!company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
-    </main>
-    <div class="sidebar">
+    </div>
+    <div class="sidebar-container">
       <div class="sidebar-top">
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
           <div>
-            <span class="nickname ellipsis">{{ wechatName || '未命名' }}</span>
-            <span>
-              <img v-if="chatType == 1 && allInfo.gender == 1" src="../../assets/icon_man.png" alt="" />
-              <img v-if="chatType == 1 && allInfo.gender == 2" src="../../assets/icon_woman.png" alt="" />
+            <span class="nickname ellipsis" v-if="chatType == 1 || chatType == 3">{{ wechatName }}</span>
+            <span v-if="chatType == 1">
+              <img v-if="allInfo.gender == 1" src="@/assets/icon_man.png" alt="" />
+              <img v-else src="@/assets/icon_woman.png" alt="" />
+            </span>
+            <span v-if="chatType == 2 && editableGroupName">
+              <a-input v-model="groupInfo.groupName" placeholder="" style="width: 150px; height: 24px;padding-left: 8px;" />
+              <span class="edit-groupname confirm" @click="editGroupName('ok')">确认</span>
+              <span class="edit-groupname" @click="editGroupName('cal')">取消</span>
+            </span>
+            <span v-if="chatType == 2 && !editableGroupName">
+              <span class="nickname ellipsis">{{ groupInfo.groupName || '未命名' }}</span>
+              <span class="edit-groupname" @click="openEditGroupName">编辑</span>
             </span>
           </div>
           <div class="source" v-if="chatType == 1 || chatType == 3">
-            <span v-if="$route.query.company" style="color: #FF8000;font-size: 12px; line-height: 18px; font-weight: 400;">{{ '@' + $route.query.company }}</span>
-            <span v-else style="color: #0ead63; font-size: 12px; line-height: 18px; font-weight: 400;"> @微信</span>
+            <span v-if="company" class="company">{{ '@' + company }}</span>
+            <span v-else class="we-chat"> @微信</span>
           </div>
         </div>
       </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
         <a-tab-pane key="groupInfo" tab="群资料">
-          <div class="memberList" v-if="chatType == 2 && groupInfo.memberCount">
-            <div class="memberCount">群成员({{ groupInfo.memberCount }})</div>
-            <!-- <div class="search">
-              <a-input-search placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
-            </div> -->
-            <div class="member-container">
-              <div class="memberInfo" v-for="item in groupInfo.members" :key="item.wechatId">
-                <a-avatar shape="square" :size="36" :src="item.wechatAvatar" />
-                <span class="name"> {{ item.wechatName }} </span>
-                <span v-if="item.department" class="member-department"> @{{ item.department }}</span>
-                <span v-else class="member-wechat" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+          <div class="group-container" v-if="groupInfo.memberCount">
+            <div class="notice-container">
+              <div class="title">群公告</div>
+              <div class="content">
+                <div class="detail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
+                <div class="edit" @click="editNotice">></div>
               </div>
+              <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
+                <div class="write-notice">
+                  <textarea ref="groupNotice" placeholder="" v-model="groupInfo.groupNotice"></textarea>
+                </div>
+              </a-modal>
+            </div>
+            <div class="search">
+              <a-input-search v-model="searchMember" placeholder="搜索群成员" style="width: 260px; height: 32px; margin: 16px 20px" />
+            </div>
+            <div class="member-count">群成员({{ groupInfo.memberCount }})</div>
+            <div class="operate" @click="changeMembers('add')">
+              <img src="@/assets/icon_addmembers.png" alt="" />
+              <span>添加成员</span>
+            </div>
+            <div class="operate last" @click="changeMembers('del')">
+              <img src="@/assets/icon_deletemembers.png" alt="" />
+              <span>删除成员</span>
+            </div>
+            <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
+            <div class="member-container">
+              <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" />
             </div>
           </div>
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
-          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + JSON.stringify(userInfo)" frameborder="0">
+          <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
       </a-tabs>
-      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 1 || chatType == 3">
+      <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-else>
         <a-tab-pane key="customerInfo" tab="客户画像">
           <iframe ref="customerInfoFrame" title="客户画像" :src="sidebarConfig.customerInfo.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
@@ -231,11 +268,10 @@
       </a-tabs>
     </div>
   </div>
-  <div class="chatCotainer" v-else>
-    <header></header>
-    <div class="noRecords">
-      <div class="left">
-        <div class="talk-container" id="chatScrollbar" ref="list" @scroll="talkScroll($event)" style="position:relative">
+  <div class="chat-cotainer" v-else>
+    <div class="no-records">
+      <div class="wrap-body">
+        <div class="talk-container" id="chatScrollbar" ref="list" style="position:relative">
           <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
             <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
           </div>
@@ -244,21 +280,16 @@
           <me-editor :sendToBottom="sendToBottom" ref="editor" />
         </div>
       </div>
-      <!-- <div class="sidebar" style="position:relative">
-        <div style="position:absolute;left: 50%;top: calc(50% + 32px); transform: translate(-50%, -50%);">
-          <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapActions, mapGetters } from 'vuex'
+import deepClone from 'lodash/cloneDeep'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
-import Contextmenu from 'vue-contextmenujs'
 import { formateTime, parseTime } from '@/util/util'
+import iframeMixin from '@/mixin/iframeMixin'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
 import FileMessage from '@/views/chat/components/FileMessage'
@@ -269,11 +300,13 @@ import LinkMessage from '@/views/chat/components/LinkMessage.vue'
 import AudioMessage from '@/views/chat/components/AudioMessage'
 import WebappMessage from '@/views/chat/components/WebappMessage'
 import ReplyMessage from '@/views/chat/components/ReplyMessage'
+import LocationMessage from '@/views/chat/components/LocationMessage'
+import VideoNumMessage from '@/views/chat/components/VideoNumMessage'
 import overTimeModal from '@/util/overTime'
-import ChatRecordModal from './components/ChatRecordModal'
-import TransmitMsgModal from './components/TransmitMsgModal'
-Vue.use(Contextmenu)
-import iframeMixin from '@/mixin/iframeMixin'
+import ChatRecordModal from '@/views/chat/components/ChatRecordModal'
+import TransmitMsgModal from '@/views/chat/components/TransmitMsgModal'
+import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
+import GroupMember from '@/views/chat/components/GroupMember'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -291,27 +324,32 @@ export default {
     WebappMessage,
     ReplyMessage,
     ChatRecordModal,
-    TransmitMsgModal
+    TransmitMsgModal,
+    LocationMessage,
+    VideoNumMessage,
+    OperateGroupMeb,
+    GroupMember
   },
   data() {
     return {
       activeKey: '',
       loadRecord: 1,
-      userId: this.$route.params.tjId,
-      chatId: this.$route.params.contactId,
-      wechatId: this.$route.query.wechatId,
-      wechatName: this.$route.query.wechatName,
-      memberCount: '',
-      chatType: this.$route.query.chatType,
-      allInfo: {},
+      tjId: '',
+      chatId: '',
+      wechatId: '',
+      wechatName: '',
+      chatType: '',
+      company: '',
+      allInfo: {}, //客户信息 gender图标
       groupInfo: {
+        groupName: '',
         memberCount: '',
-        members: []
+        members: [],
+        groupNotice: ''
       },
       modal2Visible: false,
       toRensendIndex: 0,
       onLine: navigator.onLine,
-      playingAudioIndex: null,
       isLost: '',
       // 控制聊天记录弹窗显示
       chatRecordVisible: false,
@@ -319,7 +357,16 @@ export default {
       infoData: null,
       transmitMsgVisible: false,
       msgInfo: {}, // 消息体
-      defaultList: []
+      defaultList: [],
+      searchMember: '',
+      editNoticeShow: false,
+      operateMebVisible: false,
+      operateTitle: '添加群成员',
+      operateType: 'add',
+      editGroupNameVisible: {},
+      editableGroupName: false,
+      loadingHistory: false,
+      groupData: ''
     }
   },
   mounted() {
@@ -332,7 +379,8 @@ export default {
     window.removeEventListener('offline', this.updateOnlineStatus)
   },
   methods: {
-    ...mapActions([types.SEND_MSG]),
+    ...mapMutations([types.ADD_CHAT_LIST]),
+    ...mapActions([types.SEND_MSG, types.PULL_HISTORY_MSG, types.RECALL_MSG, types.PULL_GROUP_DETAILS]),
     parseTime,
     sendTime: formateTime,
     compareTime(index, datetime) {
@@ -354,58 +402,36 @@ export default {
     sendToBottom() {
       setTimeout(() => (this.$refs.list.scrollTop = this.$refs.list.scrollHeight), 0)
     },
-    talkScroll(e) {
-      if (e.target.scrollTop == 0 && this.loadRecord == 1) {
-        // console.log('到达顶部需要请求更多消息')
-        return
-      }
-    },
-    ...mapActions([types.PULL_HISTORY_MSG]),
     loadChatRecords() {
-      // ('去请求更多聊天记录')
       if (this.loadRecord == 2) return
+      this.loadingHistory = true
       this.loadRecord = 2
       this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
         this.changeloadRocrd()
+        this.loadingHistory = false
       })
     },
     changeloadRocrd() {
       this.loadRecord = 1
     },
     toResendMsg() {
-      //点击确定重发 关闭弹框 重发消息 成功后 改边索引的 消息状态
-      // console.log('to-resend')
       this.modal2Visible = false
       this.records[this.toRensendIndex].notResend = false
       this[types.SEND_MSG](this.records[this.toRensendIndex])
     },
     clickStatus(index) {
-      //点击重发消息 展示弹框 存需要重发消息的索引
       this.modal2Visible = true
-      // console.log(index)
       this.toRensendIndex = index
     },
     updateOnlineStatus(e) {
       const { type } = e
       this.onLine = type === 'online'
-      // console.log(this.onLine, 'this.onLine-this.onLine')
-    },
-    changeAudioIndex(index) {
-      if (typeof this.playingAudioIndex != 'number') {
-        this.playingAudioIndex = index
-        console.log(this.playingAudioIndex, 'first')
-        return
-      }
-      this.records[this.playingAudioIndex].onlyOnePlay = !this.records[this.playingAudioIndex].onlyOnePlay
-      this.playingAudioIndex = index
-      console.log(this.playingAudioIndex, 'last')
     },
     closeOverModal() {
       overState.show = false
     },
     onCopy(index, item, event) {
       let menus = []
-      // console.log(index, item, 'oncopy')
       if (item.msgType == 'voice') {
         menus.push({
           label: '转为文字',
@@ -415,6 +441,21 @@ export default {
             this.translateText(index, item)
           }
         })
+      }
+
+      if (item.fromId == this.tjId) {
+        let time = new Date().getTime() - item.time
+        // 115s 以内支持撤回
+        if (Math.floor(time / 1000) < 115 && item.seq !== 0) {
+          menus.push({
+            label: '撤回',
+            icon: 'icon-s-flag',
+            customClass: 'cus-contextmenu-item',
+            onClick: () => {
+              this.revokeRecords(index, item)
+            }
+          })
+        }
       }
 
       menus.push({
@@ -464,35 +505,91 @@ export default {
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
       this.msgInfo = item
-      if (['link', 'card', 'weapp', 'voice'].includes(this.msgInfo.msgType)) {
+      if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
       }
       this.transmitMsgVisible = true
     },
+    revokeRecords(index, item) {
+      console.log('撤回消息', index, item)
+      this[types.RECALL_MSG]({ tjId: this.tjId, msg: item })
+    },
     // 转发
     transmitMsg() {
       this.transmitMsgVisible = false
     },
+    //聊天记录传入数据infoData
     showRecordModal() {
-      //聊天记录传入数据infoData
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
       let info =
         chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
       this.infoData = {
         ...info,
-        wechatAccount: { wechatName: accountName, wechatId: accountId } //tjid user-name
+        wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
-      console.log(this.infoData, 'this.infoData')
       this.chatRecordVisible = true
     },
     translateText(index, item) {
-      console.log(index, item)
+      // console.log(index, item)
       this.$refs[`audio${item.msgId}`][0].audioToText()
     },
     closeTranslateText(index) {
       this.records[index].translateShow = false
       this.$forceUpdate()
+    },
+    editNotice() {
+      this.editNoticeShow = true
+      this.$nextTick(() => {
+        this.$refs.groupNotice.innerText = ''
+      })
+    },
+    completeEditNotice() {
+      this.editNoticeShow = false
+      if (!this.groupInfo.groupNotice) {
+        this.$message.warning('群公告不能为空！')
+        this.groupInfo.groupNotice = this.groupData.groupNotice
+        return
+      }
+      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice }, ack => {
+        console.log(ack, 'modify_group_notice')
+      })
+    },
+    cancelEditNotice() {
+      this.groupInfo.groupNotice = this.groupData.groupNotice
+      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.groupData.groupNotice)
+    },
+    changeMembers(type) {
+      this.operateMebVisible = true
+      this.operateTitle = type == 'add' ? '添加群成员' : '删除群成员'
+      this.operateType = type
+    },
+    operateMeb(list, type) {
+      // console.log(list, type)
+      this.operateMebVisible = false
+      if (type == 'add') {
+        let ids = list.map(item => item.wechatId)
+        this.$socket.emit('inviter_join_group', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
+      } else {
+        this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
+      }
+    },
+    editGroupName(type) {
+      this.editGroupNameVisible.meb = false
+      this.editableGroupName = false
+      if (type == 'ok') {
+        this.$socket.emit('modify_group_name', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
+          console.log(ack, 'modify_group_name')
+        })
+      } else {
+        this.groupInfo.groupName = this.groupData.groupName
+      }
+    },
+    openEditGroupName() {
+      this.editableGroupName = true
+    },
+    getGroupDetail() {
+      this[types.PULL_GROUP_DETAILS]({ tjId: this.tjId, groupId: this.wechatId })
     }
   },
   watch: {
@@ -500,15 +597,15 @@ export default {
       immediate: true,
       handler(newVal, oldVal) {
         if (newVal === oldVal) return
-        const { wechatId, wechatName, memberCount = '', chatType, lost, externalWechatId, alias } = newVal.query
+        const { wechatId, wechatName, chatType, lost, externalWechatId, alias, company } = newVal.query
         const { tjId, contactId } = newVal.params
         const accountInfo = this.userDetailsById(tjId)
-        this.userId = tjId
+        this.tjId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
         this.wechatName = alias || wechatName
-        this.memberCount = memberCount ? '(' + memberCount + ')' : ''
         this.chatType = chatType
+        this.company = company
         this.isLost = lost
         this.sendToBottom()
         console.log(this.records, 'chat-records')
@@ -529,25 +626,15 @@ export default {
         }
         // 获取群资料
         if (chatType == 2) {
-          if (!this.wechatId) {
-            this.groupInfo = {
-              memberCount: '',
-              members: []
-            }
-            return
-          }
           this.activeKey = 'groupInfo'
-          this.$socket.emit(`group_info`, { tjId: tjId, groupId: wechatId }, ack => {
-            this.groupInfo = ack.data || {}
-            // console.log(this.groupInfo, 'ack-data-groupinfo')
-          })
-          return
+          if (!this.groupInfoI) {
+            this.getGroupDetail()
+          }
         }
         if (chatType == 1) {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
-            // console.log(this.allInfo, 'ack-data-allInfo')
           })
         }
         if (chatType == 3) {
@@ -562,7 +649,6 @@ export default {
     },
     isLostRequest(newVal) {
       this.isLost = newVal && newVal.lost
-      // console.log(newVal, 'chat-lost-newVal', this.isLost)
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
           newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
@@ -576,7 +662,6 @@ export default {
     onLine: {
       immediate: true,
       handler(newVal) {
-        // console.log(newVal, 'onLine')
         if (!newVal) {
           this.$nextTick(() => {
             this.$refs.editor.netLost()
@@ -603,24 +688,37 @@ export default {
         }
       }
     },
-    showOverModal(n) {
-      console.log(n, 'showOverModal')
+    searchMember: {
+      immediate: true,
+      handler(n) {
+        if (this.chatType != 2) return
+        this.groupInfo.members = n ? this.groupData.members.filter(ele => ele.wechatName && ele.wechatName.indexOf(n) > -1) : this.groupData.members
+      }
+    },
+    groupInfoI: {
+      immediate: true,
+      handler(n) {
+        this.groupInfo = n
+        this.groupData = deepClone(n)
+      }
     }
   },
   computed: {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
-        item.float = item.fromId == this.userId ? 'right' : 'left'
-        item.onlyOnePlay = true
+        item.float = item.fromId == this.tjId ? 'right' : 'left'
         return item
       })
     },
-    ...mapGetters(['contactInfoByWechatId', 'userDetailsById']),
+    ...mapGetters(['contactInfoByWechatId', 'userDetailsById', 'groupDetailsById']),
     isLostRequest() {
-      return this.contactInfoByWechatId(this.userId, this.wechatId)
+      return this.contactInfoByWechatId(this.tjId, this.wechatId)
     },
     showOverModal() {
       return overState.show
+    },
+    groupInfoI() {
+      return this.groupDetailsById(this.wechatId) || ''
     }
   }
 }
@@ -628,16 +726,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-.chatCotainer {
+.chat-cotainer {
   display: flex;
-  // flex-direction: column;
   height: 100vh;
   font-family: PingFangSC-Regular, PingFang SC;
 
-  .noRecords {
+  .no-records {
     flex: 1 1 0;
     display: flex;
-    .left {
+    .wrap-body {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
@@ -648,17 +745,17 @@ export default {
     }
   }
 
-  .mainContainer {
+  .main-container {
     flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    header {
+    .wrap-title {
       height: 68px;
       border-bottom: 1px solid #e4e5e7;
 
-      .friendName,
-      .groupName,
-      .memberName {
+      .friend,
+      .group,
+      .member {
         float: left;
         margin: 22px 8px 22px 20px;
         font-size: 16px;
@@ -669,14 +766,20 @@ export default {
       }
       .lost-customer-title {
         float: left;
-        margin: 25px 0;
+        margin: 25px 0px;
         width: 56px;
         height: 18px;
         background: #e1eaff;
         border-radius: 2px;
+        .text {
+          color: #1d61ef;
+          font-size: 11px;
+          line-height: 16px;
+          font-weight: 400;
+        }
       }
     }
-    .left {
+    .wrap-body {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
@@ -737,9 +840,8 @@ export default {
           margin-bottom: 40px;
         }
 
-        .sysInfo {
+        .sys-info {
           width: 300px;
-          // height: 18px;
           font-size: 12px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
@@ -834,7 +936,7 @@ export default {
       }
     }
   }
-  .sidebar {
+  .sidebar-container {
     width: 350px;
     display: flex;
     flex-direction: column;
@@ -857,14 +959,23 @@ export default {
         flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
+        // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
-        // margin-bottom: 25px;
         .nickname {
           margin-right: 8px;
           max-width: 150px;
           display: block;
           float: left;
+        }
+        .edit-groupname {
+          position: absolute;
+          right: 50px;
+          font-size: 12px;
+          cursor: pointer;
+          &.confirm {
+            right: 20px;
+          }
         }
         .source {
           text-align: left;
@@ -886,7 +997,6 @@ export default {
           margin: 0 !important;
           font-size: 14px;
           padding: 0px 15px;
-          // line-height: 32px;
           &:nth-of-type(1) {
             border-radius: 4px 0px 0px 4px;
           }
@@ -921,82 +1031,79 @@ export default {
     }
     iframe {
       width: 100%;
-      // height: calc(100vh - 113px);
       height: calc(100vh - 190px);
     }
 
-    // .search {
-    //     padding:16px 20px;
-    // }
-
-    .memberList {
+    .group-container {
       display: flex;
       flex-direction: column;
       height: calc(100vh - 190px);
-      padding-left: 20px;
-      padding-top: 20px;
+      padding: 20px;
       text-align: left;
       flex: 1 1 0;
       overflow-y: auto;
-      .memberCount {
+      .notice-container {
+        font-family: PingFangSC, PingFangSC-Regular;
+        .title {
+          color: rgba(0, 0, 0, 0.45);
+          margin-bottom: 8px;
+        }
+        .content {
+          display: flex;
+          justify-content: space-between;
+          padding-right: 10px;
+          color: rgba(0, 0, 0, 0.65);
+          .detail {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .edit {
+            color: rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+          }
+        }
+      }
+      .member-count {
         font-weight: 600;
         margin: 10px 0;
+      }
+      .search {
+        /deep/.ant-input-search.ant-input-affix-wrapper {
+          margin: 16px 0px !important;
+          width: 280px !important;
+        }
+      }
+      .operate {
+        height: 36px;
+        margin-top: 20px;
+        cursor: pointer;
+        span {
+          margin-left: 12px;
+        }
+      }
+      .last {
+        margin-bottom: 10px;
       }
       .member-container {
         flex: 1 1 0;
         overflow-y: auto;
       }
-      .memberInfo {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        .name {
-          font-size: 14px;
-          margin-left: 12px;
-          // margin-right: 8x;
-          max-width: 110px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-department {
-          color: #ff8000;
-          font-size: 12px;
-          line-height: 18px;
-          font-weight: 400;
-          margin-left: 8px;
-          font-family: PingFangSC-Regular, PingFang SC;
-          max-width: 95px;
-          line-height: 36px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .member-wechat {
-          color: #0ead63;
-          font-size: 12px;
-          margin-left: 8px;
-          line-height: 18px;
-          margin-top: 9px;
-          font-weight: 400;
-          font-family: PingFangSC-Regular, PingFang SC;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0s;
-}
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
+  .company {
+    color: #ff8000;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+  }
+  .we-chat {
+    color: #0ead63;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+  }
 }
 
 /deep/ .send-status-modal.ant-modal-mask {
@@ -1009,8 +1116,6 @@ export default {
     display: none;
   }
   .ant-modal-content {
-    // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-    // border: 1px solid rgba(0, 0, 0, 0.45);
     width: 480px;
     height: 200px;
     padding-top: 60px;
@@ -1043,6 +1148,70 @@ export default {
         line-height: 22px;
         &.ant-btn-primary {
           color: #fff;
+        }
+      }
+    }
+  }
+}
+/deep/ .edit-notice-modal.ant-modal-mask {
+  display: none;
+}
+/deep/ .ant-modal-wrap.ant-modal-centered.edit-notice-modal {
+  background-color: transparent;
+  .ant-modal-close-x {
+    display: none;
+  }
+  .ant-modal {
+    width: 350px !important;
+  }
+  .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 480px;
+    height: 400px;
+    padding: 24px;
+    border-radius: 4px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
+    .ant-modal-header {
+      border-bottom: none;
+      // text-align: center;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 24px;
+      padding: 0;
+    }
+    .ant-modal-body {
+      flex: 1 1 0;
+      padding: 24px 0px 0px;
+      .write-notice {
+        textarea {
+          width: 432px;
+          height: 248px;
+          border: none;
+          outline: none;
+          resize: none;
+        }
+      }
+    }
+    .ant-modal-footer {
+      border-top: none;
+      text-align: center;
+      .ant-btn {
+        width: 120px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        border: none;
+        background: #ffffff;
+        color: rgba(0, 0, 0, 0.65);
+        border: 1px solid #d9d9d9;
+        line-height: 22px;
+        &.ant-btn-primary {
+          margin-left: 20px;
+          background: #1d61ef;
+          color: #ffffff;
         }
       }
     }

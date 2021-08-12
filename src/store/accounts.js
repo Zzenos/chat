@@ -19,6 +19,17 @@ export default {
           i.info.chatInitStatus = true
         }
       })
+    },
+    [types.SET_ADDRESSBOOK_SYNC_STATUS](state, tjId) {
+      state.accounts.forEach(i => {
+        let {
+          info: { addressBookSyncStatus = true }
+        } = i
+        if (i.info.tjId === tjId) {
+          // 当前选中账号对应的会话初始化的状态
+          i.info.addressBookSyncStatus = !addressBookSyncStatus
+        }
+      })
     }
   },
   getters: {

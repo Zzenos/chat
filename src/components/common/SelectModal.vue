@@ -174,6 +174,11 @@ export default {
     echodCheckedList: {
       type: Array,
       default: () => []
+    },
+    // 单选
+    isRadio: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -356,8 +361,15 @@ export default {
       const { value, checked } = e.target
       if (checked) {
         // 勾选状态 右侧列表添加数据
-        const v = this.checkOptions.filter(item => item[this.checkOptionKey] === value)[0]
-        this.checkedRightList.push(v)
+        if (this.isRadio) {
+          this.checkedRightList = []
+          const v = this.checkOptions.filter(item => item[this.checkOptionKey] === value)[0]
+          this.checkedRightList.push(v)
+          this.checkedList.shift()
+        } else {
+          const v = this.checkOptions.filter(item => item[this.checkOptionKey] === value)[0]
+          this.checkedRightList.push(v)
+        }
       } else {
         // 非勾选状态 右侧去除勾选值
         this.checkedRightList = this.checkedRightList.filter(item => item[this.checkOptionKey] !== value)

@@ -29,7 +29,7 @@ export function formateTime(datetime) {
   //   outTime = new Date(parseInt(datetime) * 1000)
   // }
 
-  if (time.getTime() < outTime.getTime() || time.getFullYear() != outTime.getFullYear()) {
+  if (time.getFullYear() != outTime.getFullYear()) {
     return parseTime(outTime, '{y}-{m}-{d} {h}:{i}')
   }
 
@@ -194,6 +194,24 @@ export const js3 = {
       '324': { id: '324', commenter: '2' }
     }
   }
+}
+
+export const downloadImg = url => {
+  const image = new Image()
+  // 解决跨域 Canvas 污染问题
+  image.setAttribute('crossOrigin', 'anonymous')
+  image.src = url
+  return new Promise(resolve => {
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = image.width
+      canvas.height = image.height
+      const context = canvas.getContext('2d')
+      context.drawImage(image, 0, 0, image.width, image.height)
+      const urls = canvas.toDataURL('image/png') // 得到图片的base64编码数据
+      resolve(urls)
+    }
+  })
 }
 
 export default {

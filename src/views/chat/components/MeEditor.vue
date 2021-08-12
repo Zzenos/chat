@@ -3,7 +3,16 @@
     <div class="emoj">
       <ul>
         <li v-if="!lost" ref="emojiBox" v-wheel="changeEmojiList" id="emoji-parent" wheel-disabled="0">
-          <a-popover v-model="emojiVisible" :getPopupContainer="() => parentNode" trigger="click" @visibleChange="hideEmojiSelect">
+          <a-popover
+            v-model="emojiVisible"
+            :getPopupContainer="
+              triggerNode => {
+                return triggerNode.parentNode
+              }
+            "
+            trigger="click"
+            @visibleChange="hideEmojiSelect"
+          >
             <div slot="content" class="emoji-content">
               <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
                 <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
@@ -14,7 +23,6 @@
                 </div>
               </a-carousel>
             </div>
-            <!-- <a-icon type="smile" :class="['icon-emoji', disabled && 'icon-emoji_disabled']" /> -->
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
         </li>
@@ -42,7 +50,7 @@
           >
           </upload>
         </li>
-        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord">
+        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord($event)">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
         <!-- 客户流失显示 -->
@@ -72,7 +80,6 @@
         rows="6"
       ></div>
       <div class="reply" v-show="replyShow">
-        <!-- <span class="close-reply" @click="closeReply">&times;</span> -->
         <div class="reply-content">
           <div class="meditor-reply-content">{{ replyName }}:{{ replyContent }}</div>
         </div>
@@ -81,45 +88,62 @@
         </div>
       </div>
     </div>
-    <a-modal
-      v-model="noValidVisible"
-      wrapClassName="send-status-modal"
-      getPopupContainer="triggerNode => {
-        return triggerNode.parentNode
-      }"
-      :title="noValidTitle"
-      centered
-      @ok="() => (noValidVisible = false)"
-      ok-text="确认"
-      cancel-text="取消"
-    >
-    </a-modal>
+    <div class="at-container" id="selectuser" v-show="atShow && chatType == 2">
+      <div class="at-all" @click="choose('all')">
+        <img src="@/assets/icon_all.png" alt="" />
+        <div>所有人</div>
+      </div>
+      <div class="note">群成员</div>
+      <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
+        <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
+        <span class="name"> {{ item.wechatName }} </span>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import deepClone from 'lodash/cloneDeep'
 import { mapActions } from 'vuex'
 import * as types from '@/store/actionType'
-import Upload from './Upload.vue'
+import Upload from '@/views/chat/components/Upload.vue'
 import filesLibrary from '@/apis/library'
 import { emojiList } from '@/util/emojiList'
 import { wheel } from '@/util/wheel.js'
+import { downloadImg } from '@/util/util'
 
 export default {
   components: { Upload },
   name: 'MeEditor',
-  props: ['sendToBottom', 'showRecordModal', 'showRecordClick'],
+  props: {
+    sendToBottom: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordModal: {
+      type: Function,
+      default: () => {}
+    },
+    showRecordClick: {
+      type: Boolean,
+      default: true
+    },
+    chatType: {
+      type: String,
+      default: '1'
+    },
+    atList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       placeholder: '输入内容，shift+enter换行，enter发送',
       editorText: '',
       readonly: false,
       lost: false,
-      noValidVisible: false,
-      noValidTitle: '',
       // 上传素材
       uploadFile: {
-        // loading: false,
         getOssTokenApi: filesLibrary.getOssToken,
         notifyCheckApi: filesLibrary.notifyOssCheck
       },
@@ -140,11 +164,15 @@ export default {
       // emoji分页列表
       emojiPageList: [],
       rangeOfInputBox: null,
-      // emojiCarouselDisabled: false,
       timer: null,
       replyShow: false,
       replyName: '',
-      replyContent: ''
+      replyContent: '',
+      atShow: false,
+      filterAtList: [],
+      atContactSerialNos: [],
+      inputFlag: true,
+      arr: []
     }
   },
   directives: {
@@ -163,34 +191,48 @@ export default {
     inputEvent() {
       // console.log('send', e)
     },
-    keydownEvent(e) {
+    async keydownEvent(e) {
+      if (e.code == 'Digit2' && e.shiftKey == true) {
+        setTimeout(() => {
+          if (this.$refs.messagInput.innerText[this.$refs.messagInput.innerText.length - 1] == '@') {
+            this.atShow = true
+          }
+        }, 0)
+      }
       if (e.keyCode == 13 && e.shiftKey == false) {
         e.preventDefault()
-        if (!this.editorText) return
-        // console.log(this.editorText, 'enter-down')
-        let { contactId, tjId } = this.$route.params
-        let { wechatName, wechatAvatar } = this.userInfo.info
-        let { chatType } = this.$route.query
-        let content = null
-        if (chatType == 1) {
-          content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + this.editorText : this.editorText
-        } else {
-          content = this.replyContent ? this.replyContent + '\n------\n' + this.editorText : this.editorText
+        let allnodes = [...this.$refs.messagInput.childNodes]
+        let curText = ''
+        let curTextList = []
+        let imgList = []
+        for (let i = 0; i < allnodes.length; i++) {
+          if (allnodes[i].nodeName !== 'IMG') {
+            //当前节点为文字节点  textContent  wholeText
+            curText = curText + allnodes[i].textContent
+          } else {
+            // 当前节点为图片节点
+            if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
+              imgList.push(allnodes[i].src)
+            } else {
+              let url = await downloadImg(allnodes[i].src)
+              imgList.push(url)
+            }
+            if (curText) {
+              curTextList.push(curText)
+              curText = ''
+            }
+          }
+          if (i == allnodes.length - 1 && curText) {
+            curTextList.push(curText)
+          }
         }
-        this[types.SEND_MSG]({
-          msgType: 'text',
-          chatId: contactId,
-          chatType: chatType,
-          fromId: tjId,
-          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
-          content: content,
-          sender: {
-            wechatName: wechatName,
-            wechatAvatar: wechatAvatar
-          },
-          notResend: true
-        })
+        console.log(curTextList, imgList)
+        // console.log(this.editorText, 'enter-down')
+        this.sendTextMsg(curTextList)
+        this.sendImgMsg(imgList)
         this.sendToBottom()
+        this.atContactSerialNos = []
+        this.arr = []
         this.editorText = ''
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
@@ -234,7 +276,8 @@ export default {
       // this.readonly = false
       // console.log('当前网络链接成功')
     },
-    showRecord() {
+    showRecord(e) {
+      console.log('showRecordModal', e)
       this.showRecordModal()
     },
     uploaded(e, type) {
@@ -266,24 +309,31 @@ export default {
       this[types.SEND_MSG](sendData)
     },
     changeText() {
-      const value = deepClone(this.$refs.messagInput.innerText)
-      this.value = value
-      this.editorText = this.value
+      setTimeout(() => {
+        if (!this.inputFlag) return
+        const value = deepClone(this.$refs.messagInput.innerText)
+        this.value = value
+        this.editorText = this.value
+        this.filterAtList = this.atList
+        if (this.atShow) {
+          this.filterAtList = this.value && this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
+        }
+        if (this.filterAtList.length == 0 || !this.value) {
+          this.atShow = false
+        }
+      }, 0)
     },
     editBlur() {
       this.isChange = true
     },
     changeEmojiList(isNext) {
-      // this.emojiCarouselDisabled = true
       this.$refs.emojiCarousel[isNext ? 'next' : 'prev']()
     },
     changeEnd() {
-      // this.emojiCarouselDisabled = false
       clearTimeout(this.timer)
       this.timer = setTimeout(() => {
         this.$refs.emojiBox.setAttribute('wheel-disabled', '0')
       }, 300)
-      // this.emojiCarouselDisabled = false
     },
     insertSpecialText(text) {
       if (this.disabled) return
@@ -298,7 +348,6 @@ export default {
         this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
         // 设为非折叠状态
         this.rangeOfInputBox.collapse(false)
-        // return this.$refs.inputBox.appendChild(emojiEl)
       }
       // 判断是否折叠状态
       if (this.rangeOfInputBox.collapsed) {
@@ -334,7 +383,6 @@ export default {
       if (target.tagName.toLowerCase() === 'img') {
         const range = new Range()
         range.setStartBefore(target)
-        // range.setStartAfter(target);
         range.collapse(true)
         document.getSelection().removeAllRanges()
         document.getSelection().addRange(range)
@@ -359,6 +407,145 @@ export default {
       this.replyShow = true
       this.replyName = name
       this.replyContent = content
+    },
+    choose(v) {
+      this.atShow = false
+      if (v == 'all') {
+        this.atContactSerialNos.unshift('all')
+      } else {
+        this.atContactSerialNos.push(v.tjId)
+      }
+      this.filterAtList = this.atList
+      this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML.replace(this.$refs.messagInput.innerHTML.split('@').pop(), '')
+      this.rangeOfInputBox = new Range()
+      this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      this.rangeOfInputBox.collapse(false)
+      let replaceText = v == 'all' ? '所有人' : v.wechatName
+      let b = '@' + replaceText
+      this.arr.push(b)
+      let spanNode = document.createTextNode(replaceText)
+      if (this.rangeOfInputBox.collapsed) {
+        this.rangeOfInputBox.insertNode(spanNode)
+      } else {
+        this.rangeOfInputBox.deleteContents()
+        this.rangeOfInputBox.insertNode(spanNode)
+      }
+      this.changeText()
+      this.rangeOfInputBox.collapse(false)
+      // 光标选中当前插入位置
+      if (this.rangeOfInputBox) {
+        const selection = getSelection()
+        selection.removeAllRanges()
+        selection.addRange(this.rangeOfInputBox)
+      }
+    },
+    onCompositionStart() {
+      this.inputFlag = false
+    },
+    onCompositionEnd() {
+      this.inputFlag = true
+    },
+    sendTextMsg(curTextList) {
+      //发送文本消息
+      if (curTextList.length == 0) return
+      for (let i = 0; i < curTextList.length; i++) {
+        if (!curTextList[i]) return
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        let content = null
+        //引用消息只会发出第一条文本消息
+        if (i == 0) {
+          if (chatType == 1) {
+            //个微
+            content = this.replyContent ? this.replyContent + '\n- - - - - - - - - - - - - - -\n' + curTextList[i] : curTextList[i]
+          } else {
+            content = this.replyContent ? this.replyContent + '\n------\n' + curTextList[i] : curTextList[i]
+          }
+        } else {
+          content = curTextList[i]
+        }
+        msg.content = content
+        // 判断@id
+        if (chatType == 2) {
+          let copyIds = []
+          this.atContactSerialNos.forEach(item => {
+            if (item == 'all') copyIds.unshift('all')
+            this.atList.forEach(val => {
+              if (val.tjId == item) {
+                // console.log(val.wechatName, curTextList[i].indexOf(val.wechatName) > -1, curTextList[i], curTextList[i].indexOf(val.wechatName), this.atContactSerialNos.indexOf(val.tjId))
+                if (curTextList[i] && curTextList[i].indexOf(val.wechatName) == -1) {
+                  // this.atContactSerialNos.splice(this.atContactSerialNos.indexOf(val.tjId), 1)
+                } else {
+                  copyIds.push(val.tjId)
+                }
+              }
+            })
+          })
+          msg.atLocation = 1
+          if (copyIds.includes('all')) {
+            copyIds.shift()
+            msg.atContactSerialNos = copyIds
+            msg.at = 1
+          } else {
+            msg.atContactSerialNos = copyIds
+            msg.at = copyIds.length == 0 ? 0 : 2
+          }
+          msg.grpContent = content
+          this.arr.forEach(val => {
+            //content.indexOf(val) == 0  content.length == content.indexOf(val) + val.length
+            if (content.indexOf(val) == 0) msg.atLocation = 0
+            content = content.replace(val, '')
+          })
+          msg.content = content
+        }
+        msg.msgType = 'text'
+        // console.log(msg.grpContent, msg.content, msg.atContactSerialNos)
+        console.log(msg)
+        this[types.SEND_MSG](msg)
+      }
+    },
+    sendImgMsg(imgList) {
+      if (imgList.length == 0) return
+      for (let i = 0; i < imgList.length; i++) {
+        let { contactId, tjId } = this.$route.params
+        let { wechatName, wechatAvatar } = this.userInfo.info
+        let { chatType } = this.$route.query
+        let msg = {
+          chatId: contactId,
+          chatType: chatType,
+          fromId: tjId,
+          toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+          sender: {
+            wechatName: wechatName,
+            wechatAvatar: wechatAvatar
+          },
+          notResend: true
+        }
+        msg.msgType = 'image'
+        filesLibrary.getImgUrl({ base64_image: imgList[i] }).then(res => {
+          if (res.code == 200) {
+            msg.url = res.data.url
+            console.log(msg, 'ImgMsg')
+            this[types.SEND_MSG](msg)
+          }
+        })
+      }
+    },
+    paste(e) {
+      console.log(e, 111)
+      console.table(e.clipboardData.items)
     }
   },
   mounted() {
@@ -366,16 +553,19 @@ export default {
     this.parentNode = document.getElementById('emoji-parent')
     this.getEndFocus()
     this.value && this.insertEmoji(this.value, false)
+    this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
+    this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
+    this.$refs.messagInput.addEventListener('paste', this.paste)
   },
   watch: {
     $route: {
       immediate: true,
       handler() {
-        // console.log('value-1')
         this.editorText = ''
         this.replyContent = ''
         this.replyName = ''
         this.replyShow = false
+        this.atShow = false
         this.$nextTick(() => {
           this.$refs.messagInput.innerHTML = ''
         })
@@ -384,15 +574,17 @@ export default {
     value: {
       immediate: true,
       handler(n) {
-        // console.log('value-change', n)
         // let container = document.createElement('div')
-        // n = n + ''
-        // n = n.replace(/<br>/, '')
         // container.innerHTML = n
         // this.editorText = container.innerText
-        // console.log(this.editorText, n)
         // container = null
         this.editorText = n
+      }
+    },
+    atList: {
+      immediate: true,
+      handler: function() {
+        this.filterAtList = this.atList
       }
     }
   }
@@ -402,6 +594,7 @@ export default {
 .meEditor {
   width: 100%;
   height: 160px;
+  position: relative;
   display: flex;
   flex-direction: column;
 
@@ -453,14 +646,18 @@ export default {
     .message-input {
       width: 100%;
       max-width: 100%;
-      // flex: 1 1 0;
-      // overflow-y: auto;
       min-height: 21px;
       text-align: left;
       padding: 0 24px;
-      // border: 1px solid #ccc;
-      word-break: break-word;
       position: relative;
+      word-break: break-word;
+      letter-spacing: 1px;
+      /deep/ img {
+        max-width: 200px;
+        width: auto;
+        height: 60px;
+        vertical-align: bottom;
+      }
       &:focus {
         outline: none;
       }
@@ -521,10 +718,81 @@ export default {
       }
     }
   }
+  .at-container {
+    position: absolute;
+    left: 0;
+    top: -320px;
+    width: 320px;
+    height: 320px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 22px;
+    overflow-y: auto;
+    .at-all {
+      display: flex;
+      cursor: pointer;
+      img {
+        margin-right: 12px;
+      }
+      &:hover {
+        background: #f0f1f2;
+      }
+    }
+    .note {
+      text-align: left;
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+    .at-item {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 8px;
+      .name {
+        margin-left: 12px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-department {
+        color: #ff8000;
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 400;
+        margin-left: 8px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        max-width: 45px;
+        line-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .member-wechat {
+        color: #0ead63;
+        font-size: 12px;
+        margin-left: 8px;
+        line-height: 18px;
+        margin-top: 9px;
+        font-weight: 400;
+        font-family: PingFangSC-Regular, PingFang SC;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      &:hover {
+        background: #f0f1f2;
+      }
+    }
+  }
 }
 /deep/ .ant-modal-content {
-  // box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  // border: 1px solid rgba(0, 0, 0, 0.45);
   width: 480px;
   height: 200px;
   padding-top: 60px;
@@ -580,8 +848,6 @@ export default {
   padding-bottom: 10px;
 }
 .emoji-content {
-  // background-color: #3a4d76;
-  // width: 400px;
   width: 360px;
   height: 340px;
   overflow: hidden;
@@ -602,9 +868,6 @@ export default {
   display: inline-block;
   width: 40px;
   height: 40px;
-  // width: 30px;
-  // height: 30px;
-  // margin: 5px;
   line-height: 40px;
   text-align: center;
   font-size: 22px;
@@ -615,11 +878,5 @@ export default {
   &:hover {
     background-color: #efefef;
   }
-  // img {
-  //   display: inline-block;
-  //   width: 25px;
-  //   height: 25px;
-  //   vertical-align: middle;
-  // }
 }
 </style>

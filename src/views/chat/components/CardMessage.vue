@@ -27,7 +27,7 @@
       </template>
       <template slot="title">
         <a-avatar :src="src" />
-        <span class="bigname">{{ name }}</span>
+        <div class="bigname">{{ name }}</div>
         <!-- <img v-if="allInfo.gender == 1" src="../../assets/icon_men.png" alt="" />
         <img v-if="allInfo.gender == 2" src="../../assets/icon_women.png" alt="" /> -->
         <br />
@@ -78,6 +78,8 @@ export default {
     padding: 40px;
   }
 
+  &.ant-popover.ant-popover-placement-topLeft,
+  &.ant-popover.ant-popover-placement-topRight,
   &.ant-popover.ant-popover-placement-right,
   &.ant-popover.ant-popover-placement-left {
     // position: absolute;
@@ -97,6 +99,7 @@ export default {
         display: none;
       }
       .ant-popover-title {
+        display: flex;
         height: 88px;
         position: relative;
         padding: 0;
@@ -108,13 +111,20 @@ export default {
         }
 
         .bigname {
-          margin-left: 20px;
+          display: flex;
+          align-items: center;
+          margin-left: 80px;
           margin-right: 12px;
           font-size: 24px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
           line-height: 36px;
           position: absolute;
+          img {
+            width: 16px;
+            height: 16px;
+            margin-left: 12px;
+          }
         }
         .green {
           margin-left: 86px;
@@ -126,6 +136,21 @@ export default {
           font-weight: 400;
           position: absolute;
           bottom: 22px;
+        }
+        .department {
+          margin-left: 86px;
+          font-size: 14px;
+          font-weight: 400;
+          color: #ff8000;
+          line-height: 22px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          position: absolute;
+          bottom: 22px;
+          max-width: 170px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
       .ant-popover-inner-content {
@@ -162,6 +187,20 @@ export default {
               color: rgba(0, 0, 0, 0.85);
               line-height: 22px;
             }
+          }
+          .addBtn {
+            width: 280px;
+            height: 32px;
+            background: #1d61ef;
+            border-radius: 4px;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: PingFangSC, PingFangSC-Regular;
+            font-weight: 400;
+            color: #ffffff;
+            line-height: 22px;
           }
         }
       }

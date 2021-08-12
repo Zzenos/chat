@@ -11,7 +11,7 @@ import accountDetails from './accountDetails'
 vue.use(vuex)
 
 let plugins = [vuexLocal.plugin]
-if (process.env.VUE_APP_MODE !== 'production') {
+if (process.env.VUE_APP_MODE === 'development') {
   plugins.push(createLogger())
 }
 const store = new vuex.Store({

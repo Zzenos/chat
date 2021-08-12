@@ -35,6 +35,14 @@ export default {
       } else {
         state.chatList[tjId].splice(0, 0, ...filterLsit)
       }
+    },
+    [types.UPDATE_CHAT_TOP_STATUS](state, chatInfo) {
+      const tjId = chatInfo.tjId
+      // 找到索引，替换
+      const index = state.chatList[tjId].findIndex(i => {
+        return i.wechatId === chatInfo.chatList[0].wechatId
+      })
+      state.chatList[tjId].splice(index, 1, ...chatInfo.chatList)
     }
   },
   actions: {},
@@ -45,25 +53,30 @@ export default {
 
         // 获取当前会话消息，计算未读消息数量，获取最后一条消息，并排序
         if (chatList && chatList.length) {
-          return orderBy(
-            chatList,
-            function(i) {
+          chatList = chatList.map(i => {
+            try {
               const curChatMsgs = rootState.messages.chatMsgs[i.chatId] || []
-              const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId)
+              const curContactInfo = rootGetters.contactInfoByWechatId(tjId, i.wechatId, i.chatType)
               const curChatInfo = rootState.messages.chatInfo[tjId] ? rootState.messages.chatInfo[tjId][i.chatId] : null
               i.unreadCount = curChatInfo ? curChatInfo.unreadCount : 0
-              i.lost = curContactInfo ? curContactInfo.lost : 0 // 0-未流失，1-流失
               i.lastMsg = curChatMsgs.length
                 ? curChatMsgs[curChatMsgs.length - 1]
                 : {
                     time: i.lastActiveTime,
                     defaultContent: ''
                   }
-              i.lastMsg.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
-              return i.lastMsg.sortTime
-            },
-            ['desc']
-          )
+              i.sortTime = parseInt(i.lastMsg.time / 10000) // 排序的粒度为10秒
+              if (curContactInfo) {
+                i = { ...i, ...curContactInfo }
+              }
+              i.isTop = i.isTop ? 1 : 0
+              i.lost = curContactInfo && curContactInfo.lost ? curContactInfo.lost : 0 // 0-未流失，1-流失
+              return i
+            } catch (error) {
+              console.log(error)
+            }
+          })
+          return orderBy(chatList, ['isTop', 'sortTime'], ['desc', 'desc'])
         } else {
           Vue.set(state.chatList, `${tjId}`, [])
           return state.chatList[tjId]
