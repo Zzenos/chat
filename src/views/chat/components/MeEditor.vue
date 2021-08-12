@@ -677,6 +677,11 @@ export default {
         line-height: 1.5 !important;
         background-color: transparent !important;
         font-weight: normal !important;
+        // white-space: pre-wrap !important;
+      }
+      // fix: 外部粘贴的带格式内容引起的换行问题
+      /deep/ * {
+        white-space: pre-wrap !important;
       }
     }
     .reply {
