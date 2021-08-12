@@ -14,14 +14,33 @@
             @visibleChange="hideEmojiSelect"
           >
             <div slot="content" class="emoji-content">
-              <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
-                <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
-                  <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
-                </div>
-                <div slot="customPaging">
-                  <span class="carousel-circle"></span>
-                </div>
-              </a-carousel>
+              <a-tabs default-active-key="aa" :tabBarGutter="5" type="card" tab-position="bottom">
+                <a-tab-pane key="aa">
+                  <span slot="tab">
+                    <a-icon type="smile" />
+                  </span>
+                  <div style="height:346px; overflow:hidden;">
+                    <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
+                      <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
+                        <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
+                      </div>
+                      <div slot="customPaging">
+                        <span class="carousel-circle"></span>
+                      </div>
+                    </a-carousel>
+                  </div>
+                </a-tab-pane>
+                <a-tab-pane key="bb">
+                  <span slot="tab">
+                    <a-icon type="heart" />
+                  </span>
+                  <div class="heart-wrap" style="height:346px;overflow-y:auto;">
+                    <div class="heart-item">
+                      <img src="http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif" alt="" />
+                    </div>
+                  </div>
+                </a-tab-pane>
+              </a-tabs>
             </div>
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
@@ -103,7 +122,7 @@
 </template>
 <script>
 import deepClone from 'lodash/cloneDeep'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import Upload from '@/views/chat/components/Upload.vue'
 import filesLibrary from '@/apis/library'
@@ -188,6 +207,7 @@ export default {
   },
   methods: {
     ...mapActions([types.SEND_MSG]),
+    ...mapMutations(['setDraft', 'clearDraft']),
     inputEvent() {
       // console.log('send', e)
     },
@@ -237,6 +257,7 @@ export default {
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
         this.closeReply()
+        this.clearDraft({ chatId: this.$route.query.chatId })
       }
     },
     // clear() {
@@ -314,6 +335,8 @@ export default {
         const value = deepClone(this.$refs.messagInput.innerText)
         this.value = value
         this.editorText = this.value
+        // console.log(this.editorText, '----', this.$route.query.chatId)
+        this.setDraft({ chatId: this.$route.query.chatId, draft: this.editorText })
         this.filterAtList = this.atList
         if (this.atShow) {
           this.filterAtList = this.value && this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
@@ -546,6 +569,20 @@ export default {
     paste(e) {
       console.log(e, 111)
       console.table(e.clipboardData.items)
+    },
+    addRecallMsg(v) {
+      this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML + v
+      this.focus()
+    },
+    focus() {
+      this.$refs.messagInput.focus()
+      this.rangeOfInputBox = new Range()
+      this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      this.rangeOfInputBox.collapse(false)
+      this.changeText()
+      const selection = getSelection()
+      selection.removeAllRanges()
+      selection.addRange(this.rangeOfInputBox)
     }
   },
   mounted() {
@@ -567,7 +604,8 @@ export default {
         this.replyShow = false
         this.atShow = false
         this.$nextTick(() => {
-          this.$refs.messagInput.innerHTML = ''
+          this.$refs.messagInput.innerHTML = this.$store.getters.getDraftByChatId(this.$route.query.chatId)
+          this.focus()
         })
       }
     },
@@ -846,11 +884,19 @@ export default {
 }
 .emoji-page {
   padding-bottom: 10px;
+  height: 340px;
+  overflow: hidden;
 }
 .emoji-content {
   width: 360px;
-  height: 340px;
+  height: 405px;
   overflow: hidden;
+  /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab {
+    border-top: 1px solid #e8e8e8;
+  }
+  /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab-active {
+    padding-top: 0px;
+  }
 }
 .carousel-circle {
   display: inline-block;
@@ -877,6 +923,22 @@ export default {
   cursor: pointer;
   &:hover {
     background-color: #efefef;
+  }
+}
+.heart-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  height: 346px;
+  overflow-y: auto;
+  .heart-item {
+    display: flex;
+    width: 80px;
+    height: 80px;
+    margin-right: 5px;
+    background-color: #f1f7fe;
+    &:nth-child(4n) {
+      margin-right: 0px;
+    }
   }
 }
 </style>

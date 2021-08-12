@@ -21,7 +21,7 @@
 </template>
 <script>
 export default {
-  name: 'TextMessage',
+  name: 'ReplyMessage',
   props: {
     content: {
       type: String,
