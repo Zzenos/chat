@@ -57,11 +57,13 @@
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sys-info" v-if="item.msgType == 'system'" v-text="item.content"></div>
+            <div class="sys-info" v-if="item.msgType == 'system'" v-html="item.content" @click="reEdit(item)"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
-              <!-- <div v-if="isOpen"> v </div> -->
+              <div v-if="multiSelect.isOpen && item.msgType !== 'videoNum'" class="select-box" :class="{ selected: verifyMultiSelect(item) }" @click="triggerMultiSelect(item)">
+                <a-icon type="check-circle" />
+              </div>
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
@@ -176,7 +178,8 @@
           <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
         </div>
         <div class="foot">
-          <me-editor :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
+          <multi-select-modal v-if="multiSelect.isOpen" v-model="multiSelect.items.length" @event="handleMultiMode" />
+          <me-editor v-else :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -307,6 +310,7 @@ import ChatRecordModal from '@/views/chat/components/ChatRecordModal'
 import TransmitMsgModal from '@/views/chat/components/TransmitMsgModal'
 import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
+import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -328,7 +332,8 @@ export default {
     LocationMessage,
     VideoNumMessage,
     OperateGroupMeb,
-    GroupMember
+    GroupMember,
+    MultiSelectModal
   },
   data() {
     return {
@@ -366,7 +371,12 @@ export default {
       editGroupNameVisible: {},
       editableGroupName: false,
       loadingHistory: false,
-      groupData: ''
+      groupData: '',
+      multiSelect: {
+        isOpen: false,
+        items: [],
+        mode: 0
+      }
     }
   },
   mounted() {
@@ -473,6 +483,15 @@ export default {
         customClass: 'cus-contextmenu-item',
         onClick: () => {
           this.replyRecords(index, item)
+        }
+      })
+
+      menus.push({
+        label: '多选',
+        icon: 'finished',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          this.openMultiSelect()
         }
       })
 
@@ -590,6 +609,61 @@ export default {
     },
     getGroupDetail() {
       this[types.PULL_GROUP_DETAILS]({ tjId: this.tjId, groupId: this.wechatId })
+    },
+    reEdit(item) {
+      // console.log(item.content)
+      //撤回了一条消息<span onclick="reEdit()" style="color:#1d61ef;cursor:pointer;">重新编辑</span>
+      if (item.content.indexOf('撤回了一条消息') > -1) {
+        let m = this.$store.getters.getRecallMsg(item.seq)
+        if (!m || m.msgType !== 'text') return
+        this.$refs.editor.addRecallMsg(m.content)
+      }
+    },
+    openMultiSelect() {
+      this.multiSelect.isOpen = true
+    },
+    verifyMultiSelect(i) {
+      return this.multiSelect.items.some(item => item.msgId === i.msgId)
+    },
+    triggerMultiSelect(v) {
+      // let i = this.multiSelect.items.some(item => item.msgId === v.msgId)
+      let flag = false
+      let index = 0
+      this.multiSelect.items.forEach((item, i) => {
+        if (item.msgId === v.msgId) {
+          flag = true
+          index = i
+        }
+      })
+      if (flag) {
+        console.log('true-1', this.multiSelect.items)
+        this.multiSelect.items.splice(index, 1)
+        console.log('true-2', this.multiSelect.items)
+      } else {
+        if (this.multiSelect.items.length >= 30) {
+          this.$message.warning('批量操作最大支持30条数据')
+          return false
+        }
+        console.log('false-1', this.multiSelect.items)
+        this.multiSelect.items.push(v)
+        console.log('false-2', this.multiSelect.items)
+      }
+    },
+    handleMultiMode(value) {
+      console.log(value, 'value')
+      if (value === 'close') {
+        this.multiSelect.isOpen = false
+        this.multiSelect.items = []
+      }
+      if (value === 'forward') {
+        console.log(this.multiSelect.items)
+        // this.msgInfo = this.multiSelect.items
+        // if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
+        //   this.$message.warning('该类型消息暂不支持转发')
+        //   return
+        // }
+        // this.transmitMsgVisible = true
+      }
     }
   },
   watch: {
@@ -707,6 +781,18 @@ export default {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.tjId ? 'right' : 'left'
+        // 系统消息 300s以内 发送方 indexOf('撤回了一条消息') 可重新编辑
+        if (
+          item.msgType == 'system' &&
+          item.content.indexOf('撤回了一条消息') > -1 &&
+          new Date().getTime() / 1000 - item.time / 1000 < 300 &&
+          item.fromId == this.tjId &&
+          item.content.indexOf('重新编辑') == -1 &&
+          this.$store.getters.getRecallMsg(item.seq) &&
+          this.$store.getters.getRecallMsg(item.seq).msgType == 'text'
+        ) {
+          item.content = item.content + '<span style="color:#1d61ef;cursor:pointer;">重新编辑</span>'
+        }
         return item
       })
     },
@@ -848,6 +934,7 @@ export default {
           line-height: 18px;
           text-align: center;
           margin: 20px auto;
+          cursor: pointer;
         }
 
         .message-box {
@@ -856,6 +943,16 @@ export default {
           margin-top: 20px;
           display: flex;
           flex-direction: row;
+
+          .select-box {
+            align-self: center;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 22px;
+            &.selected {
+              color: #409eff;
+            }
+          }
 
           .avatar-column {
             width: 36px;
