@@ -26,6 +26,8 @@ export const ADD_GROUP_MEMBER = 'ADD_GROUP_MEMBER'
 export const SEND_MSG = 'SEND_MSG'
 // 撤回消息
 export const RECALL_MSG = 'RECALL_MSG'
+
+export const CACHE_RECALL_MSG = 'CACHE_RECALL_MSG'
 //
 export const CACHE_SENDING_MSG = 'CACHE_SENDING_MSG_'
 //

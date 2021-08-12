@@ -21,7 +21,8 @@ export default {
     chatMsgs: {},
     sendingMsgHash: {},
     chatMsgHash: {},
-    chatInfo: {}
+    chatInfo: {},
+    recallMsg: {}
   },
   mutations: {
     // 新会话
@@ -138,6 +139,11 @@ export default {
       if (state.chatMsgHash[msg.msgId]) {
         Vue.delete(state.chatMsgHash, `${msg.msgId}`, msg)
       }
+    },
+    // 撤回消息缓存
+    [types.CACHE_RECALL_MSG](state, msg) {
+      // if (state.chatMsgHash[msg.msgId]) return
+      Vue.set(state.recallMsg, `${msg.seq}`, msg)
     }
   },
   actions: {
@@ -269,6 +275,7 @@ export default {
               commit(types.ClEAR_CACHED_MSG, data.msg)
               // 清除会话里的消息
               commit(types.CLEAR_HISTORY_MSG, data.msg)
+              commit(types.CACHE_RECALL_MSG, data.msg)
               resolve(res.data)
             }
           })
@@ -286,6 +293,11 @@ export default {
     getMsgsUnread: state => {
       return chatId => {
         return state.chatMsgs[chatId] ? state.chatMsgs[chatId].filter(ele => ele.unread) : []
+      }
+    },
+    getRecallMsg: state => {
+      return seq => {
+        return state.recallMsg[seq]
       }
     }
   }
