@@ -592,10 +592,6 @@ export default {
         })
       }
     },
-    paste(e) {
-      console.log(e, 111)
-      console.table(e.clipboardData.items)
-    },
     addRecallMsg(v) {
       this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML + v
       this.focus()
@@ -622,7 +618,6 @@ export default {
     this.value && this.insertEmoji(this.value, false)
     this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
     this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
-    this.$refs.messagInput.addEventListener('paste', this.paste)
   },
   watch: {
     $route: {
@@ -745,6 +740,11 @@ export default {
         line-height: 1.5 !important;
         background-color: transparent !important;
         font-weight: normal !important;
+        // white-space: pre-wrap !important;
+      }
+      // fix: 外部粘贴的带格式内容引起的换行问题
+      /deep/ * {
+        white-space: pre-wrap !important;
       }
     }
     .reply {

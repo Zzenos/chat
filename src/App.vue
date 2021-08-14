@@ -11,6 +11,20 @@ export default {
   name: 'App',
   components: {
     VideoModal
+  },
+  methods: {
+    copy(e) {
+      const selection = window.getSelection()
+      // console.log(selection)
+      e.clipboardData.setData('text', `${selection}`)
+      e.preventDefault()
+    }
+  },
+  created() {
+    document.addEventListener('copy', this.copy)
+  },
+  beforeDestroy() {
+    document.removeEventListener('copy', this.copy)
   }
 }
 </script>
