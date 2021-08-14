@@ -19,7 +19,7 @@
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
           <!-- 需要根据消息类型，处理显示的内容 v-show="curChat.chatId === item.chatId || !getDraft(item.chatId)" -->
-          <div v-if="curChat.chatId !== item.chatId && getDraft(item.chatId)">
+          <div class="msg ellipsis" v-if="curChat.chatId !== item.chatId && getDraft(item.chatId)">
             <span style="color:red">[草稿] </span>
             <span v-text="getDraft(item.chatId)"></span>
           </div>
