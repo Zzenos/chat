@@ -18,6 +18,10 @@ export default {
         orderDynamic: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/orderDynamic.html`
           // src: `http://localhost:9999/app/orderDynamic.html`
+        },
+        mediaLibrary: {
+          // src: `${process.env.VUE_APP_LOGIN_URL}/app/mediaLibrary.html`
+          src: `http://localhost:9999/app/mediaLibrary.html`
         }
       },
       // 用户信息

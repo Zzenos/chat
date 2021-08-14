@@ -268,6 +268,11 @@
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
+        <!-- <a-tab-pane key="mediaLibrary" tab="素材库">
+          <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane> -->
       </a-tabs>
     </div>
   </div>
@@ -537,6 +542,7 @@ export default {
     // 转发
     transmitMsg() {
       this.transmitMsgVisible = false
+      this.closeMultiSelect()
     },
     //聊天记录传入数据infoData
     showRecordModal() {
@@ -652,8 +658,7 @@ export default {
     handleMultiMode(value) {
       console.log(value, 'value')
       if (value === 'close') {
-        this.multiSelect.isOpen = false
-        this.multiSelect.items = []
+        this.closeMultiSelect()
       }
       if (value === 'forward') {
         console.log(this.multiSelect.items)
@@ -664,6 +669,10 @@ export default {
         // }
         // this.transmitMsgVisible = true
       }
+    },
+    closeMultiSelect() {
+      this.multiSelect.isOpen = false
+      this.multiSelect.items = []
     }
   },
   watch: {
@@ -1099,10 +1108,15 @@ export default {
           }
           &:nth-of-type(2) {
             border-radius: 0px;
-            border-right: 0px;
+            // border-right: 0px;
             border-left: 0px;
           }
           &:nth-of-type(3) {
+            border-radius: 0px;
+            border-right: 0px;
+            border-left: 0px;
+          }
+          &:nth-of-type(4) {
             border-radius: 0px 4px 4px 0px;
           }
           &:nth-last-child(1) {

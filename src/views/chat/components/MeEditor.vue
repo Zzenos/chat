@@ -35,8 +35,8 @@
                     <a-icon type="heart" />
                   </span>
                   <div class="heart-wrap" style="height:346px;overflow-y:auto;">
-                    <div class="heart-item">
-                      <img src="http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif" alt="" />
+                    <div class="heart-item" v-for="(item, index) in heartList" :key="index">
+                      <img :src="item.url" alt="" @click="sendHeartEmoji(item)" />
                     </div>
                   </div>
                 </a-tab-pane>
@@ -191,7 +191,33 @@ export default {
       filterAtList: [],
       atContactSerialNos: [],
       inputFlag: true,
-      arr: []
+      arr: [],
+      heartList: [
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' }
+      ]
     }
   },
   directives: {
@@ -583,6 +609,10 @@ export default {
       const selection = getSelection()
       selection.removeAllRanges()
       selection.addRange(this.rangeOfInputBox)
+    },
+    sendHeartEmoji(item) {
+      this.emojiVisible = false
+      console.log(item, item.url)
     }
   },
   mounted() {
@@ -928,14 +958,18 @@ export default {
 .heart-wrap {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   height: 346px;
   overflow-y: auto;
   .heart-item {
     display: flex;
+    justify-content: center;
     width: 80px;
     height: 80px;
     margin-right: 5px;
-    background-color: #f1f7fe;
+    margin-bottom: 5px;
+    overflow: hidden;
+    // background-color: #f1f7fe;
     &:nth-child(4n) {
       margin-right: 0px;
     }
