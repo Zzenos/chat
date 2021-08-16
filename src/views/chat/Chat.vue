@@ -61,8 +61,8 @@
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
-              <div v-if="multiSelect.isOpen && item.msgType !== 'videoNum'" class="select-box" :class="{ selected: verifyMultiSelect(item) }" @click="triggerMultiSelect(item)">
-                <a-icon type="check-circle" />
+              <div v-if="multiSelect.isOpen && item.msgType !== 'videoNum'" class="select-box" :class="{ selected: verifyMultiSelect(item) }" @click="triggerMultiSelect($event, item)">
+                <a-icon class="select-icon" type="check-circle" />
               </div>
               <!-- 头像 -->
               <div class="avatar-column">
@@ -631,8 +631,12 @@ export default {
     verifyMultiSelect(i) {
       return this.multiSelect.items.some(item => item.msgId === i.msgId)
     },
-    triggerMultiSelect(v) {
-      // let i = this.multiSelect.items.some(item => item.msgId === v.msgId)
+    triggerMultiSelect(e, v) {
+      // let i = this.multiSelect.items.some(item => item.msgId === v.msgId) ['talk-content', 'text-message', 'SVGAnimatedString']
+      // console.log(e, typeof e.target.className)
+      // if (!['talk-content', 'text-message left', 'text-message right', 'SVGAnimatedString'].includes(e.target.className)) return
+      // if (!this.multiSelect.isOpen) return
+      // console.log(e.target.className, '----', this.multiSelect.isOpen)
       let flag = false
       let index = 0
       this.multiSelect.items.forEach((item, i) => {
@@ -642,17 +646,13 @@ export default {
         }
       })
       if (flag) {
-        console.log('true-1', this.multiSelect.items)
         this.multiSelect.items.splice(index, 1)
-        console.log('true-2', this.multiSelect.items)
       } else {
         if (this.multiSelect.items.length >= 30) {
           this.$message.warning('批量操作最大支持30条数据')
           return false
         }
-        console.log('false-1', this.multiSelect.items)
         this.multiSelect.items.push(v)
-        console.log('false-2', this.multiSelect.items)
       }
     },
     handleMultiMode(value) {
@@ -691,6 +691,7 @@ export default {
         this.company = company
         this.isLost = lost
         this.sendToBottom()
+        this.closeMultiSelect()
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
         this.userInfo = {
@@ -957,7 +958,7 @@ export default {
             align-self: center;
             margin-right: 10px;
             cursor: pointer;
-            font-size: 22px;
+            font-size: 18px;
             &.selected {
               color: #409eff;
             }

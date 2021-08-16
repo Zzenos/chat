@@ -29,7 +29,7 @@ class Msg {
     this.time = msgTime || new Date().getTime() // 发出的消息time为0， 时间戳
     this.seq = seq || 0 //消息序号 0为发出的消息
     this.at = at || 0
-    this.atList = (atList && atList.split(';')) || [] // 接收的@列表 若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
+    this.atList = (atList && atList.split(';')) || '' // 接收的@列表 若多人被@则使用逗号隔开，@全体成员时该指为 'ALL'
     this.atContactSerialNos = atContactSerialNos // 发送的@列表 被@人员的id列表
     this.grpContent = grpContent
     this.unread = unread // 是否已读

@@ -286,18 +286,6 @@ export default {
         this.clearDraft({ chatId: this.$route.query.chatId })
       }
     },
-    // clear() {
-    //   this.draft_text = this.editorText
-    //   this.editorText=''
-    // },
-    //1.先获取当前区域内容存起来 2.清空区域  3.给当前区域赋值草稿内容或者空
-    // let item = findTalk(index_name)
-    // item.draft_text = this.editorText
-    // this.editorText = findTalk(index_name).draft_text || ''
-    // getDraftText(index_name) {
-    //   console.log(index_name)
-    //   this.editorText = ''
-    // }
     changePlaceholder() {
       this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
       this.readonly = true
