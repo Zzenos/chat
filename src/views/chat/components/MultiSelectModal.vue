@@ -40,22 +40,9 @@ export default {
     }
   },
   data() {
-    return {
-      html: '',
-      replyContentAll: false,
-      visible: false
-    }
+    return {}
   },
-  methods: {
-    hide() {
-      this.visible = false
-    }
-  },
-  computed: {
-    placement() {
-      return this.float == 'left' ? 'right' : 'left'
-    }
-  }
+  methods: {}
 }
 </script>
 <style lang="scss" scoped>
