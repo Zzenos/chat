@@ -4,29 +4,23 @@
       <span>已选中：{{ value }} 条消息</span>
     </div>
     <div class="multi-main">
-      <div class="operate-btn">
+      <!-- <div class="operate-btn">
         <div class="icon" @click="$emit('event', 'merge_forward')">
           <img src="@/assets/icon_addmembers.png" alt="" />
         </div>
         <div>合并转发</div>
+      </div> -->
+      <div class="operate-btn">
+        <div class="icon forward" @click="$emit('event', 'forward')"></div>
+        <div class="text">逐条转发</div>
       </div>
       <div class="operate-btn">
-        <div class="icon" @click="$emit('event', 'forward')">
-          <img src="@/assets/icon_addmembers.png" alt="" />
-        </div>
-        <div>逐条转发</div>
+        <div class="icon collect" @click="$emit('event', 'collect')"></div>
+        <div class="text">收藏</div>
       </div>
       <div class="operate-btn">
-        <div class="icon" @click="$emit('event', 'delete')">
-          <img src="@/assets/icon_addmembers.png" alt="" />
-        </div>
-        <div>转发</div>
-      </div>
-      <div class="operate-btn">
-        <div class="icon" @click="$emit('event', 'close')">
-          <img src="@/assets/关闭 (1).png" alt="" />
-        </div>
-        <div>关闭</div>
+        <div class="icon close" @click="$emit('event', 'close')"></div>
+        <div class="text">关闭</div>
       </div>
     </div>
   </div>
@@ -64,6 +58,35 @@ export default {
     align-items: center;
     .operate-btn {
       margin-right: 40px;
+      font-size: 12px;
+      font-family: PingFangSC, PingFangSC-Regular;
+      font-weight: 400;
+      text-align: left;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 18px;
+      .icon {
+        width: 52px;
+        height: 52px;
+        margin-bottom: 8px;
+        border-radius: 50%;
+        background-color: #edeef2;
+        background-position: center center;
+        background-repeat: no-repeat;
+        &.forward {
+          background-image: url('../../../assets/multiselect_icon_forward.png');
+        }
+        &.collect {
+          background-image: url('../../../assets/chat_icon_collection.png');
+        }
+        &.close {
+          background-image: url('../../../assets/关闭 (1).png');
+          background-size: 20px 20px;
+        }
+      }
+      .text {
+        width: 48px;
+        text-align: center;
+      }
     }
   }
 }

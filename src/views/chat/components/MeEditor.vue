@@ -35,6 +35,9 @@
                     <a-icon type="heart" />
                   </span>
                   <div class="heart-wrap" style="height:346px;overflow-y:auto;">
+                    <div class="heart-item">
+                      <img src="@/assets/icon_addmembers.png" alt="" />
+                    </div>
                     <div class="heart-item" v-for="(item, index) in heartList" :key="index">
                       <img :src="item.url" alt="" @click="sendHeartEmoji(item)" />
                     </div>
@@ -69,8 +72,9 @@
           >
           </upload>
         </li>
-        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord($event)">
-          <img src="@/assets/chat_icon_record.png" alt="" />
+        <li v-if="!lost && showRecordClick" class="chat-record">
+          <img src="@/assets/chat_icon_collection.png" class="collection" alt="" @click="showCollectRecord()" />
+          <img src="@/assets/chat_icon_record.png" alt="" @click="showRecord($event)" />
         </li>
         <!-- 客户流失显示 -->
         <li v-if="lost">
@@ -138,10 +142,6 @@ export default {
       type: Function,
       default: () => {}
     },
-    showRecordModal: {
-      type: Function,
-      default: () => {}
-    },
     showRecordClick: {
       type: Boolean,
       default: true
@@ -198,10 +198,13 @@ export default {
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
@@ -211,6 +214,7 @@ export default {
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
+        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
@@ -311,9 +315,8 @@ export default {
       // this.readonly = false
       // console.log('当前网络链接成功')
     },
-    showRecord(e) {
-      console.log('showRecordModal', e)
-      this.showRecordModal()
+    showRecord() {
+      this.$emit('showRecordModal')
     },
     uploaded(e, type) {
       console.log(e, type)
@@ -549,7 +552,7 @@ export default {
         }
         msg.msgType = 'text'
         // console.log(msg.grpContent, msg.content, msg.atContactSerialNos)
-        console.log(msg)
+        // console.log(msg)
         this[types.SEND_MSG](msg)
       }
     },
@@ -597,6 +600,25 @@ export default {
     sendHeartEmoji(item) {
       this.emojiVisible = false
       console.log(item, item.url)
+      let { contactId, tjId } = this.$route.params
+      let { wechatName, wechatAvatar } = this.userInfo.info
+      let sendData = {
+        chatId: contactId,
+        chatType: this.$route.query.chatType,
+        fromId: tjId,
+        toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+        sender: {
+          wechatName: wechatName,
+          wechatAvatar: wechatAvatar
+        },
+        notResend: true
+      }
+      sendData.msgType = 'image'
+      sendData.url = item.url
+      this[types.SEND_MSG](sendData)
+    },
+    showCollectRecord() {
+      this.$emit('showCollectRecord')
     }
   },
   mounted() {
@@ -669,6 +691,9 @@ export default {
         &.chat-record {
           // align-items: flex-end;
           margin-left: auto;
+          .collection {
+            margin-right: 20px;
+          }
         }
       }
     }
@@ -906,14 +931,21 @@ export default {
   overflow: hidden;
 }
 .emoji-content {
-  width: 360px;
+  width: 368px;
   height: 405px;
   overflow: hidden;
   /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab {
+    border: none;
     border-top: 1px solid #e8e8e8;
+    margin-right: 26px !important;
+    .anticon {
+      margin-right: 0px;
+    }
   }
   /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab-active {
     padding-top: 0px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
   }
 }
 .carousel-circle {
@@ -949,16 +981,19 @@ export default {
   align-content: flex-start;
   height: 346px;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .heart-item {
     display: flex;
     justify-content: center;
-    width: 80px;
-    height: 80px;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    width: 60px;
+    height: 60px;
+    margin-right: 16px;
+    margin-bottom: 16px;
     overflow: hidden;
     // background-color: #f1f7fe;
-    &:nth-child(4n) {
+    &:nth-child(5n) {
       margin-right: 0px;
     }
   }

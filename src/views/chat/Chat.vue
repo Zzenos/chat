@@ -179,11 +179,20 @@
         </div>
         <div class="foot">
           <multi-select-modal v-if="multiSelect.isOpen" v-model="multiSelect.items.length" @event="handleMultiMode" />
-          <me-editor v-else :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
+          <me-editor
+            v-else
+            :chatType="chatType"
+            :atList="groupData.members"
+            :sendToBottom="sendToBottom"
+            @showRecordModal="showRecordModal"
+            @showCollectRecord="showCollectRecord"
+            :showRecordClick="!company"
+            ref="editor"
+          />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
-      <chat-record-modal v-if="!company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
+      <chat-record-modal v-if="!company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData" :title="chatRcordTitle" :recordType="recordType"></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </div>
@@ -268,11 +277,11 @@
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
-        <!-- <a-tab-pane key="mediaLibrary" tab="素材库">
+        <a-tab-pane key="mediaLibrary" tab="素材库">
           <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
-        </a-tab-pane> -->
+        </a-tab-pane>
       </a-tabs>
     </div>
   </div>
@@ -381,7 +390,9 @@ export default {
         isOpen: false,
         items: [],
         mode: 0
-      }
+      },
+      chatRcordTitle: '',
+      recordType: 0 // 0 聊天记录 1 收藏记录
     }
   },
   mounted() {
@@ -500,6 +511,15 @@ export default {
         }
       })
 
+      menus.push({
+        label: '收藏',
+        icon: 'collect',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          this.collectMsg([item])
+        }
+      })
+
       this.$contextmenu({
         items: menus,
         event,
@@ -528,7 +548,7 @@ export default {
     },
     forwardRecords(index, item) {
       console.log('转发消息', index, item)
-      this.msgInfo = item
+      this.msgInfo = [item]
       if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
@@ -553,7 +573,23 @@ export default {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
+      this.chatRcordTitle = '聊天记录'
+      this.recordType = 0
       this.chatRecordVisible = true
+    },
+    //收藏的聊天记录
+    showCollectRecord() {
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
+      let info =
+        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
+      this.infoData = {
+        ...info,
+        wechatAccount: { wechatName: accountName, wechatId: accountId }
+      }
+      this.chatRcordTitle = '我的收藏'
+      this.recordType = 1
+      this.chatRecordVisible = true
+      console.log('showCollectRecord', '111')
     },
     translateText(index, item) {
       // console.log(index, item)
@@ -660,19 +696,30 @@ export default {
       if (value === 'close') {
         this.closeMultiSelect()
       }
+      if (value === 'collect') {
+        this.collectMsg(this.multiSelect.items)
+        this.closeMultiSelect()
+      }
       if (value === 'forward') {
         console.log(this.multiSelect.items)
-        // this.msgInfo = this.multiSelect.items
+        this.msgInfo = this.multiSelect.items
         // if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         //   this.$message.warning('该类型消息暂不支持转发')
         //   return
         // }
-        // this.transmitMsgVisible = true
+        this.transmitMsgVisible = true
       }
     },
     closeMultiSelect() {
       this.multiSelect.isOpen = false
       this.multiSelect.items = []
+    },
+    collectMsg(v) {
+      console.log(v)
+      // v.forEach(item => {
+      //   // api.collect(item)
+      //   console.log(item)
+      // })
     }
   },
   watch: {
@@ -1093,41 +1140,54 @@ export default {
         }
       }
     }
+    /deep/.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
+      height: 80px;
+    }
     /deep/.ant-tabs-bar {
       margin: 0;
       margin-bottom: 20px;
       border-bottom: none;
       .ant-tabs-nav {
-        .ant-tabs-tab {
-          border-color: #1d61ef;
-          background: #fff;
-          margin: 0 !important;
-          font-size: 14px;
-          padding: 0px 15px;
-          &:nth-of-type(1) {
-            border-radius: 4px 0px 0px 4px;
+        > div {
+          display: flex;
+          flex-wrap: wrap;
+          // justify-content: center;
+          align-content: flex-start;
+          padding-left: 14px;
+          .ant-tabs-tab {
+            width: 107px;
+            box-sizing: border-box;
+            border-color: #1d61ef;
+            background: #fff;
+            margin: 0 !important;
+            font-size: 14px;
+            padding: 0px 15px;
+            &:nth-of-type(1) {
+              border-radius: 4px 0px 0px 4px;
+            }
+            &:nth-of-type(2) {
+              border-radius: 0px;
+              border-left: 0px;
+            }
+            &:nth-of-type(3) {
+              border-radius: 0px 4px 4px 0px;
+              border-left: 0px;
+            }
+            &:nth-of-type(4) {
+              border-radius: 0px 0px 0px 4px;
+            }
+            &:nth-of-type(3n + 4) {
+              border-radius: 0px 0px 0px 4px !important;
+            }
+            // &:nth-last-child(1) {
+            //   border-radius: 0px 4px 4px 0px !important;
+            //   border-right: 1px solid #1d61ef !important;
+            // }
           }
-          &:nth-of-type(2) {
-            border-radius: 0px;
-            // border-right: 0px;
-            border-left: 0px;
+          .ant-tabs-tab-active {
+            background: #1d61ef;
+            color: #fff;
           }
-          &:nth-of-type(3) {
-            border-radius: 0px;
-            border-right: 0px;
-            border-left: 0px;
-          }
-          &:nth-of-type(4) {
-            border-radius: 0px 4px 4px 0px;
-          }
-          &:nth-last-child(1) {
-            border-radius: 0px 4px 4px 0px !important;
-            border-right: 1px solid #1d61ef !important;
-          }
-        }
-        .ant-tabs-tab-active {
-          background: #1d61ef;
-          color: #fff;
         }
       }
       // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {

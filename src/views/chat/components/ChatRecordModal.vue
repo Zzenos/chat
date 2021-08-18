@@ -1,6 +1,6 @@
 <template>
-  <a-modal title="聊天记录" width="960px" :visible="visible" :footer="null" @cancel="handleCancel" class="chat-record_modal" :bodyStyle="{ padding: '20px 0px' }" :maskClosable="false">
-    <div class="record-modal_top" v-if="infoData">
+  <a-modal :title="title" width="960px" :visible="visible" :footer="null" @cancel="handleCancel" class="chat-record_modal" :bodyStyle="{ padding: '20px 0px' }" :maskClosable="false">
+    <div class="record-modal_top" v-if="infoData && recordType == 0">
       <template v-if="type">
         <!-- <svg-icon icon-class="icon-group" class="info-avatar" /> -->
         <img :src="infoData.group && infoData.group.avatar" class="info-avatar" />
@@ -49,7 +49,7 @@ import { exportFile } from '@/util/util'
 import ChatRecordItem from './ChatRecordItem.vue'
 
 export default {
-  props: ['visible', 'type', 'infoData'],
+  props: ['visible', 'type', 'infoData', 'title', 'recordType'],
   mixins: [disabledDateRangeMixin],
   components: {
     ChatRecordItem
