@@ -718,9 +718,8 @@ export default {
     },
     collectMsg(v) {
       v.forEach(item => {
-        // item.msgId.split('&').pop()
-        let id = { msgId: item.msgId }
-        console.log(id, 'id')
+        // item.msgId.split('&')
+        let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
       })
     }

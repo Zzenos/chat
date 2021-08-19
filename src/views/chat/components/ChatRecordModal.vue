@@ -272,7 +272,7 @@ export default {
         customerUserId: this.customerUserId,
         chatId: this.chatId,
         ...this.chatRecordParams,
-        isCollect: 1
+        isCollect: this.recordType
       }
       return api
         .getChatRecordList(params)
