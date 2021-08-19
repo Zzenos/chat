@@ -219,7 +219,8 @@ export default {
         chatId: this.chatId,
         nameSearch,
         pageSize,
-        pageNum
+        pageNum,
+        isCollect: this.recordType
       }
       if (date.length) {
         searchData.startDate = date[0]
