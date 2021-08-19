@@ -8,8 +8,8 @@ export default {
       // 侧边栏配置
       sidebarConfig: {
         customerInfo: {
-          src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
-          // src: `http://localhost:9999/app/cusPortrait.html`
+          // src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
+          src: `http://localhost:9999/app/cusPortrait.html`
         },
         verbalTrick: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/library.html`
@@ -122,7 +122,7 @@ export default {
             default:
               break
           }
-          this.msgInfo = data
+          this.msgInfo = [data]
           this.transmitMsgVisible = true
           break
 

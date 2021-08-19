@@ -231,33 +231,40 @@ export default {
     [types.SEND_MSG]: {
       // root: true,
       handler: ({ commit, dispatch }, data) => {
-        const newMsg = getSendMsg(data, data.notResend)
+        if (Object.prototype.toString.call(data) !== '[object Array]') {
+          data = [data]
+        }
+        let newMsg = data.map(item => {
+          return getSendMsg(item, item.notResend)
+        })
         Zsocket.emit('msg_send', newMsg, ack => {
           // 找到对应的消息的息cliMsgId，并修改该消息的msgId和消息状态
           if (ack) {
             dispatch(types.DISTRIBUTE_MSG, ack.data)
           }
         })
-        //小程序先发送 再json.parse添加本地 发送时不会出现空白
-        if (data.notResend) {
-          if (['videoNum', 'weapp'].includes(newMsg.msgType)) {
-            newMsg.content = JSON.parse(newMsg.content)
+        newMsg.forEach(item => {
+          //小程序先发送 再json.parse添加本地 发送时不会出现空白
+          if (data[0].notResend) {
+            if (['videoNum', 'weapp'].includes(item.msgType)) {
+              item.content = JSON.parse(item.content)
+            }
+            if (item.grpContent) {
+              item.defaultContent =
+                item.grpContent.split('\n------\n').length > 1
+                  ? item.grpContent.split('\n------\n').pop()
+                  : item.grpContent.split('\n- - - - - - - - - - - - - - -\n').length > 1
+                  ? item.grpContent.split('\n- - - - - - - - - - - - - - -\n').pop()
+                  : item.grpContent
+              item.content = item.grpContent
+            }
+            // console.log(newMsg, 'ADD_MSG_LOCAL')
+            commit(types.ADD_MSG_LOCAL, item)
           }
-          if (newMsg.grpContent) {
-            newMsg.defaultContent =
-              newMsg.grpContent.split('\n------\n').length > 1
-                ? newMsg.grpContent.split('\n------\n').pop()
-                : newMsg.grpContent.split('\n- - - - - - - - - - - - - - -\n').length > 1
-                ? newMsg.grpContent.split('\n- - - - - - - - - - - - - - -\n').pop()
-                : newMsg.grpContent
-            newMsg.content = newMsg.grpContent
-          }
-          // console.log(newMsg, 'ADD_MSG_LOCAL')
-          commit(types.ADD_MSG_LOCAL, newMsg)
-        }
-        // 发送消息不需要放到hash
-        commit(types.ADD_CHAT, newMsg.chatId)
-        commit(types.CACHE_SENDING_MSG, newMsg)
+          // 发送消息不需要放到hash
+          commit(types.ADD_CHAT, item.chatId)
+          commit(types.CACHE_SENDING_MSG, item)
+        })
       }
     },
     /**

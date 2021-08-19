@@ -129,41 +129,45 @@ export default {
      */
     confirmSelect(checkedList) {
       console.log(checkedList, 'transmitMsgList')
-      const { msgType, content, url, coverUrl, title, voiceTime, href, desc, id, msgSerialNo } = this.msg
       checkedList.forEach(item => {
         const { tjId } = this.$route.params
         const {
           info: { wechatName, wechatAvatar }
         } = this.userDetailsById(tjId)
-        const msg = {
-          msgType,
-          content:
-            content &&
-            (msgType == 'text'
-              ? item.chatType == '2'
-                ? content.replace(/\{用户昵称\}(,|，)?/g, '')
-                : content.replace(/\{用户昵称\}/g, item.wechatName)
-              : ['videoNum', 'weapp'].includes(msgType)
-              ? JSON.stringify(JSON.stringify(content))
-              : content),
-          url,
-          coverUrl,
-          title: msgType == 'link' ? (title ? title : desc) : title,
-          voiceTime,
-          href,
-          desc,
-          id,
-          msgSerialNo,
-          chatId: `${tjId}&${item.wechatId}`,
-          chatType: item.chatType,
-          fromId: tjId,
-          toId: item.wechatId,
-          sender: {
-            wechatName,
-            wechatAvatar
-          },
-          notResend: true
-        }
+        let msg = this.msg.map(i => {
+          const { msgType, content, url, coverUrl, title, voiceTime, href, desc, id, msgSerialNo } = i
+          const msg = {
+            msgType,
+            content:
+              content &&
+              (msgType == 'text'
+                ? item.chatType == '2'
+                  ? content.replace(/\{用户昵称\}(,|，)?/g, '')
+                  : content.replace(/\{用户昵称\}/g, item.wechatName)
+                : ['videoNum', 'weapp'].includes(msgType)
+                ? JSON.stringify(JSON.stringify(content))
+                : content),
+            url,
+            coverUrl,
+            title: msgType == 'link' ? (title ? title : desc) : title,
+            voiceTime,
+            href,
+            desc,
+            id,
+            msgSerialNo,
+            chatId: `${tjId}&${item.wechatId}`,
+            chatType: item.chatType,
+            fromId: tjId,
+            toId: item.wechatId,
+            sender: {
+              wechatName,
+              wechatAvatar
+            },
+            notResend: true
+          }
+          return msg
+        })
+
         console.log(msg)
         this[types.SEND_MSG](msg)
       })

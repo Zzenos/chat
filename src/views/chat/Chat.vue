@@ -576,6 +576,7 @@ export default {
       this.chatRcordTitle = '聊天记录'
       this.recordType = 0
       this.chatRecordVisible = true
+      console.log(this.chatRcordTitle, this.recordType)
     },
     //收藏的聊天记录
     showCollectRecord() {
@@ -589,7 +590,7 @@ export default {
       this.chatRcordTitle = '我的收藏'
       this.recordType = 1
       this.chatRecordVisible = true
-      console.log('showCollectRecord', '111')
+      console.log(this.chatRcordTitle, this.recordType, '----')
     },
     translateText(index, item) {
       // console.log(index, item)
@@ -1177,6 +1178,7 @@ export default {
               border-radius: 0px 0px 0px 4px;
             }
             &:nth-of-type(3n + 4) {
+              border-top: none;
               border-radius: 0px 0px 0px 4px !important;
             }
             // &:nth-last-child(1) {
@@ -1203,13 +1205,13 @@ export default {
     }
     iframe {
       width: 100%;
-      height: calc(100vh - 190px);
+      height: calc(100vh - 215px);
     }
 
     .group-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 190px);
+      height: calc(100vh - 215px);
       padding: 20px;
       text-align: left;
       flex: 1 1 0;
