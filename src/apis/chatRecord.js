@@ -44,6 +44,14 @@ const searchChatRecord = data =>
     data
   })
 
+// 收藏聊天记录
+const collectChatRecord = data =>
+  api({
+    url: '/collect',
+    method: 'POST',
+    data
+  })
+
 // 导出群聊
 const exportChatRecord = data =>
   axios.request({
@@ -67,5 +75,6 @@ export default {
   getChatRecordList,
   searchChatRecord,
   exportChatRecord,
-  voiceToText
+  voiceToText,
+  collectChatRecord
 }

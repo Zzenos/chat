@@ -306,6 +306,7 @@ import deepClone from 'lodash/cloneDeep'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
+import api from '@/apis/chatRecord.js'
 import iframeMixin from '@/mixin/iframeMixin'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -716,11 +717,12 @@ export default {
       this.multiSelect.items = []
     },
     collectMsg(v) {
-      console.log(v)
-      // v.forEach(item => {
-      //   // api.collect(item)
-      //   console.log(item)
-      // })
+      v.forEach(item => {
+        // item.msgId.split('&').pop()
+        let id = { msgId: item.msgId }
+        console.log(id, 'id')
+        api.collectChatRecord(id)
+      })
     }
   },
   watch: {

@@ -271,7 +271,8 @@ export default {
         wechatId: this.wechatId,
         customerUserId: this.customerUserId,
         chatId: this.chatId,
-        ...this.chatRecordParams
+        ...this.chatRecordParams,
+        isCollect: 1
       }
       return api
         .getChatRecordList(params)
