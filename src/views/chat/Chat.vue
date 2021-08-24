@@ -743,12 +743,6 @@ export default {
         this.closeMultiSelect()
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
-        this.userInfo = {
-          corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
-          contactUserId: externalWechatId,
-          userId: accountInfo.info.wechatId,
-          nickname: chatType == 2 ? '' : wechatName
-        }
         this.onLine = navigator.onLine
         if (!this.onLine) {
           this.$refs.editor.netLost()
@@ -768,6 +762,12 @@ export default {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
+            this.userInfo = {
+              corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
+              contactUserId: externalWechatId || this.allInfo.externalWechatId,
+              userId: accountInfo.info.wechatId,
+              nickname: chatType == 2 ? '' : wechatName
+            }
           })
         }
         if (chatType == 3) {
