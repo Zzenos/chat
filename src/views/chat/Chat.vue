@@ -705,10 +705,6 @@ export default {
       if (value === 'forward') {
         console.log(this.multiSelect.items)
         this.msgInfo = this.multiSelect.items
-        // if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
-        //   this.$message.warning('该类型消息暂不支持转发')
-        //   return
-        // }
         this.transmitMsgVisible = true
       }
     },
@@ -718,9 +714,11 @@ export default {
     },
     collectMsg(v) {
       v.forEach(item => {
-        // item.msgId.split('&')
         let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
+        if (item.msgType == 'image') {
+          this.$refs.editor.collectEmotion(item)
+        }
       })
     }
   },

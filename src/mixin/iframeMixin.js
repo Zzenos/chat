@@ -12,8 +12,8 @@ export default {
           src: `http://localhost:9999/app/cusPortrait.html`
         },
         verbalTrick: {
-          src: `${process.env.VUE_APP_LOGIN_URL}/app/library.html`
-          // src: `http://localhost:9999/app/library.html`
+          // src: `${process.env.VUE_APP_LOGIN_URL}/app/library.html`
+          src: `http://localhost:9999/app/library.html`
         },
         orderDynamic: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/orderDynamic.html`
@@ -76,7 +76,7 @@ export default {
      */
     handleMessage(evt) {
       console.warn('evt', evt.data)
-      if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
+      // if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
       const { cmd, data } = JSON.parse(evt.data)
       switch (cmd) {
         case 'ready':
@@ -111,13 +111,21 @@ export default {
             case 5:
               data.msgType = 'weapp'
               data.content = {}
-              data.coverUrl = data.cover
-              data.content.des_1 = data.appName
-              data.content.weappiconurl = data.avatar
-              data.content.title = data.appTitle
-              data.content.pagepath = data.path
-              // data.content = JSON.stringify(data.content)
+              data.coverUrl = data.cover || data.fileUrl
+              data.content.des_1 = data.appName || data.des1
+              data.content.weappiconurl = data.avatar || data.weappiconurl
+              data.content.title = data.appTitle || data.title
+              data.content.pagepath = data.path || data.pagepath
               data.title = data.appTitle
+              break
+            case 6:
+              //title content msgSerialNo desc coverUrl
+              data.msgType = 'videoNum'
+              data.title = data.name
+              data.content = {}
+              data.content.icon = data.icon
+              data.desc = data.des
+              data.coverUrl = data.thumbUrl
               break
             default:
               break

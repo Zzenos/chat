@@ -17,7 +17,7 @@
               <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" tab-position="bottom">
                 <a-tab-pane key="sys">
                   <span slot="tab">
-                    <a-icon type="smile" />
+                    <img src="@/assets/chat_icon_emoticon.png" alt="" />
                   </span>
                   <div style="height:346px; overflow:hidden;">
                     <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
@@ -32,7 +32,7 @@
                 </a-tab-pane>
                 <a-tab-pane key="heart">
                   <span slot="tab">
-                    <a-icon type="heart" />
+                    <img src="@/assets/chat_emotion_collection.png" alt="" />
                   </span>
                   <div class="heart-wrap" style="height:346px;overflow-y:auto;">
                     <div class="heart-item">
@@ -50,7 +50,7 @@
                       </div>
                     </div>
                     <div class="heart-item" v-for="(item, index) in heartList" :key="index">
-                      <img :src="item.url" alt="" @click="sendHeartEmoji(item)" />
+                      <img :src="item" alt="" @click="sendHeartEmoji(item)" />
                     </div>
                   </div>
                 </a-tab-pane>
@@ -203,36 +203,7 @@ export default {
       atContactSerialNos: [],
       inputFlag: true,
       arr: [],
-      heartList: [
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1427915597089476608.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751333625008128.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425388577226887168.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
-        { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' }
-      ],
+      heartList: [],
       activeKey: 'sys'
     }
   },
@@ -620,7 +591,6 @@ export default {
     sendHeartEmoji(item) {
       this.emojiVisible = false
       this.activeKey = 'sys'
-      console.log(item, item.url)
       let { contactId, tjId } = this.$route.params
       let { wechatName, wechatAvatar } = this.userInfo.info
       let sendData = {
@@ -635,22 +605,27 @@ export default {
         notResend: true
       }
       sendData.msgType = 'image'
-      sendData.url = item.url
+      sendData.url = item
       this[types.SEND_MSG](sendData)
     },
     showCollectRecord() {
       this.$emit('showCollectRecord')
-      this.getEmoction()
     },
     getEmoction() {
       this.$socket.emit('download_emoticon', { token: this.$store.state.token }, ack => {
-        console.log(ack, 'download_emoticon')
-        // this.heartList = ack.data
+        this.heartList = ack.data
       })
     },
     uploadEmotion() {
       this.emojiVisible = false
-      // this.activeKey = 'sys'
+    },
+    collectEmotion(e) {
+      if (!this.heartList.includes(e.url)) {
+        this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: e.url }, ack => {
+          console.log(ack, 'collectEmotion')
+          this.getEmoction()
+        })
+      }
     }
   },
   mounted() {
@@ -660,7 +635,6 @@ export default {
     this.value && this.insertEmoji(this.value, false)
     this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
     this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
-    this.getEmoction()
   },
   watch: {
     $route: {
@@ -676,6 +650,7 @@ export default {
           this.focus()
         })
         this.activeKey = 'sys'
+        this.getEmoction()
       }
     },
     value: {
