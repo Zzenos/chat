@@ -14,8 +14,8 @@
             @visibleChange="hideEmojiSelect"
           >
             <div slot="content" class="emoji-content">
-              <a-tabs default-active-key="aa" :tabBarGutter="5" type="card" tab-position="bottom">
-                <a-tab-pane key="aa">
+              <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" tab-position="bottom">
+                <a-tab-pane key="sys">
                   <span slot="tab">
                     <a-icon type="smile" />
                   </span>
@@ -30,13 +30,24 @@
                     </a-carousel>
                   </div>
                 </a-tab-pane>
-                <a-tab-pane key="bb">
+                <a-tab-pane key="heart">
                   <span slot="tab">
                     <a-icon type="heart" />
                   </span>
                   <div class="heart-wrap" style="height:346px;overflow-y:auto;">
                     <div class="heart-item">
-                      <img src="@/assets/icon_addmembers.png" alt="" />
+                      <div class="upload-emo" @click="uploadEmotion">
+                        <upload
+                          :showType="'emotion'"
+                          :sendType="'emotion'"
+                          :accept="['png', 'jpg', 'jpeg']"
+                          :maxSize="20 * 1024 * 1024"
+                          :getOssTokenApi="uploadFile.getOssTokenApi"
+                          :notifyCheckApi="uploadFile.notifyOssCheck"
+                          @uploaded="uploaded"
+                        >
+                        </upload>
+                      </div>
                     </div>
                     <div class="heart-item" v-for="(item, index) in heartList" :key="index">
                       <img :src="item.url" alt="" @click="sendHeartEmoji(item)" />
@@ -221,7 +232,8 @@ export default {
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425383273923743744.png' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425753159627837440.gif' },
         { url: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1425751248182841344.gif' }
-      ]
+      ],
+      activeKey: 'sys'
     }
   },
   directives: {
@@ -342,6 +354,14 @@ export default {
         sendData.msgType = e.file.type.split('/')[0]
         sendData.url = e.OssInfo.host + '/' + e.OssInfo.key
         sendData.coverUrl = e.OssInfo.host + '/' + e.OssInfo.key + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
+      }
+      if (type == 'emotion') {
+        let url = e.OssInfo.host + '/' + e.OssInfo.key
+        console.log(this.$store.state.token, url)
+        this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: url }, ack => {
+          console.log(ack, 'upload_emoticon')
+        })
+        return
       }
       console.log(sendData, 'sendData')
       this[types.SEND_MSG](sendData)
@@ -599,6 +619,7 @@ export default {
     },
     sendHeartEmoji(item) {
       this.emojiVisible = false
+      this.activeKey = 'sys'
       console.log(item, item.url)
       let { contactId, tjId } = this.$route.params
       let { wechatName, wechatAvatar } = this.userInfo.info
@@ -619,6 +640,17 @@ export default {
     },
     showCollectRecord() {
       this.$emit('showCollectRecord')
+      this.getEmoction()
+    },
+    getEmoction() {
+      this.$socket.emit('download_emoticon', { token: this.$store.state.token }, ack => {
+        console.log(ack, 'download_emoticon')
+        // this.heartList = ack.data
+      })
+    },
+    uploadEmotion() {
+      this.emojiVisible = false
+      // this.activeKey = 'sys'
     }
   },
   mounted() {
@@ -628,6 +660,7 @@ export default {
     this.value && this.insertEmoji(this.value, false)
     this.$refs.messagInput.addEventListener('compositionstart', this.onCompositionStart)
     this.$refs.messagInput.addEventListener('compositionend', this.onCompositionEnd)
+    this.getEmoction()
   },
   watch: {
     $route: {
@@ -642,6 +675,7 @@ export default {
           this.$refs.messagInput.innerHTML = this.$store.getters.getDraftByChatId(this.$route.query.chatId)
           this.focus()
         })
+        this.activeKey = 'sys'
       }
     },
     value: {
@@ -934,9 +968,12 @@ export default {
   width: 368px;
   height: 405px;
   overflow: hidden;
+  /deep/ .ant-tabs-nav.ant-tabs-nav-animated {
+    margin-top: 5px;
+  }
   /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab {
     border: none;
-    border-top: 1px solid #e8e8e8;
+    // border-top: 1px solid #e8e8e8;
     margin-right: 26px !important;
     .anticon {
       margin-right: 0px;
@@ -992,9 +1029,13 @@ export default {
     margin-right: 16px;
     margin-bottom: 16px;
     overflow: hidden;
+    cursor: pointer;
     // background-color: #f1f7fe;
     &:nth-child(5n) {
       margin-right: 0px;
+    }
+    .upload-emo {
+      align-self: center;
     }
   }
 }

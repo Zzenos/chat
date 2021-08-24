@@ -1,11 +1,9 @@
 <template>
   <span>
     <a-upload :customRequest="putRequest" :accept="acceptType" :multiple="multiple" :showUploadList="false">
-      <!-- <a-button class="addnew__button" :loading="loading" type="primary">
-        {{ this.text }}
-      </a-button> -->
       <img v-if="showType == 'image'" src="@/assets/chat_icon_image.png" alt="" />
       <img v-if="showType == 'file'" src="@/assets/chat_icon_file.png" alt="" />
+      <img v-if="showType == 'emotion'" src="@/assets/icon_addmembers.png" alt="" />
     </a-upload>
     <uplaodProgressModal :uploadingFilesList="uploadingFilesList" :showProgressModel="showProgressModel" :isUploadComplete="uploadFullfilled" @close="closeProgressModal" />
   </span>

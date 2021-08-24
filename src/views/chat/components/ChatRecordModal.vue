@@ -315,7 +315,8 @@ export default {
         chatId: this.chatId,
         includeSeq: 1,
         direction: 0,
-        seq
+        seq,
+        isCollect: this.recordType
       }
       const { list, total } = await api.getChatRecordList(params)
       if (list[0].msgtype === 'text') {
