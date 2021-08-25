@@ -59,6 +59,7 @@ export default {
     // justify-content: space-between;
     justify-content: center;
     align-items: center;
+    position: relative;
     .operate-btn {
       margin-right: 40px;
       font-size: 12px;
@@ -92,13 +93,12 @@ export default {
       }
     }
     .close {
+      position: absolute;
+      right: 0;
+      top: 0;
       width: 20px;
       height: 20px;
       cursor: pointer;
-      img {
-        width: 20px;
-        height: 20px;
-      }
     }
   }
 }
