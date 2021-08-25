@@ -470,6 +470,17 @@ export default {
         })
       }
 
+      if (item.msgType == 'image') {
+        menus.push({
+          label: '添加表情',
+          icon: 'collect',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            this.$refs.editor.collectEmotion(item)
+          }
+        })
+      }
+
       if (item.fromId == this.tjId) {
         let time = new Date().getTime() - item.time
         // 115s 以内支持撤回
@@ -577,7 +588,6 @@ export default {
       this.chatRcordTitle = '聊天记录'
       this.recordType = 0
       this.chatRecordVisible = true
-      console.log(this.chatRcordTitle, this.recordType)
     },
     //收藏的聊天记录
     showCollectRecord() {
@@ -591,10 +601,8 @@ export default {
       this.chatRcordTitle = '我的收藏'
       this.recordType = 1
       this.chatRecordVisible = true
-      console.log(this.chatRcordTitle, this.recordType, '----')
     },
     translateText(index, item) {
-      // console.log(index, item)
       this.$refs[`audio${item.msgId}`][0].audioToText()
     },
     closeTranslateText(index) {
@@ -620,7 +628,6 @@ export default {
     },
     cancelEditNotice() {
       this.groupInfo.groupNotice = this.groupData.groupNotice
-      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.groupData.groupNotice)
     },
     changeMembers(type) {
       this.operateMebVisible = true
@@ -628,7 +635,6 @@ export default {
       this.operateType = type
     },
     operateMeb(list, type) {
-      // console.log(list, type)
       this.operateMebVisible = false
       if (type == 'add') {
         let ids = list.map(item => item.wechatId)
@@ -655,7 +661,6 @@ export default {
       this[types.PULL_GROUP_DETAILS]({ tjId: this.tjId, groupId: this.wechatId })
     },
     reEdit(item) {
-      // console.log(item.content)
       //撤回了一条消息<span onclick="reEdit()" style="color:#1d61ef;cursor:pointer;">重新编辑</span>
       if (item.content.indexOf('撤回了一条消息') > -1) {
         let m = this.$store.getters.getRecallMsg(item.seq)
@@ -670,7 +675,7 @@ export default {
       return this.multiSelect.items.some(item => item.msgId === i.msgId)
     },
     triggerMultiSelect(e, v) {
-      // let i = this.multiSelect.items.some(item => item.msgId === v.msgId) ['talk-content', 'text-message', 'SVGAnimatedString']
+      // ['talk-content', 'text-message', 'SVGAnimatedString']
       // console.log(e, typeof e.target.className)
       // if (!['talk-content', 'text-message left', 'text-message right', 'SVGAnimatedString'].includes(e.target.className)) return
       // if (!this.multiSelect.isOpen) return
@@ -716,9 +721,9 @@ export default {
       v.forEach(item => {
         let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
-        if (item.msgType == 'image') {
-          this.$refs.editor.collectEmotion(item)
-        }
+        // if (item.msgType == 'image') {
+        //   this.$refs.editor.collectEmotion(item)
+        // }
       })
     }
   },
