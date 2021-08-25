@@ -8,12 +8,12 @@ export default {
       // 侧边栏配置
       sidebarConfig: {
         customerInfo: {
-          // src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
-          src: `http://localhost:9999/app/cusPortrait.html`
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/cusPortrait.html`
+          // src: `http://localhost:9999/app/cusPortrait.html`
         },
         verbalTrick: {
-          // src: `${process.env.VUE_APP_LOGIN_URL}/app/library.html`
-          src: `http://localhost:9999/app/library.html`
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/library.html`
+          // src: `http://localhost:9999/app/library.html`
         },
         orderDynamic: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/orderDynamic.html`
@@ -76,7 +76,7 @@ export default {
      */
     handleMessage(evt) {
       console.warn('evt', evt.data)
-      // if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
+      if (evt.origin.indexOf('bizchat') === -1 || !evt.data) return
       const { cmd, data } = JSON.parse(evt.data)
       switch (cmd) {
         case 'ready':
@@ -126,6 +126,7 @@ export default {
               data.content.icon = data.icon
               data.desc = data.des
               data.coverUrl = data.thumbUrl
+              data.base64Content = data.msgContent
               break
             default:
               break

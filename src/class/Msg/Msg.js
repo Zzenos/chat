@@ -199,7 +199,7 @@ export class mpMsg extends Msg {
 export class videoNumMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { icon, coverUrl, title, desc, href, content, msgSerialNo } = options
+    let { icon, coverUrl, title, desc, href, content, msgSerialNo, base64Content } = options
     this.icon = icon
     this.coverUrl = coverUrl
     this.title = title
@@ -207,6 +207,7 @@ export class videoNumMsg extends Msg {
     this.url = href
     this.content = JSON.parse(content)
     this.msgSerialNo = msgSerialNo
+    this.base64Content = base64Content
     this.defaultContent = `[视频号] ${title}的动态`
   }
 }

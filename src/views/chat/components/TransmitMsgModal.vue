@@ -135,7 +135,7 @@ export default {
           info: { wechatName, wechatAvatar }
         } = this.userDetailsById(tjId)
         let msg = this.msg.map(i => {
-          const { msgType, content, url, coverUrl, title, voiceTime, href, desc, id, msgSerialNo } = i
+          const { msgType, content, url, coverUrl, title, voiceTime, href, desc, id, msgSerialNo, base64Content } = i
           const msg = {
             msgType,
             content:
@@ -155,6 +155,7 @@ export default {
             desc,
             id,
             msgSerialNo,
+            base64Content,
             chatId: `${tjId}&${item.wechatId}`,
             chatType: item.chatType,
             fromId: tjId,
@@ -167,7 +168,7 @@ export default {
           }
           return msg
         })
-        console.log(msg)
+        // console.log(msg)
         this[types.SEND_MSG](msg)
       })
       this.$emit('confirmSelect', checkedList)
