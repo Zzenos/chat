@@ -18,9 +18,12 @@
         <div class="icon collect" @click="$emit('event', 'collect')"></div>
         <div class="text">收藏</div>
       </div>
-      <div class="operate-btn">
+      <!-- <div class="operate-btn">
         <div class="icon close" @click="$emit('event', 'close')"></div>
         <div class="text">关闭</div>
+      </div> -->
+      <div class="close" @click="$emit('event', 'close')">
+        &times;
       </div>
     </div>
   </div>
@@ -86,6 +89,15 @@ export default {
       .text {
         width: 48px;
         text-align: center;
+      }
+    }
+    .close {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      img {
+        width: 20px;
+        height: 20px;
       }
     }
   }
