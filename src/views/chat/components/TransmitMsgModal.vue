@@ -167,7 +167,6 @@ export default {
           }
           return msg
         })
-
         console.log(msg)
         this[types.SEND_MSG](msg)
       })

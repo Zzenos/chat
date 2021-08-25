@@ -523,14 +523,16 @@ export default {
         }
       })
 
-      menus.push({
-        label: '收藏',
-        icon: 'collect',
-        customClass: 'cus-contextmenu-item',
-        onClick: () => {
-          this.collectMsg([item])
-        }
-      })
+      if (this.chatType != 3) {
+        menus.push({
+          label: '收藏',
+          icon: 'collect',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            this.collectMsg([item])
+          }
+        })
+      }
 
       this.$contextmenu({
         items: menus,
@@ -843,7 +845,6 @@ export default {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.tjId ? 'right' : 'left'
-        // 系统消息 300s以内 发送方 indexOf('撤回了一条消息') 可重新编辑
         if (
           item.msgType == 'system' &&
           item.content.indexOf('撤回了一条消息') > -1 &&
