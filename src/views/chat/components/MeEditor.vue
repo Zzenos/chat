@@ -219,7 +219,7 @@ export default {
               curTextList.push(curText)
               curText = ''
             }
-          } else if (allnodes[i].nodeName !== '#comment') {
+          } else if (allnodes[i].nodeName === '#comment') {
             // 当前节点为注释节点
           } else {
             //当前节点为文字节点  textContent  wholeText
