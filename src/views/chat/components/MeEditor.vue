@@ -206,7 +206,7 @@ export default {
         let curTextList = []
         let imgList = []
         for (let i = 0; i < allnodes.length; i++) {
-          if (allnodes[i].nodeName !== 'IMG') {
+          if (allnodes[i].nodeName !== 'IMG' && allnodes[i].nodeName !== '#comment') {
             //当前节点为文字节点  textContent  wholeText
             curText = curText + allnodes[i].textContent
           } else {
