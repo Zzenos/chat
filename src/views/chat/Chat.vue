@@ -777,6 +777,12 @@ export default {
         }
         if (chatType == 3) {
           this.activeKey = 'customerInfo'
+          this.userInfo = {
+            corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
+            contactUserId: externalWechatId,
+            userId: accountInfo.info.wechatId,
+            nickname: chatType == 2 ? '' : wechatName
+          }
         }
       }
     },
