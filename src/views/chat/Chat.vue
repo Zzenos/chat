@@ -68,7 +68,7 @@
                 :class="{ selected: verifyMultiSelect(item) }"
                 @click="triggerMultiSelect($event, item)"
               >
-                <a-icon class="select-icon" type="check-circle" />
+                <a-icon v-show="verifyMultiSelect(item)" class="select-icon" type="check-square" />
               </div>
               <!-- 头像 -->
               <div class="avatar-column">
@@ -1020,12 +1020,22 @@ export default {
           flex-direction: row;
 
           .select-box {
+            width: 16px;
+            height: 16px;
             align-self: center;
             margin-right: 10px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
+            background: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
             &.selected {
-              color: #409eff;
+              background: #fff;
+              color: #1d61ef;
+              border: none;
+            }
+            .select-icon {
+              display: block;
             }
           }
 
