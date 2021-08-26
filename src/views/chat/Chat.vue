@@ -61,7 +61,13 @@
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
-              <div v-if="multiSelect.isOpen && item.msgType !== 'videoNum'" class="select-box" :class="{ selected: verifyMultiSelect(item) }" @click="triggerMultiSelect($event, item)">
+              <!-- 多选框 'location', 'voice', 'card'暂不支持发送 -->
+              <div
+                v-if="multiSelect.isOpen && !['location', 'voice', 'card'].includes(item.msgType)"
+                class="select-box"
+                :class="{ selected: verifyMultiSelect(item) }"
+                @click="triggerMultiSelect($event, item)"
+              >
                 <a-icon class="select-icon" type="check-circle" />
               </div>
               <!-- 头像 -->
