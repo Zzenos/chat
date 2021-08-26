@@ -238,11 +238,9 @@ export default {
         let curText = ''
         let curTextList = []
         let imgList = []
+        console.log(allnodes)
         for (let i = 0; i < allnodes.length; i++) {
-          if (allnodes[i].nodeName !== 'IMG') {
-            //当前节点为文字节点  textContent  wholeText
-            curText = curText + allnodes[i].textContent
-          } else {
+          if (allnodes[i].nodeName === 'IMG') {
             // 当前节点为图片节点
             if (allnodes[i].src.indexOf('data:image/png;base64') != -1) {
               imgList.push(allnodes[i].src)
@@ -254,6 +252,11 @@ export default {
               curTextList.push(curText)
               curText = ''
             }
+          } else if (allnodes[i].nodeName === '#comment') {
+            // 当前节点为注释节点
+          } else {
+            //当前节点为文字节点  textContent  wholeText
+            curText = curText + allnodes[i].textContent
           }
           if (i == allnodes.length - 1 && curText) {
             curTextList.push(curText)
