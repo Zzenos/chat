@@ -10,7 +10,7 @@
         <div class="info">
           <div class="nickname">
             <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '70px' : '140px' }">
-              <span class="ellipsis" v-html="item.alias || item.wechatName" style="max-width:90px;display:block;float:left"></span>
+              <span class="ellipsis" v-html="item.alias || item.wechatName || '未命名'" style="max-width:90px;display:block;float:left"></span>
               <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
               <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
             </div>
