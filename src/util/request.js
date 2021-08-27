@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
 import store from '@/store'
-import router from '@/router'
+// import router from '@/router'
 
 class Request {
   constructor() {
@@ -23,7 +23,8 @@ class Request {
         // return res
         const { code } = res.data
         if (code === 301 || code === 302) {
-          router.replace('/login')
+          // router.replace('/login')
+          message.error(res.data.message)
         } else if (code && code !== 0 && code !== 200) {
           message.error(res.data.message)
           return Promise.reject(res.data)
