@@ -642,7 +642,8 @@ export default {
         }
       }
     },
-    records() {
+    records(n, o) {
+      if (n.length === o.length) return
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
