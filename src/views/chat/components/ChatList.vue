@@ -16,6 +16,7 @@
             </div>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
+            <span v-if="item.chatType == 0" class="tag system">官方</span>
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
           <!-- 需要根据消息类型，处理显示的内容 v-show="curChat.chatId === item.chatId || !getDraft(item.chatId)" -->
@@ -261,6 +262,10 @@ export default {
           border-radius: 2px;
           font-size: 12px;
           margin-left: 8px;
+          &.system {
+            width: 24px;
+            background: none;
+          }
         }
       }
       .time {
