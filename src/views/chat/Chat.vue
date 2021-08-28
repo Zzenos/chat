@@ -266,6 +266,16 @@
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
+        <a-tab-pane key="mediaLibrary" tab="素材库">
+          <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="redPacket" tab="小红包">
+          <iframe ref="redPacketFrame" title="小红包" :src="sidebarConfig.redPacket.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
       </a-tabs>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-else>
         <a-tab-pane key="customerInfo" tab="客户画像">
@@ -285,6 +295,11 @@
         </a-tab-pane>
         <a-tab-pane key="mediaLibrary" tab="素材库">
           <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="redPacket" tab="小红包">
+          <iframe ref="redPacketFrame" title="小红包" :src="sidebarConfig.redPacket.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
@@ -1192,7 +1207,7 @@ export default {
             font-size: 14px;
             padding: 0px 15px;
             &:nth-of-type(1) {
-              border-radius: 4px 0px 0px 4px;
+              border-radius: 4px 0px 0px 0px;
             }
             &:nth-of-type(2) {
               border-radius: 0px;
@@ -1202,12 +1217,19 @@ export default {
               border-radius: 0px 4px 4px 0px;
               border-left: 0px;
             }
-            &:nth-of-type(4) {
-              border-radius: 0px 0px 0px 4px;
-            }
             &:nth-of-type(3n + 4) {
+              border-radius: 0px 0px 0px 4px;
               border-top: none;
-              border-radius: 0px 0px 0px 4px !important;
+            }
+            &:nth-of-type(3n + 5) {
+              border-radius: 0px 0px 0px 0px;
+              border-left: 0px;
+              border-top: 0px;
+            }
+            &:nth-of-type(3n + 6) {
+              border-radius: 0px 0px 4px 0px;
+              border-left: 0px;
+              border-top: 0px;
             }
             // &:nth-last-child(1) {
             //   border-radius: 0px 4px 4px 0px !important;

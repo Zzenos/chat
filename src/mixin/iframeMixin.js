@@ -22,6 +22,10 @@ export default {
         mediaLibrary: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/mediaLibrary.html`
           // src: `http://localhost:9999/app/mediaLibrary.html`
+        },
+        redPacket: {
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/redPacket.html`
+          // src: `http://localhost:9999/app/redPacket.html`
         }
       },
       // 用户信息
