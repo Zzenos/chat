@@ -2,7 +2,7 @@
   <div class="chat-cotainer" v-if="chatId != 0">
     <div class="main-container">
       <div class="wrap-title">
-        <!-- 客户名称 -->
+        <!-- 官方 -->
         <span v-if="chatType == 0" class="friend ellipsis">
           {{ wechatName }}
           <span class="system">官方</span>
