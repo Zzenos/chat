@@ -63,7 +63,7 @@
           <upload
             :showType="'image'"
             :sendType="'iv'"
-            :accept="['png', 'jpg', 'jpeg', 'mp4']"
+            :accept="['png', 'jpg', 'JPG', 'jpeg', 'mp4']"
             :maxSize="20 * 1024 * 1024"
             :getOssTokenApi="uploadFile.getOssTokenApi"
             :notifyCheckApi="uploadFile.notifyOssCheck"
