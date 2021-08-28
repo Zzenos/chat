@@ -49,7 +49,7 @@ import { exportFile } from '@/util/util'
 import ChatRecordItem from './ChatRecordItem.vue'
 
 export default {
-  props: ['visible', 'type', 'infoData', 'title', 'recordType'],
+  props: ['visible', 'type', 'infoData', 'title', 'recordType', 'chatType'],
   mixins: [disabledDateRangeMixin],
   components: {
     ChatRecordItem
@@ -220,7 +220,8 @@ export default {
         nameSearch,
         pageSize,
         pageNum,
-        isCollect: this.recordType
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       if (date.length) {
         searchData.startDate = date[0]
@@ -273,7 +274,8 @@ export default {
         customerUserId: this.customerUserId,
         chatId: this.chatId,
         ...this.chatRecordParams,
-        isCollect: this.recordType
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       return api
         .getChatRecordList(params)
@@ -316,7 +318,8 @@ export default {
         includeSeq: 1,
         direction: 0,
         seq,
-        isCollect: this.recordType
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       const { list, total } = await api.getChatRecordList(params)
       if (list[0].msgtype === 'text') {

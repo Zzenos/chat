@@ -3,6 +3,11 @@
     <div class="main-container">
       <div class="wrap-title">
         <!-- 客户名称 -->
+        <span v-if="chatType == 0" class="friend ellipsis">
+          {{ wechatName }}
+          <span class="system">官方</span>
+        </span>
+        <!-- 客户名称 -->
         <span v-if="chatType == 1" class="friend ellipsis">
           {{ wechatName }}
           <span v-if="company" class="company">{{ company }}</span>
@@ -198,11 +203,19 @@
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
-      <chat-record-modal v-if="!company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData" :title="chatRcordTitle" :recordType="recordType"></chat-record-modal>
+      <chat-record-modal
+        v-if="!company"
+        :visible.sync="chatRecordVisible"
+        :type="chatType == 2"
+        :infoData="infoData"
+        :title="chatRcordTitle"
+        :recordType="recordType"
+        :chatType="chatType"
+      ></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </div>
-    <div class="sidebar-container">
+    <div class="sidebar-container" v-if="chatType != 0">
       <div class="sidebar-top">
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
@@ -601,9 +614,11 @@ export default {
     },
     //聊天记录传入数据infoData
     showRecordModal() {
-      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
-        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
+        chatType == 2
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
+          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId }
@@ -614,9 +629,11 @@ export default {
     },
     //收藏的聊天记录
     showCollectRecord() {
-      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
-        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
+        chatType == 2
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
+          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId }
@@ -1315,6 +1332,12 @@ export default {
         overflow-y: auto;
       }
     }
+  }
+  .system {
+    color: #1d61ef;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
   }
   .company {
     color: #ff8000;
