@@ -331,9 +331,9 @@ export default {
       }
       if (type == 'emotion') {
         let url = e.OssInfo.host + '/' + e.OssInfo.key
-        console.log(this.$store.state.token, url)
         this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: url }, ack => {
           console.log(ack, 'upload_emoticon')
+          this.getEmoction()
         })
         return
       }
