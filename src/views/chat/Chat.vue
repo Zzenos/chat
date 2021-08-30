@@ -5,13 +5,13 @@
         <!-- 官方 -->
         <span v-if="chatType == 0" class="friend ellipsis">
           {{ wechatName }}
-          <span class="system">官方</span>
+          <span class="system common">官方</span>
         </span>
         <!-- 客户名称 -->
         <span v-if="chatType == 1" class="friend ellipsis">
           {{ wechatName }}
-          <span v-if="company" class="company">{{ company }}</span>
-          <span v-else class="we-chat"> @微信</span>
+          <span v-if="company" class="company common">{{ '@' + company }}</span>
+          <span v-else class="we-chat common"> @微信</span>
         </span>
         <!-- 群聊名称 -->
         <span v-if="chatType == 2" class="group ellipsis">
@@ -21,14 +21,11 @@
         <!-- 成员名称 -->
         <span v-if="chatType == 3" class="member ellipsis">
           {{ wechatName }}
-          <span class="company">{{ company }}</span>
+          <span class="company common">{{ '@' + company }}</span>
         </span>
         <!-- 流失状态显示 -->
-        <span class="lost-customer-title" v-if="isLost == '1'">
-          <span class="text">流失客户</span>
-        </span>
-        <span class="lost-customer-title" v-if="isLost == '3'">
-          <span class="text">删除客户</span>
+        <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
+          <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
         </span>
       </div>
       <div class="wrap-body">
@@ -80,7 +77,7 @@
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
               </div>
               <div class="main-column">
-                <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边-->
+                <!-- 昵称 在群聊时显示-->
                 <div class="talk-title" :class="{ show: item.chatType == 2 && item.float == 'left' }">
                   <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.wechatName"></span>
                 </div>
@@ -163,11 +160,7 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
-                    <!-- !消息发送状态 
-                      getPopupContainer="triggerNode => {
-                        return triggerNode.parentNode
-                      }"
-                     -->
+                    <!-- 消息发送状态 -->
                     <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
@@ -182,24 +175,12 @@
           </div>
         </div>
         <!-- 客户流失 -->
-        <div class="lost-customer" v-if="isLost == '1'">
-          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
-        </div>
-        <div class="lost-customer" v-if="isLost == '3'">
-          <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
+        <div class="lost-customer" v-if="[1, 3].includes(isLost)">
+          <div class="lost-text" v-text="isLost == 1 ? '客户已流失，消息无法送达，无法编辑内容' : '客户已删除，消息无法送达，无法编辑内容'"></div>
         </div>
         <div class="foot">
           <multi-select-modal v-if="multiSelect.isOpen" v-model="multiSelect.items.length" @event="handleMultiMode" />
-          <me-editor
-            v-else
-            :chatType="chatType"
-            :atList="groupData.members"
-            :sendToBottom="sendToBottom"
-            @showRecordModal="showRecordModal"
-            @showCollectRecord="showCollectRecord"
-            :showRecordClick="!company"
-            ref="editor"
-          />
+          <me-editor v-else :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" @showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
@@ -236,8 +217,8 @@
             </span>
           </div>
           <div class="source" v-if="chatType == 1 || chatType == 3">
-            <span v-if="company" class="company">{{ '@' + company }}</span>
-            <span v-else class="we-chat"> @微信</span>
+            <span v-if="company" class="company common">{{ '@' + company }}</span>
+            <span v-else class="we-chat common"> @微信</span>
           </div>
         </div>
       </div>
@@ -420,11 +401,10 @@ export default {
       editGroupNameVisible: {},
       editableGroupName: false,
       loadingHistory: false,
-      groupData: '',
+      groupData: '', // 群信息的原始数据
       multiSelect: {
         isOpen: false,
-        items: [],
-        mode: 0
+        items: []
       },
       chatRcordTitle: '',
       recordType: 0 // 0 聊天记录 1 收藏记录
@@ -491,6 +471,7 @@ export default {
     closeOverModal() {
       overState.show = false
     },
+    // 鼠标右键点击菜单选项
     onCopy(index, item, event) {
       let menus = []
       if (item.msgType == 'voice') {
@@ -503,7 +484,6 @@ export default {
           }
         })
       }
-
       if (item.msgType == 'image') {
         menus.push({
           label: '添加表情',
@@ -514,10 +494,8 @@ export default {
           }
         })
       }
-
       if (item.fromId == this.tjId) {
         let time = new Date().getTime() - item.time
-        // 115s 以内支持撤回
         if (Math.floor(time / 1000) < 115 && item.seq !== 0) {
           menus.push({
             label: '撤回',
@@ -529,7 +507,6 @@ export default {
           })
         }
       }
-
       menus.push({
         label: '转发',
         icon: 'promotion',
@@ -538,7 +515,6 @@ export default {
           this.forwardRecords(index, item)
         }
       })
-
       menus.push({
         label: '引用',
         icon: 'connection',
@@ -547,7 +523,6 @@ export default {
           this.replyRecords(index, item)
         }
       })
-
       menus.push({
         label: '多选',
         icon: 'finished',
@@ -556,7 +531,6 @@ export default {
           this.openMultiSelect()
         }
       })
-
       if (this.chatType != 3) {
         menus.push({
           label: '收藏',
@@ -567,7 +541,6 @@ export default {
           }
         })
       }
-
       this.$contextmenu({
         items: menus,
         event,
@@ -577,8 +550,8 @@ export default {
       })
       event.preventDefault()
     },
+    // 引用消息
     replyRecords(index, item) {
-      console.log('引用消息', index, item)
       let content = item.defaultContent
       let container = document.createElement('div')
       container.innerHTML = content
@@ -587,6 +560,7 @@ export default {
       content = '"' + content + '"'
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
+    // 引用消息中来自个微和企微消息的处理 '\n------\n' \n- - - - - - - - - - - - - - -\n
     dealContent(content) {
       return content.split('\n------\n').lenght > 1
         ? content.split('\n------\n').shift()
@@ -594,8 +568,8 @@ export default {
         ? content.split('\n- - - - - - - - - - - - - - -\n').shift()
         : content.split('\n------\n').shift()
     },
+    // 右键转发
     forwardRecords(index, item) {
-      console.log('转发消息', index, item)
       this.msgInfo = [item]
       if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
@@ -603,17 +577,17 @@ export default {
       }
       this.transmitMsgVisible = true
     },
+    // 撤回消息
     revokeRecords(index, item) {
-      console.log('撤回消息', index, item)
       this[types.RECALL_MSG]({ tjId: this.tjId, msg: item })
     },
-    // 转发
+    // 转发框
     transmitMsg() {
       this.transmitMsgVisible = false
       this.closeMultiSelect()
     },
-    //聊天记录传入数据infoData
-    showRecordModal() {
+    //聊天记录 0  我的收藏 1
+    showRecordModal(type) {
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
         chatType == 2
@@ -623,25 +597,11 @@ export default {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
-      this.chatRcordTitle = '聊天记录'
-      this.recordType = 0
+      this.chatRcordTitle = type == 0 ? '聊天记录' : '我的收藏'
+      this.recordType = type
       this.chatRecordVisible = true
     },
-    //收藏的聊天记录
-    showCollectRecord() {
-      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
-      let info =
-        chatType == 2
-          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
-          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
-      this.infoData = {
-        ...info,
-        wechatAccount: { wechatName: accountName, wechatId: accountId }
-      }
-      this.chatRcordTitle = '我的收藏'
-      this.recordType = 1
-      this.chatRecordVisible = true
-    },
+    // 语音转文字
     translateText(index, item) {
       this.$refs[`audio${item.msgId}`][0].audioToText()
     },
@@ -655,6 +615,7 @@ export default {
         this.$refs.groupNotice.innerText = ''
       })
     },
+    // 确认编辑群公告
     completeEditNotice() {
       this.editNoticeShow = false
       if (!this.groupInfo.groupNotice) {
@@ -662,13 +623,12 @@ export default {
         this.groupInfo.groupNotice = this.groupData.groupNotice
         return
       }
-      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice }, ack => {
-        console.log(ack, 'modify_group_notice')
-      })
+      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice })
     },
     cancelEditNotice() {
       this.groupInfo.groupNotice = this.groupData.groupNotice
     },
+    // 添加/删除 群成员
     changeMembers(type) {
       this.operateMebVisible = true
       this.operateTitle = type == 'add' ? '添加群成员' : '删除群成员'
@@ -683,13 +643,12 @@ export default {
         this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
       }
     },
+    // 确认编辑群名称
     editGroupName(type) {
       this.editGroupNameVisible.meb = false
       this.editableGroupName = false
       if (type == 'ok') {
-        this.$socket.emit('modify_group_name', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
-          console.log(ack, 'modify_group_name')
-        })
+        this.$socket.emit('modify_group_name', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName })
       } else {
         this.groupInfo.groupName = this.groupData.groupName
       }
@@ -700,26 +659,25 @@ export default {
     getGroupDetail() {
       this[types.PULL_GROUP_DETAILS]({ tjId: this.tjId, groupId: this.wechatId })
     },
+    // 撤回了一条消息 重新编辑
     reEdit(item) {
-      //撤回了一条消息<span onclick="reEdit()" style="color:#1d61ef;cursor:pointer;">重新编辑</span>
       if (item.content.indexOf('撤回了一条消息') > -1) {
         let m = this.$store.getters.getRecallMsg(item.seq)
         if (!m || m.msgType !== 'text') return
         this.$refs.editor.addRecallMsg(m.content)
       }
     },
+    // 开启多选模式
     openMultiSelect() {
       this.multiSelect.isOpen = true
     },
     verifyMultiSelect(i) {
       return this.multiSelect.items.some(item => item.msgId === i.msgId)
     },
+    // 多选 勾选
     triggerMultiSelect(e, v) {
-      // ['talk-content', 'text-message', 'SVGAnimatedString']
-      // console.log(e, typeof e.target.className)
-      // if (!['talk-content', 'text-message left', 'text-message right', 'SVGAnimatedString'].includes(e.target.className)) return
-      // if (!this.multiSelect.isOpen) return
-      // console.log(e.target.className, '----', this.multiSelect.isOpen)
+      // ['talk-content', 'text-message', 'SVGAnimatedString'] 改变多选点击区域
+      // if (!['talk-content', 'text-message left', 'text-message right', 'SVGAnimatedString'].includes(e.target.className) || !this.multiSelect.isOpen) return
       let flag = false
       let index = 0
       this.multiSelect.items.forEach((item, i) => {
@@ -739,7 +697,6 @@ export default {
       }
     },
     handleMultiMode(value) {
-      console.log(value, 'value')
       if (value === 'close') {
         this.closeMultiSelect()
       }
@@ -757,13 +714,11 @@ export default {
       this.multiSelect.isOpen = false
       this.multiSelect.items = []
     },
+    // 收藏消息 []
     collectMsg(v) {
       v.forEach(item => {
         let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
-        // if (item.msgType == 'image') {
-        //   this.$refs.editor.collectEmotion(item)
-        // }
       })
     }
   },
@@ -787,13 +742,6 @@ export default {
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
         this.onLine = navigator.onLine
-        if (!this.onLine) {
-          this.$refs.editor.netLost()
-        } else {
-          this.$nextTick(() => {
-            this.$refs.editor.netReconnect()
-          })
-        }
         // 获取群资料
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
@@ -834,41 +782,12 @@ export default {
       this.isLost = newVal && newVal.lost
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
-          newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
+          this.$refs.editor.changePlaceholder(newVal.lost)
         })
       } else {
         this.$nextTick(() => {
           this.$refs.editor.changePlaceholderT()
         })
-      }
-    },
-    onLine: {
-      immediate: true,
-      handler(newVal) {
-        if (!newVal) {
-          this.$nextTick(() => {
-            this.$refs.editor.netLost()
-          })
-        }
-        if (newVal) {
-          this.$nextTick(() => {
-            this.$refs.editor.netReconnect()
-          })
-        }
-      }
-    },
-    isLost: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal == '1' || newVal == '3') {
-          this.$nextTick(() => {
-            newVal == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
-          })
-        } else {
-          this.$nextTick(() => {
-            this.$refs.editor.changePlaceholderT()
-          })
-        }
       }
     },
     searchMember: {
@@ -923,6 +842,9 @@ export default {
 .chat-cotainer {
   display: flex;
   height: 100vh;
+  font-weight: 400;
+  line-height: 18px;
+  font-size: 12px;
   font-family: PingFangSC-Regular, PingFang SC;
 
   .no-records {
@@ -955,7 +877,6 @@ export default {
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
-        font-weight: 400;
         max-width: 450px;
       }
       .lost-customer-title {
@@ -969,7 +890,6 @@ export default {
           color: #1d61ef;
           font-size: 11px;
           line-height: 16px;
-          font-weight: 400;
         }
       }
     }
@@ -1001,11 +921,7 @@ export default {
           padding: 10px 0;
           span {
             margin-left: 8px;
-            font-size: 12px;
-            font-family: PingFangSC-Regular, PingFang SC;
-            font-weight: 400;
             color: rgba(0, 0, 0, 0.65);
-            line-height: 18px;
           }
         }
 
@@ -1014,9 +930,6 @@ export default {
           height: 15px;
           margin-bottom: 4px;
           color: rgba(0, 0, 0, 0.45);
-          font-weight: 400;
-          line-height: 18px;
-          font-size: 12px;
           text-align: left;
           &.show {
             display: block;
@@ -1026,9 +939,6 @@ export default {
         .datetime {
           height: 18px;
           color: rgba(0, 0, 0, 0.45);
-          font-weight: 400;
-          font-size: 12px;
-          line-height: 18px;
           text-align: center;
           margin-top: 40px;
           margin-bottom: 40px;
@@ -1036,10 +946,7 @@ export default {
 
         .sys-info {
           width: 300px;
-          font-size: 12px;
-          font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
-          line-height: 18px;
           text-align: center;
           margin: 20px auto;
           cursor: pointer;
@@ -1050,7 +957,6 @@ export default {
           min-height: 46px;
           margin-top: 20px;
           display: flex;
-          flex-direction: row;
 
           .select-box {
             width: 16px;
@@ -1138,11 +1044,7 @@ export default {
         .lost-text {
           width: 228px;
           height: 18px;
-          font-size: 12px;
-          font-family: PingFangSC-Regular, PingFang SC;
-          font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
-          line-height: 18px;
           margin: 11px auto;
         }
       }
@@ -1174,7 +1076,6 @@ export default {
         flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
-        // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
         .nickname {
@@ -1248,10 +1149,6 @@ export default {
               border-left: 0px;
               border-top: 0px;
             }
-            // &:nth-last-child(1) {
-            //   border-radius: 0px 4px 4px 0px !important;
-            //   border-right: 1px solid #1d61ef !important;
-            // }
           }
           .ant-tabs-tab-active {
             background: #1d61ef;
@@ -1259,12 +1156,6 @@ export default {
           }
         }
       }
-      // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
-      //   // height: 1px;
-      //   // transform: none !important;
-      //   // background: lightblue;
-      //   display: none !important;
-      // }
     }
     /deep/.ant-tabs-tab .ant-tabs-tab-active {
       border-color: #000;
@@ -1333,32 +1224,28 @@ export default {
       }
     }
   }
-  .system {
-    color: #1d61ef;
+  .common {
     font-size: 12px;
     line-height: 18px;
     font-weight: 400;
+  }
+  .system {
+    color: #1d61ef;
   }
   .company {
     color: #ff8000;
-    font-size: 12px;
-    line-height: 18px;
-    font-weight: 400;
   }
   .we-chat {
     color: #0ead63;
-    font-size: 12px;
-    line-height: 18px;
-    font-weight: 400;
   }
 }
 
-/deep/ .send-status-modal.ant-modal-mask {
+/deep/ .send-status-modal.ant-modal-mask,
+/deep/ .edit-notice-modal.ant-modal-mask {
   display: none;
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
-  // display: none;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: transparent;
   .ant-modal-close-x {
     display: none;
   }
@@ -1400,9 +1287,6 @@ export default {
     }
   }
 }
-/deep/ .edit-notice-modal.ant-modal-mask {
-  display: none;
-}
 /deep/ .ant-modal-wrap.ant-modal-centered.edit-notice-modal {
   background-color: transparent;
   .ant-modal-close-x {
@@ -1421,7 +1305,6 @@ export default {
     box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
     .ant-modal-header {
       border-bottom: none;
-      // text-align: center;
       font-size: 16px;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;

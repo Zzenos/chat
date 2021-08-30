@@ -84,8 +84,8 @@
           </upload>
         </li>
         <li v-if="!lost && showRecordClick" class="chat-record">
-          <img src="@/assets/chat_icon_collection.png" class="collection" alt="" @click="showCollectRecord()" />
-          <img src="@/assets/chat_icon_record.png" alt="" @click="showRecord($event)" />
+          <img src="@/assets/chat_icon_collection.png" class="collection" alt="" @click="showRecordModal('1')" />
+          <img src="@/assets/chat_icon_record.png" alt="" @click="showRecordModal('0')" />
         </li>
         <!-- 客户流失显示 -->
         <li v-if="lost">
@@ -94,7 +94,7 @@
         <li v-if="lost">
           <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
-        <li v-if="lost && showRecordClick" class="chat-record" @click="showRecord">
+        <li v-if="lost && showRecordClick" class="chat-record" @click="showRecordModal('0')">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
       </ul>
@@ -238,7 +238,7 @@ export default {
         let curText = ''
         let curTextList = []
         let imgList = []
-        console.log(allnodes)
+        // console.log(allnodes)
         for (let i = 0; i < allnodes.length; i++) {
           if (allnodes[i].nodeName === 'IMG') {
             // 当前节点为图片节点
@@ -262,8 +262,7 @@ export default {
             curTextList.push(curText)
           }
         }
-        console.log(curTextList, imgList)
-        // console.log(this.editorText, 'enter-down')
+        // console.log(curTextList, imgList)
         this.sendTextMsg(curTextList)
         this.sendImgMsg(imgList)
         this.sendToBottom()
@@ -276,13 +275,8 @@ export default {
         this.clearDraft({ chatId: this.$route.query.chatId })
       }
     },
-    changePlaceholder() {
-      this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
-      this.readonly = true
-      this.lost = true
-    },
-    changePlaceholderS() {
-      this.placeholder = '客户已删除，消息无法送达，无法编辑内容'
+    changePlaceholder(type) {
+      this.placeholder = type == 1 ? '客户已流失，消息无法送达，无法编辑内容' : '客户已删除，消息无法送达，无法编辑内容'
       this.readonly = true
       this.lost = true
     },
@@ -291,18 +285,8 @@ export default {
       this.readonly = false
       this.lost = false
     },
-    netLost() {
-      // this.placeholder = '当前网络不可用'
-      // this.readonly = true
-      // console.log('当前网络不可用')
-    },
-    netReconnect() {
-      // this.placeholder = '输入内容，shift+enter换行，enter发送'
-      // this.readonly = false
-      // console.log('当前网络链接成功')
-    },
-    showRecord() {
-      this.$emit('showRecordModal')
+    showRecordModal(type) {
+      this.$emit('showRecordModal', type)
     },
     uploaded(e, type) {
       console.log(e, type)
@@ -538,15 +522,13 @@ export default {
           }
           msg.grpContent = content
           this.arr.forEach(val => {
-            //content.indexOf(val) == 0  content.length == content.indexOf(val) + val.length
+            // @在开头 content.indexOf(val) == 0  @在末尾 content.length == content.indexOf(val) + val.length
             if (content.indexOf(val) == 0) msg.atLocation = 0
             content = content.replace(val, '')
           })
           msg.content = content
         }
         msg.msgType = 'text'
-        // console.log(msg.grpContent, msg.content, msg.atContactSerialNos)
-        // console.log(msg)
         this[types.SEND_MSG](msg)
       }
     },
@@ -571,7 +553,6 @@ export default {
         filesLibrary.getImgUrl({ base64_image: imgList[i] }).then(res => {
           if (res.code == 200) {
             msg.url = res.data.url
-            console.log(msg, 'ImgMsg')
             this[types.SEND_MSG](msg)
           }
         })
@@ -611,9 +592,6 @@ export default {
       sendData.url = item
       this[types.SEND_MSG](sendData)
     },
-    showCollectRecord() {
-      this.$emit('showCollectRecord')
-    },
     getEmoction() {
       this.$socket.emit('download_emoticon', { token: this.$store.state.token }, ack => {
         this.heartList = ack.data
@@ -625,8 +603,9 @@ export default {
     collectEmotion(e) {
       if (!this.heartList.includes(e.url)) {
         this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: e.url }, ack => {
-          console.log(ack, 'collectEmotion')
-          this.getEmoction()
+          if (ack) {
+            this.getEmoction()
+          }
         })
       }
     }
@@ -659,10 +638,6 @@ export default {
     value: {
       immediate: true,
       handler(n) {
-        // let container = document.createElement('div')
-        // container.innerHTML = n
-        // this.editorText = container.innerText
-        // container = null
         this.editorText = n
       }
     },
