@@ -118,7 +118,7 @@
           <div class="meditor-reply-content">{{ replyName }}:{{ replyContent }}</div>
         </div>
         <div class="close-reply" @click="closeReply">
-          <img src="@/assets/关闭 (1).png" alt="" />
+          <img src="@/assets/close.png" alt="" />
         </div>
       </div>
     </div>

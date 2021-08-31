@@ -3,7 +3,7 @@
     <div class="center">
       <Xgplayer v-if="config.url" :config="config" @player="player = $event" ref="videoPlayer" />
     </div>
-    <div class="btn" @click="toclose"><img src="@/assets/关闭 (1).png" alt="" /></div>
+    <div class="btn" @click="toclose"><img src="@/assets/close.png" alt="" /></div>
   </div>
 </template>
 
