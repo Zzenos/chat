@@ -884,10 +884,10 @@ export default {
         margin: 25px 0px;
         width: 56px;
         height: 18px;
-        background: #e1eaff;
+        background: #dcdee0;
         border-radius: 2px;
         .text {
-          color: #1d61ef;
+          color: rgba(0, 0, 0, 0.65);
           font-size: 11px;
           line-height: 16px;
         }

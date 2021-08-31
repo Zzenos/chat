@@ -1,0 +1,139 @@
+<template>
+  <select-modal
+    :title="title"
+    leftTitle=""
+    rightTitle="已添加群聊"
+    rightTopText=""
+    :showRightNum="true"
+    :showDeleteAll="true"
+    :visible="visible"
+    :loading="listLoading"
+    :allCheckOptions="allCheckOptions || checkOptions"
+    checkOptionKey="groupId"
+    :rightFilter="rightFilter"
+    @close="closeModal"
+    @confirm="confirmSelect"
+    class="select-group_modal"
+  >
+    <div slot="modalTop">
+      <a-alert style="margin-bottom:13px;" type="info" show-icon>
+        <div slot="message">目前一个账号仅支持关注<span style="color: #1d61ef">50个</span>群聊，若群聊未被关注，则该群聊对应的自动回复、违规提醒、及群聊互动信息均不可进行使用</div>
+      </a-alert>
+    </div>
+    <div slot="leftTop">
+      <div style="margin-bottom: 10px;">
+        <a-radio-group v-model="curSource" button-style="solid">
+          <a-radio-button value="1">
+            我创建的群(群主)
+          </a-radio-button>
+          <a-radio-button value="0">
+            我加入的群
+          </a-radio-button>
+        </a-radio-group>
+      </div>
+      <div class="select-search">
+        <a-input-search v-model="searchData.name" placeholder="请输入名称" allowClear style="width: 100%" @change="onSearch" />
+      </div>
+    </div>
+    <div slot="rightTop">
+      <div class="select-search">
+        <a-input-search v-model="rightSearchData.name" placeholder="请输入名称" allowClear style="width: 200px" @change="rightFilter" />
+      </div>
+    </div>
+    <div class="checked-item" slot="checkItem" slot-scope="{ item }">
+      <!-- <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon> -->
+      <img class="avatar" :src="item.groupAvatar" alt="" />
+      <div class="info">
+        <div class="nickname">
+          <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '150px' : '200px' }">
+            <span> {{ item.groupName }} </span>
+            <span>（{{ item.memberCount }}）</span>
+          </div>
+          <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">内部</span>
+          <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">外部</span>
+        </div>
+      </div>
+    </div>
+  </select-modal>
+</template>
+
+<script>
+// import { mapGetters } from 'vuex'
+import SelectModal from '@/components/common/SelectModal.vue'
+
+export default {
+  components: {
+    SelectModal
+  },
+  props: ['visible', 'title', 'tjId'],
+  data() {
+    return {
+      // 左侧搜索条件
+      searchData: {
+        name: ''
+      },
+      rightSearchData: {
+        name: ''
+      },
+      curSource: '',
+      // 可勾选群聊列表
+      allCheckOptions: [],
+      // 勾选列表数据加载loading
+      listLoading: false,
+      // 搜索防抖定时器
+      timer: null,
+      checkedList: []
+    }
+  },
+  computed: {},
+  watch: {
+    curSource: {
+      immediate: true,
+      handler: function(n) {
+        if (!n) return
+        this.$socket.emit('unconcern_group_list', { tjId: this.tjId, isOwner: +n }, ack => {
+          console.log(ack)
+          this.checkedList = ack.data
+          this.allCheckOptions = this.checkedList
+        })
+        this.checkedList = []
+        this.allCheckOptions = this.checkedList
+      }
+    }
+  },
+  methods: {
+    onSearch() {
+      // console.log(this.searchData.name, 'this.searchData.name')
+      this.allCheckOptions = this.searchData.name ? this.checkedList.filter(ele => ele.groupName && ele.groupName.indexOf(this.searchData.name) > -1) : this.checkedList
+    },
+    rightFilter(list) {
+      // if (this.rightSearchData.name) {
+      //   return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
+      // } else {
+      //   return list
+      // }
+      return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
+    },
+    closeModal() {
+      this.$emit('update:visible', false)
+    },
+    confirmSelect(checkedList) {
+      this.$emit('confirmSelect', checkedList)
+      this.$socket.emit('concern_group', { tjId: this.tjId, groupList: checkedList })
+    }
+  },
+  mounted() {
+    this.curSource = '1'
+  }
+}
+</script>
+
+<style scoped lang="scss">
+@import '@/mixin/mixin.scss';
+.select-group_modal {
+  .select-search {
+    padding-bottom: 10px;
+  }
+  @include checkedItem();
+}
+</style>

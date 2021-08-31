@@ -23,7 +23,7 @@
           <no-data v-if="customerListAry.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="group" tab="群聊">
-          <RecycleScroller class="list-wraper" :items="groupListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
+          <RecycleScroller class="list-wraper group" :items="groupListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
             <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <div class="nickname">
@@ -34,6 +34,8 @@
               </div>
             </div>
           </RecycleScroller>
+          <div class="group-manage" @click="showGroupManage">群聊管理</div>
+          <group-manage :visible.sync="groupManageVisible" title="选择关注群聊" :tjId="tjId" @confirmSelect="concernGroup" />
           <no-data v-if="groupListAry.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="member" tab="成员">
@@ -57,6 +59,7 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import GroupManage from '@/views/chat/components/GroupManage'
 
 const ADDRESS_BOOK_CONFIG = {
   customer: '1',
@@ -74,7 +77,8 @@ export default {
       contactInfo: {},
       customerListAry: [],
       groupListAry: [],
-      memberListAry: []
+      memberListAry: [],
+      groupManageVisible: false
     }
   },
   props: {
@@ -87,6 +91,9 @@ export default {
     selected: {
       type: Boolean
     }
+  },
+  components: {
+    GroupManage
   },
   computed: {
     contactData() {
@@ -188,6 +195,13 @@ export default {
         },
         onCancel() {}
       })
+    },
+    showGroupManage() {
+      this.groupManageVisible = true
+      console.log(this.tjId)
+    },
+    concernGroup() {
+      this.groupManageVisible = false
     }
   }
 }
@@ -217,6 +231,17 @@ export default {
   .list-wraper {
     height: calc(100vh - 193px);
     overflow-y: scroll;
+    &.group {
+      height: calc(100vh - 245px);
+    }
+  }
+  .group-manage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 51px;
+    border-top: 1px solid #e4e5e7;
+    cursor: pointer;
   }
   /deep/ .ant-tabs-nav-scroll {
     text-align: left;
@@ -253,8 +278,8 @@ export default {
       }
       .tag {
         display: inline-block;
-        background: #e1eaff;
-        color: #1d61ef;
+        background: #dcdee0;
+        color: rgba(0, 0, 0, 0.65);
         width: 56px;
         height: 18px;
         line-height: 18px;

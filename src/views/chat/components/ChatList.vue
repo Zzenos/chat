@@ -253,8 +253,8 @@ export default {
         }
         .tag {
           display: inline-block;
-          background: #e1eaff;
-          color: #1d61ef;
+          background: #dcdee0;
+          color: rgba(0, 0, 0, 0.65);
           width: 56px;
           height: 18px;
           line-height: 18px;

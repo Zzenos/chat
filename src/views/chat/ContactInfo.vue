@@ -212,9 +212,9 @@ export default {
           width: 56px;
           height: 18px;
           display: inline-block;
-          background: #e1eaff;
           border-radius: 2px;
-          color: #1d61ef;
+          background: #dcdee0;
+          color: rgba(0, 0, 0, 0.65);
           font-size: 11px;
           line-height: 16px;
           font-weight: 400;
