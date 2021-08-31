@@ -130,7 +130,7 @@
       <div class="note">群成员</div>
       <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
         <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
-        <span class="name"> {{ item.wechatName }} </span>
+        <span class="name ellipsis"> {{ item.wechatName }} </span>
       </div>
     </div>
   </div>
@@ -676,7 +676,6 @@ export default {
         line-height: 52px;
         cursor: pointer;
         &.chat-record {
-          // align-items: flex-end;
           margin-left: auto;
           .collection {
             margin-right: 20px;
@@ -774,7 +773,6 @@ export default {
       }
       .close-reply {
         width: 14px;
-        // height: 14px;
         margin-left: 8px;
         line-height: 1;
         border-radius: 50%;
@@ -825,34 +823,6 @@ export default {
       .name {
         margin-left: 12px;
         max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .member-department {
-        color: #ff8000;
-        font-size: 12px;
-        line-height: 18px;
-        font-weight: 400;
-        margin-left: 8px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        max-width: 45px;
-        line-height: 36px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .member-wechat {
-        color: #0ead63;
-        font-size: 12px;
-        margin-left: 8px;
-        line-height: 18px;
-        margin-top: 9px;
-        font-weight: 400;
-        font-family: PingFangSC-Regular, PingFang SC;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
       &:hover {
         background: #f0f1f2;
@@ -926,7 +896,6 @@ export default {
   }
   /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab {
     border: none;
-    // border-top: 1px solid #e8e8e8;
     margin-right: 26px !important;
     .anticon {
       margin-right: 0px;
@@ -983,7 +952,6 @@ export default {
     margin-bottom: 16px;
     overflow: hidden;
     cursor: pointer;
-    // background-color: #f1f7fe;
     &:nth-child(5n) {
       margin-right: 0px;
     }

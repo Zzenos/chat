@@ -228,7 +228,7 @@
             <div class="notice-container">
               <div class="title">群公告</div>
               <div class="content">
-                <div class="detail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
+                <div class="detail ellipsis">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
                 <div class="edit" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
@@ -1187,9 +1187,6 @@ export default {
           color: rgba(0, 0, 0, 0.65);
           .detail {
             max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
           }
           .edit {
             color: rgba(0, 0, 0, 0.25);
