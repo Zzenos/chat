@@ -184,7 +184,8 @@ export default {
         wechatId: this.wechatId,
         customerUserId: this.customerUserId,
         chatId: this.chatId,
-        nameSearch
+        nameSearch,
+        isCollect: this.recordType
       }
       if (date.length) {
         params.startDate = date[0]
