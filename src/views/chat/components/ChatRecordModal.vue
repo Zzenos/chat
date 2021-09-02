@@ -194,8 +194,8 @@ export default {
       api
         .exportChatRecord(params)
         .then(data => {
-          exportFile(data, '聊天记录')
-          // console.log(data, '导出聊天记录')
+          let fileName = this.recordType == 0 ? '聊天记录' : '我的收藏'
+          exportFile(data, fileName)
         })
         .catch(err => {
           console.log(err)
