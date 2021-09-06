@@ -17,6 +17,8 @@
         <span v-if="chatType == 2" class="group ellipsis">
           {{ groupInfo.groupName }}
           <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
+          <span class="out common">外部</span>
+          <span class="inner common">内部</span>
         </span>
         <!-- 成员名称 -->
         <span v-if="chatType == 3" class="member ellipsis">
@@ -27,6 +29,7 @@
         <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
           <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
         </span>
+        <!-- <div>由企业微信用户创建的外部群 ｜ 群主：次倩澜</div> -->
       </div>
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
@@ -251,7 +254,7 @@
             </div>
             <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
             <div class="member-container">
-              <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" />
+              <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" :ownerId="groupInfo.ownerId" />
             </div>
           </div>
         </a-tab-pane>
@@ -866,18 +869,33 @@ export default {
     display: flex;
     flex-direction: column;
     .wrap-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       height: 68px;
+      padding-left: 20px;
+      text-align: left;
       border-bottom: 1px solid #e4e5e7;
 
       .friend,
       .group,
       .member {
-        float: left;
-        margin: 22px 8px 22px 20px;
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
         max-width: 450px;
+      }
+      .out {
+        padding: 1px 4px;
+        margin-left: 4px;
+        background: #daf2e8;
+        color: #0ea860;
+      }
+      .inner {
+        padding: 1px 4px;
+        margin-left: 4px;
+        background: #e1eaff;
+        color: #1d61ef;
       }
       .lost-customer-title {
         float: left;
