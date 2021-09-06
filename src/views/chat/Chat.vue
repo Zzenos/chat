@@ -531,7 +531,7 @@ export default {
           this.openMultiSelect()
         }
       })
-      if (this.chatType != 3) {
+      if ([1, 2].includes(this.chatType)) {
         menus.push({
           label: '收藏',
           icon: 'collect',
