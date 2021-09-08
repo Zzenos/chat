@@ -196,6 +196,7 @@ export default {
     align-self: center;
     width: 30px;
     height: 18px;
+    padding-top: 1px;
     background: #e1eaff;
     border-radius: 2px;
     font-size: 11px;
