@@ -745,9 +745,16 @@ export default {
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
         this.onLine = navigator.onLine
+        this.userInfo = {
+          corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
+          userId: accountInfo.info.wechatId,
+          nickname: chatType == 2 ? '' : wechatName
+        }
         // 获取群资料
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
+          this.userInfo.groupId = externalWechatId
+          console.log(this.userInfo, 'this.userInfo')
           if (!this.groupInfoI) {
             this.getGroupDetail()
           }
@@ -756,22 +763,12 @@ export default {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
-            this.userInfo = {
-              corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
-              contactUserId: externalWechatId || this.allInfo.externalWechatId,
-              userId: accountInfo.info.wechatId,
-              nickname: chatType == 2 ? '' : wechatName
-            }
+            this.userInfo.contactUserId = this.allInfo.externalWechatId
           })
         }
         if (chatType == 3) {
           this.activeKey = 'customerInfo'
-          this.userInfo = {
-            corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
-            contactUserId: externalWechatId,
-            userId: accountInfo.info.wechatId,
-            nickname: chatType == 2 ? '' : wechatName
-          }
+          this.userInfo.contactUserId = externalWechatId
         }
       }
     },
