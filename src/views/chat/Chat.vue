@@ -594,7 +594,7 @@ export default {
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
         chatType == 2
-          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId || this.tjId } }
           : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,
@@ -754,7 +754,6 @@ export default {
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
           this.userInfo.groupId = externalWechatId
-          console.log(this.userInfo, 'this.userInfo')
           if (!this.groupInfoI) {
             this.getGroupDetail()
           }
