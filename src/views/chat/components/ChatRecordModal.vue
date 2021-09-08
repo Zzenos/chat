@@ -1,6 +1,6 @@
 <template>
-  <a-modal title="聊天记录" width="960px" :visible="visible" :footer="null" @cancel="handleCancel" class="chat-record_modal" :bodyStyle="{ padding: '20px 0px' }" :maskClosable="false">
-    <div class="record-modal_top" v-if="infoData">
+  <a-modal :title="title" width="960px" :visible="visible" :footer="null" @cancel="handleCancel" class="chat-record_modal" :bodyStyle="{ padding: '20px 0px' }" :maskClosable="false">
+    <div class="record-modal_top" v-if="infoData && recordType == 0">
       <template v-if="type">
         <!-- <svg-icon icon-class="icon-group" class="info-avatar" /> -->
         <img :src="infoData.group && infoData.group.avatar" class="info-avatar" />
@@ -49,7 +49,7 @@ import { exportFile } from '@/util/util'
 import ChatRecordItem from './ChatRecordItem.vue'
 
 export default {
-  props: ['visible', 'type', 'infoData'],
+  props: ['visible', 'type', 'infoData', 'title', 'recordType', 'chatType'],
   mixins: [disabledDateRangeMixin],
   components: {
     ChatRecordItem
@@ -184,7 +184,8 @@ export default {
         wechatId: this.wechatId,
         customerUserId: this.customerUserId,
         chatId: this.chatId,
-        nameSearch
+        nameSearch,
+        isCollect: this.recordType
       }
       if (date.length) {
         params.startDate = date[0]
@@ -193,8 +194,8 @@ export default {
       api
         .exportChatRecord(params)
         .then(data => {
-          exportFile(data, '聊天记录')
-          // console.log(data, '导出聊天记录')
+          let fileName = this.recordType == 0 ? '聊天记录' : '我的收藏'
+          exportFile(data, fileName)
         })
         .catch(err => {
           console.log(err)
@@ -219,7 +220,9 @@ export default {
         chatId: this.chatId,
         nameSearch,
         pageSize,
-        pageNum
+        pageNum,
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       if (date.length) {
         searchData.startDate = date[0]
@@ -271,7 +274,9 @@ export default {
         wechatId: this.wechatId,
         customerUserId: this.customerUserId,
         chatId: this.chatId,
-        ...this.chatRecordParams
+        ...this.chatRecordParams,
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       return api
         .getChatRecordList(params)
@@ -313,7 +318,9 @@ export default {
         chatId: this.chatId,
         includeSeq: 1,
         direction: 0,
-        seq
+        seq,
+        isCollect: this.recordType,
+        chatType: this.chatType
       }
       const { list, total } = await api.getChatRecordList(params)
       if (list[0].msgtype === 'text') {

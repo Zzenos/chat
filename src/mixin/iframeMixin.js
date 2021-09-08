@@ -18,6 +18,14 @@ export default {
         orderDynamic: {
           src: `${process.env.VUE_APP_LOGIN_URL}/app/orderDynamic.html`
           // src: `http://localhost:9999/app/orderDynamic.html`
+        },
+        mediaLibrary: {
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/mediaLibrary.html`
+          // src: `http://localhost:9999/app/mediaLibrary.html`
+        },
+        redPacket: {
+          src: `${process.env.VUE_APP_LOGIN_URL}/app/redPacket.html`
+          // src: `http://localhost:9999/app/redPacket.html`
         }
       },
       // 用户信息
@@ -107,18 +115,27 @@ export default {
             case 5:
               data.msgType = 'weapp'
               data.content = {}
-              data.coverUrl = data.cover
-              data.content.des_1 = data.appName
-              data.content.weappiconurl = data.avatar
-              data.content.title = data.appTitle
-              data.content.pagepath = data.path
-              // data.content = JSON.stringify(data.content)
+              data.coverUrl = data.cover || data.fileUrl
+              data.content.des_1 = data.appName || data.des1
+              data.content.weappiconurl = data.avatar || data.weappiconurl
+              data.content.title = data.appTitle || data.title
+              data.content.pagepath = data.path || data.pagepath
               data.title = data.appTitle
+              break
+            case 6:
+              //title content msgSerialNo desc coverUrl
+              data.msgType = 'videoNum'
+              data.title = data.name
+              data.content = {}
+              data.content.icon = data.icon
+              data.desc = data.des
+              data.coverUrl = data.thumbUrl
+              data.base64Content = data.msgContent
               break
             default:
               break
           }
-          this.msgInfo = data
+          this.msgInfo = [data]
           this.transmitMsgVisible = true
           break
 

@@ -28,7 +28,7 @@
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
               <div class="nickname">
                 <div class="ellipsis" :style="{ 'max-width': '225px' }">
-                  <span v-html="item.wechatName"></span>
+                  <span v-html="item.wechatName || '未命名'"></span>
                 </div>
                 <span>（{{ item.memberCount }}）</span>
               </div>

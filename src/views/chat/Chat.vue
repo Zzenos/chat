@@ -2,11 +2,16 @@
   <div class="chat-cotainer" v-if="chatId != 0">
     <div class="main-container">
       <div class="wrap-title">
+        <!-- 官方 -->
+        <span v-if="chatType == 0" class="friend ellipsis">
+          {{ wechatName }}
+          <span class="system common">官方</span>
+        </span>
         <!-- 客户名称 -->
         <span v-if="chatType == 1" class="friend ellipsis">
           {{ wechatName }}
-          <span v-if="company" class="company">{{ company }}</span>
-          <span v-else class="we-chat"> @微信</span>
+          <span v-if="company" class="company common">{{ '@' + company }}</span>
+          <span v-else class="we-chat common"> @微信</span>
         </span>
         <!-- 群聊名称 -->
         <span v-if="chatType == 2" class="group ellipsis">
@@ -16,14 +21,11 @@
         <!-- 成员名称 -->
         <span v-if="chatType == 3" class="member ellipsis">
           {{ wechatName }}
-          <span class="company">{{ company }}</span>
+          <span class="company common">{{ '@' + company }}</span>
         </span>
         <!-- 流失状态显示 -->
-        <span class="lost-customer-title" v-if="isLost == '1'">
-          <span class="text">流失客户</span>
-        </span>
-        <span class="lost-customer-title" v-if="isLost == '3'">
-          <span class="text">删除客户</span>
+        <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
+          <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
         </span>
       </div>
       <div class="wrap-body">
@@ -57,17 +59,25 @@
             <div class="datetime no-select" v-text="sendTime(item.time)" v-show="compareTime(index, item.time)"></div>
 
             <!-- 系统通知 -->
-            <div class="sys-info" v-if="item.msgType == 'system'" v-text="item.content"></div>
+            <div class="sys-info" v-if="item.msgType == 'system'" v-html="item.content" @click="reEdit(item)"></div>
 
             <!-- 对话消息 -->
             <div v-else class="message-box" :class="{ 'direction-rt': item.float == 'right' }">
-              <!-- <div v-if="isOpen"> v </div> -->
+              <!-- 多选框 'location', 'voice', 'card'暂不支持发送 -->
+              <div
+                v-if="multiSelect.isOpen && !['location', 'voice', 'card'].includes(item.msgType)"
+                class="select-box"
+                :class="{ selected: verifyMultiSelect(item) }"
+                @click="triggerMultiSelect($event, item)"
+              >
+                <a-icon v-show="verifyMultiSelect(item)" class="select-icon" type="check-square" />
+              </div>
               <!-- 头像 -->
               <div class="avatar-column">
                 <a-avatar shape="square" :size="36" :src="item.sender.wechatAvatar" />
               </div>
               <div class="main-column">
-                <!-- 昵称 只有在群聊时显示 必须消息来源是群聊且在左边-->
+                <!-- 昵称 在群聊时显示-->
                 <div class="talk-title" :class="{ show: item.chatType == 2 && item.float == 'left' }">
                   <span class="nickname" v-show="item.chatType == 2" v-text="item.sender.wechatName"></span>
                 </div>
@@ -150,11 +160,7 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
-                    <!-- !消息发送状态 
-                      getPopupContainer="triggerNode => {
-                        return triggerNode.parentNode
-                      }"
-                     -->
+                    <!-- 消息发送状态 -->
                     <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
                         <img src="@/assets/icon_resend.png" alt="" />
@@ -169,22 +175,28 @@
           </div>
         </div>
         <!-- 客户流失 -->
-        <div class="lost-customer" v-if="isLost == '1'">
-          <div class="lost-text">客户已流失，消息无法送达，无法编辑内容</div>
-        </div>
-        <div class="lost-customer" v-if="isLost == '3'">
-          <div class="lost-text">客户已删除，消息无法送达，无法编辑内容</div>
+        <div class="lost-customer" v-if="[1, 3].includes(isLost)">
+          <div class="lost-text" v-text="isLost == 1 ? '客户已流失，消息无法送达，无法编辑内容' : '客户已删除，消息无法送达，无法编辑内容'"></div>
         </div>
         <div class="foot">
-          <me-editor :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" :showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
+          <multi-select-modal v-if="multiSelect.isOpen" v-model="multiSelect.items.length" @event="handleMultiMode" />
+          <me-editor v-else :chatType="chatType" :atList="groupData.members" :sendToBottom="sendToBottom" @showRecordModal="showRecordModal" :showRecordClick="!company" ref="editor" />
         </div>
       </div>
       <!-- 聊天记录弹窗 -->
-      <chat-record-modal v-if="!company" :visible.sync="chatRecordVisible" :type="chatType == 2" :infoData="infoData"></chat-record-modal>
+      <chat-record-modal
+        v-if="!company"
+        :visible.sync="chatRecordVisible"
+        :type="chatType == 2"
+        :infoData="infoData"
+        :title="chatRcordTitle"
+        :recordType="recordType"
+        :chatType="chatType"
+      ></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
     </div>
-    <div class="sidebar-container">
+    <div class="sidebar-container" v-if="chatType != 0">
       <div class="sidebar-top">
         <div class="avatar"><img :src="$route.query.wechatAvatar" alt="" /></div>
         <div class="info">
@@ -205,8 +217,8 @@
             </span>
           </div>
           <div class="source" v-if="chatType == 1 || chatType == 3">
-            <span v-if="company" class="company">{{ '@' + company }}</span>
-            <span v-else class="we-chat"> @微信</span>
+            <span v-if="company" class="company common">{{ '@' + company }}</span>
+            <span v-else class="we-chat common"> @微信</span>
           </div>
         </div>
       </div>
@@ -216,7 +228,7 @@
             <div class="notice-container">
               <div class="title">群公告</div>
               <div class="content">
-                <div class="detail">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
+                <div class="detail ellipsis">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
                 <div class="edit" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
@@ -248,6 +260,16 @@
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
+        <a-tab-pane key="mediaLibrary" tab="素材库">
+          <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="redPacket" tab="小红包">
+          <iframe ref="redPacketFrame" title="小红包" :src="sidebarConfig.redPacket.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
       </a-tabs>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-else>
         <a-tab-pane key="customerInfo" tab="客户画像">
@@ -262,6 +284,16 @@
         </a-tab-pane>
         <a-tab-pane key="verbalTrick" tab="话术库">
           <iframe ref="verbalTrickFrame" title="话术库" :src="sidebarConfig.verbalTrick.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="mediaLibrary" tab="素材库">
+          <iframe ref="mediaLibraryFrame" title="素材库" :src="sidebarConfig.mediaLibrary.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
+            <p>Your Browser dose not support iframes</p>
+          </iframe>
+        </a-tab-pane>
+        <a-tab-pane key="redPacket" tab="小红包">
+          <iframe ref="redPacketFrame" title="小红包" :src="sidebarConfig.redPacket.src + '?userInfo=' + encodeURIComponent(JSON.stringify(userInfo))" frameborder="0">
             <p>Your Browser dose not support iframes</p>
           </iframe>
         </a-tab-pane>
@@ -289,6 +321,7 @@ import deepClone from 'lodash/cloneDeep'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import { formateTime, parseTime } from '@/util/util'
+import api from '@/apis/chatRecord.js'
 import iframeMixin from '@/mixin/iframeMixin'
 import TextMessage from '@/views/chat/components/TextMessage'
 import ImageMessage from '@/views/chat/components/ImageMessage'
@@ -307,6 +340,7 @@ import ChatRecordModal from '@/views/chat/components/ChatRecordModal'
 import TransmitMsgModal from '@/views/chat/components/TransmitMsgModal'
 import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
+import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -328,7 +362,8 @@ export default {
     LocationMessage,
     VideoNumMessage,
     OperateGroupMeb,
-    GroupMember
+    GroupMember,
+    MultiSelectModal
   },
   data() {
     return {
@@ -366,7 +401,13 @@ export default {
       editGroupNameVisible: {},
       editableGroupName: false,
       loadingHistory: false,
-      groupData: ''
+      groupData: '', // 群信息的原始数据
+      multiSelect: {
+        isOpen: false,
+        items: []
+      },
+      chatRcordTitle: '',
+      recordType: 0 // 0 聊天记录 1 收藏记录
     }
   },
   mounted() {
@@ -430,6 +471,7 @@ export default {
     closeOverModal() {
       overState.show = false
     },
+    // 鼠标右键点击菜单选项
     onCopy(index, item, event) {
       let menus = []
       if (item.msgType == 'voice') {
@@ -442,10 +484,18 @@ export default {
           }
         })
       }
-
+      if (item.msgType == 'image') {
+        menus.push({
+          label: '添加表情',
+          icon: 'collect',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            this.$refs.editor.collectEmotion(item)
+          }
+        })
+      }
       if (item.fromId == this.tjId) {
         let time = new Date().getTime() - item.time
-        // 115s 以内支持撤回
         if (Math.floor(time / 1000) < 115 && item.seq !== 0) {
           menus.push({
             label: '撤回',
@@ -457,7 +507,6 @@ export default {
           })
         }
       }
-
       menus.push({
         label: '转发',
         icon: 'promotion',
@@ -466,7 +515,6 @@ export default {
           this.forwardRecords(index, item)
         }
       })
-
       menus.push({
         label: '引用',
         icon: 'connection',
@@ -475,7 +523,24 @@ export default {
           this.replyRecords(index, item)
         }
       })
-
+      menus.push({
+        label: '多选',
+        icon: 'finished',
+        customClass: 'cus-contextmenu-item',
+        onClick: () => {
+          this.openMultiSelect()
+        }
+      })
+      if (['1', '2'].includes(this.chatType)) {
+        menus.push({
+          label: '收藏',
+          icon: 'collect',
+          customClass: 'cus-contextmenu-item',
+          onClick: () => {
+            this.collectMsg([item])
+          }
+        })
+      }
       this.$contextmenu({
         items: menus,
         event,
@@ -485,8 +550,8 @@ export default {
       })
       event.preventDefault()
     },
+    // 引用消息
     replyRecords(index, item) {
-      console.log('引用消息', index, item)
       let content = item.defaultContent
       let container = document.createElement('div')
       container.innerHTML = content
@@ -495,6 +560,7 @@ export default {
       content = '"' + content + '"'
       this.$refs.editor.openReply(item.sender.wechatName, content)
     },
+    // 引用消息中来自个微和企微消息的处理 '\n------\n' \n- - - - - - - - - - - - - - -\n
     dealContent(content) {
       return content.split('\n------\n').lenght > 1
         ? content.split('\n------\n').shift()
@@ -502,36 +568,41 @@ export default {
         ? content.split('\n- - - - - - - - - - - - - - -\n').shift()
         : content.split('\n------\n').shift()
     },
+    // 右键转发
     forwardRecords(index, item) {
-      console.log('转发消息', index, item)
-      this.msgInfo = item
+      this.msgInfo = [item]
       if (['card', 'voice', 'location'].includes(this.msgInfo.msgType)) {
         this.$message.warning('该类型消息暂不支持转发')
         return
       }
       this.transmitMsgVisible = true
     },
+    // 撤回消息
     revokeRecords(index, item) {
-      console.log('撤回消息', index, item)
       this[types.RECALL_MSG]({ tjId: this.tjId, msg: item })
     },
-    // 转发
+    // 转发框
     transmitMsg() {
       this.transmitMsgVisible = false
+      this.closeMultiSelect()
     },
-    //聊天记录传入数据infoData
-    showRecordModal() {
-      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName } = this.$route.query
+    //聊天记录 0  我的收藏 1
+    showRecordModal(type) {
+      const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
-        chatType == 2 ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } } : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: externalWechatId } }
+        chatType == 2
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
+          : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,
         wechatAccount: { wechatName: accountName, wechatId: accountId }
       }
+      this.chatRcordTitle = type == 0 ? '聊天记录' : '我的收藏'
+      this.recordType = type
       this.chatRecordVisible = true
     },
+    // 语音转文字
     translateText(index, item) {
-      // console.log(index, item)
       this.$refs[`audio${item.msgId}`][0].audioToText()
     },
     closeTranslateText(index) {
@@ -544,6 +615,7 @@ export default {
         this.$refs.groupNotice.innerText = ''
       })
     },
+    // 确认编辑群公告
     completeEditNotice() {
       this.editNoticeShow = false
       if (!this.groupInfo.groupNotice) {
@@ -551,21 +623,18 @@ export default {
         this.groupInfo.groupNotice = this.groupData.groupNotice
         return
       }
-      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice }, ack => {
-        console.log(ack, 'modify_group_notice')
-      })
+      this.$socket.emit('modify_group_notice', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupNotice: this.groupInfo.groupNotice })
     },
     cancelEditNotice() {
       this.groupInfo.groupNotice = this.groupData.groupNotice
-      // console.log('cancelEditNotice', this.groupInfo.groupNotice, this.groupData.groupNotice)
     },
+    // 添加/删除 群成员
     changeMembers(type) {
       this.operateMebVisible = true
       this.operateTitle = type == 'add' ? '添加群成员' : '删除群成员'
       this.operateType = type
     },
     operateMeb(list, type) {
-      // console.log(list, type)
       this.operateMebVisible = false
       if (type == 'add') {
         let ids = list.map(item => item.wechatId)
@@ -574,13 +643,12 @@ export default {
         this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
       }
     },
+    // 确认编辑群名称
     editGroupName(type) {
       this.editGroupNameVisible.meb = false
       this.editableGroupName = false
       if (type == 'ok') {
-        this.$socket.emit('modify_group_name', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName }, ack => {
-          console.log(ack, 'modify_group_name')
-        })
+        this.$socket.emit('modify_group_name', { tjId: this.tjId, groupId: this.groupInfo.groupId, groupName: this.groupInfo.groupName })
       } else {
         this.groupInfo.groupName = this.groupData.groupName
       }
@@ -590,6 +658,68 @@ export default {
     },
     getGroupDetail() {
       this[types.PULL_GROUP_DETAILS]({ tjId: this.tjId, groupId: this.wechatId })
+    },
+    // 撤回了一条消息 重新编辑
+    reEdit(item) {
+      if (item.content.indexOf('撤回了一条消息') > -1) {
+        let m = this.$store.getters.getRecallMsg(item.seq)
+        if (!m || m.msgType !== 'text') return
+        this.$refs.editor.addRecallMsg(m.content)
+      }
+    },
+    // 开启多选模式
+    openMultiSelect() {
+      this.multiSelect.isOpen = true
+    },
+    verifyMultiSelect(i) {
+      return this.multiSelect.items.some(item => item.msgId === i.msgId)
+    },
+    // 多选 勾选
+    triggerMultiSelect(e, v) {
+      // ['talk-content', 'text-message', 'SVGAnimatedString'] 改变多选点击区域
+      // if (!['talk-content', 'text-message left', 'text-message right', 'SVGAnimatedString'].includes(e.target.className) || !this.multiSelect.isOpen) return
+      let flag = false
+      let index = 0
+      this.multiSelect.items.forEach((item, i) => {
+        if (item.msgId === v.msgId) {
+          flag = true
+          index = i
+        }
+      })
+      if (flag) {
+        this.multiSelect.items.splice(index, 1)
+      } else {
+        if (this.multiSelect.items.length >= 30) {
+          this.$message.warning('批量操作最大支持30条数据')
+          return false
+        }
+        this.multiSelect.items.push(v)
+      }
+    },
+    handleMultiMode(value) {
+      if (value === 'close') {
+        this.closeMultiSelect()
+      }
+      if (value === 'collect') {
+        this.collectMsg(this.multiSelect.items)
+        this.closeMultiSelect()
+      }
+      if (value === 'forward') {
+        console.log(this.multiSelect.items)
+        this.msgInfo = this.multiSelect.items
+        this.transmitMsgVisible = true
+      }
+    },
+    closeMultiSelect() {
+      this.multiSelect.isOpen = false
+      this.multiSelect.items = []
+    },
+    // 收藏消息 []
+    collectMsg(v) {
+      v.forEach(item => {
+        let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
+        api.collectChatRecord(id)
+      })
     }
   },
   watch: {
@@ -608,25 +738,20 @@ export default {
         this.company = company
         this.isLost = lost
         this.sendToBottom()
+        this.closeMultiSelect()
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
+        this.onLine = navigator.onLine
         this.userInfo = {
           corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
-          contactUserId: externalWechatId,
           userId: accountInfo.info.wechatId,
           nickname: chatType == 2 ? '' : wechatName
-        }
-        this.onLine = navigator.onLine
-        if (!this.onLine) {
-          this.$refs.editor.netLost()
-        } else {
-          this.$nextTick(() => {
-            this.$refs.editor.netReconnect()
-          })
         }
         // 获取群资料
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
+          this.userInfo.groupId = externalWechatId
+          console.log(this.userInfo, 'this.userInfo')
           if (!this.groupInfoI) {
             this.getGroupDetail()
           }
@@ -635,10 +760,12 @@ export default {
           this.activeKey = 'customerInfo'
           this.$socket.emit(`customer_info`, { tjId: tjId, customerId: wechatId }, ack => {
             this.allInfo = ack.data || {}
+            this.userInfo.contactUserId = this.allInfo.externalWechatId
           })
         }
         if (chatType == 3) {
           this.activeKey = 'customerInfo'
+          this.userInfo.contactUserId = externalWechatId
         }
       }
     },
@@ -652,41 +779,12 @@ export default {
       this.isLost = newVal && newVal.lost
       if (newVal && (newVal.lost == '1' || newVal.lost == '3')) {
         this.$nextTick(() => {
-          newVal.lost == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
+          this.$refs.editor.changePlaceholder(newVal.lost)
         })
       } else {
         this.$nextTick(() => {
           this.$refs.editor.changePlaceholderT()
         })
-      }
-    },
-    onLine: {
-      immediate: true,
-      handler(newVal) {
-        if (!newVal) {
-          this.$nextTick(() => {
-            this.$refs.editor.netLost()
-          })
-        }
-        if (newVal) {
-          this.$nextTick(() => {
-            this.$refs.editor.netReconnect()
-          })
-        }
-      }
-    },
-    isLost: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal == '1' || newVal == '3') {
-          this.$nextTick(() => {
-            newVal == '1' ? this.$refs.editor.changePlaceholder() : this.$refs.editor.changePlaceholderS()
-          })
-        } else {
-          this.$nextTick(() => {
-            this.$refs.editor.changePlaceholderT()
-          })
-        }
       }
     },
     searchMember: {
@@ -708,6 +806,17 @@ export default {
     records() {
       return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
         item.float = item.fromId == this.tjId ? 'right' : 'left'
+        if (
+          item.msgType == 'system' &&
+          item.content.indexOf('撤回了一条消息') > -1 &&
+          new Date().getTime() / 1000 - item.time / 1000 < 300 &&
+          item.fromId == this.tjId &&
+          item.content.indexOf('重新编辑') == -1 &&
+          this.$store.getters.getRecallMsg(item.seq) &&
+          this.$store.getters.getRecallMsg(item.seq).msgType == 'text'
+        ) {
+          item.content = item.content + '<span style="color:#1d61ef;cursor:pointer;">重新编辑</span>'
+        }
         return item
       })
     },
@@ -730,6 +839,9 @@ export default {
 .chat-cotainer {
   display: flex;
   height: 100vh;
+  font-weight: 400;
+  line-height: 18px;
+  font-size: 12px;
   font-family: PingFangSC-Regular, PingFang SC;
 
   .no-records {
@@ -762,7 +874,6 @@ export default {
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
-        font-weight: 400;
         max-width: 450px;
       }
       .lost-customer-title {
@@ -776,7 +887,6 @@ export default {
           color: #1d61ef;
           font-size: 11px;
           line-height: 16px;
-          font-weight: 400;
         }
       }
     }
@@ -808,11 +918,7 @@ export default {
           padding: 10px 0;
           span {
             margin-left: 8px;
-            font-size: 12px;
-            font-family: PingFangSC-Regular, PingFang SC;
-            font-weight: 400;
             color: rgba(0, 0, 0, 0.65);
-            line-height: 18px;
           }
         }
 
@@ -821,9 +927,6 @@ export default {
           height: 15px;
           margin-bottom: 4px;
           color: rgba(0, 0, 0, 0.45);
-          font-weight: 400;
-          line-height: 18px;
-          font-size: 12px;
           text-align: left;
           &.show {
             display: block;
@@ -833,9 +936,6 @@ export default {
         .datetime {
           height: 18px;
           color: rgba(0, 0, 0, 0.45);
-          font-weight: 400;
-          font-size: 12px;
-          line-height: 18px;
           text-align: center;
           margin-top: 40px;
           margin-bottom: 40px;
@@ -843,12 +943,10 @@ export default {
 
         .sys-info {
           width: 300px;
-          font-size: 12px;
-          font-weight: 400;
           color: rgba(0, 0, 0, 0.45);
-          line-height: 18px;
           text-align: center;
           margin: 20px auto;
+          cursor: pointer;
         }
 
         .message-box {
@@ -856,7 +954,26 @@ export default {
           min-height: 46px;
           margin-top: 20px;
           display: flex;
-          flex-direction: row;
+
+          .select-box {
+            width: 16px;
+            height: 16px;
+            align-self: center;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            &.selected {
+              background: #fff;
+              color: #1d61ef;
+              border: none;
+            }
+            .select-icon {
+              display: block;
+            }
+          }
 
           .avatar-column {
             width: 36px;
@@ -924,11 +1041,7 @@ export default {
         .lost-text {
           width: 228px;
           height: 18px;
-          font-size: 12px;
-          font-family: PingFangSC-Regular, PingFang SC;
-          font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
-          line-height: 18px;
           margin: 11px auto;
         }
       }
@@ -960,7 +1073,6 @@ export default {
         flex-direction: column;
         margin-top: 8px;
         font-size: 16px;
-        // width: 250px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
         .nickname {
@@ -987,44 +1099,60 @@ export default {
         }
       }
     }
+    /deep/.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
+      height: 80px;
+    }
     /deep/.ant-tabs-bar {
       margin: 0;
       margin-bottom: 20px;
       border-bottom: none;
       .ant-tabs-nav {
-        .ant-tabs-tab {
-          border-color: #1d61ef;
-          background: #fff;
-          margin: 0 !important;
-          font-size: 14px;
-          padding: 0px 15px;
-          &:nth-of-type(1) {
-            border-radius: 4px 0px 0px 4px;
+        > div {
+          display: flex;
+          flex-wrap: wrap;
+          // justify-content: center;
+          align-content: flex-start;
+          padding-left: 14px;
+          .ant-tabs-tab {
+            width: 107px;
+            box-sizing: border-box;
+            border-color: #1d61ef;
+            background: #fff;
+            margin: 0 !important;
+            font-size: 14px;
+            padding: 0px 15px;
+            &:nth-of-type(1) {
+              border-radius: 4px 0px 0px 0px;
+            }
+            &:nth-of-type(2) {
+              border-radius: 0px;
+              border-left: 0px;
+            }
+            &:nth-of-type(3) {
+              border-radius: 0px 4px 4px 0px;
+              border-left: 0px;
+            }
+            &:nth-of-type(3n + 4) {
+              border-radius: 0px 0px 0px 4px;
+              border-top: none;
+            }
+            &:nth-of-type(3n + 5) {
+              border-radius: 0px 0px 0px 0px;
+              border-left: 0px;
+              border-top: 0px;
+            }
+            &:nth-of-type(3n + 6) {
+              border-radius: 0px 0px 4px 0px;
+              border-left: 0px;
+              border-top: 0px;
+            }
           }
-          &:nth-of-type(2) {
-            border-radius: 0px;
-            border-right: 0px;
-            border-left: 0px;
+          .ant-tabs-tab-active {
+            background: #1d61ef;
+            color: #fff;
           }
-          &:nth-of-type(3) {
-            border-radius: 0px 4px 4px 0px;
-          }
-          &:nth-last-child(1) {
-            border-radius: 0px 4px 4px 0px !important;
-            border-right: 1px solid #1d61ef !important;
-          }
-        }
-        .ant-tabs-tab-active {
-          background: #1d61ef;
-          color: #fff;
         }
       }
-      // .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
-      //   // height: 1px;
-      //   // transform: none !important;
-      //   // background: lightblue;
-      //   display: none !important;
-      // }
     }
     /deep/.ant-tabs-tab .ant-tabs-tab-active {
       border-color: #000;
@@ -1032,13 +1160,13 @@ export default {
     }
     iframe {
       width: 100%;
-      height: calc(100vh - 190px);
+      height: calc(100vh - 215px);
     }
 
     .group-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 190px);
+      height: calc(100vh - 215px);
       padding: 20px;
       text-align: left;
       flex: 1 1 0;
@@ -1056,9 +1184,6 @@ export default {
           color: rgba(0, 0, 0, 0.65);
           .detail {
             max-width: 250px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
           }
           .edit {
             color: rgba(0, 0, 0, 0.25);
@@ -1093,26 +1218,28 @@ export default {
       }
     }
   }
-  .company {
-    color: #ff8000;
+  .common {
     font-size: 12px;
     line-height: 18px;
     font-weight: 400;
+  }
+  .system {
+    color: #1d61ef;
+  }
+  .company {
+    color: #ff8000;
   }
   .we-chat {
     color: #0ead63;
-    font-size: 12px;
-    line-height: 18px;
-    font-weight: 400;
   }
 }
 
-/deep/ .send-status-modal.ant-modal-mask {
+/deep/ .send-status-modal.ant-modal-mask,
+/deep/ .edit-notice-modal.ant-modal-mask {
   display: none;
 }
 /deep/ .ant-modal-wrap.ant-modal-centered.send-status-modal {
-  // display: none;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: transparent;
   .ant-modal-close-x {
     display: none;
   }
@@ -1154,9 +1281,6 @@ export default {
     }
   }
 }
-/deep/ .edit-notice-modal.ant-modal-mask {
-  display: none;
-}
 /deep/ .ant-modal-wrap.ant-modal-centered.edit-notice-modal {
   background-color: transparent;
   .ant-modal-close-x {
@@ -1175,7 +1299,6 @@ export default {
     box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
     .ant-modal-header {
       border-bottom: none;
-      // text-align: center;
       font-size: 16px;
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;

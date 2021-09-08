@@ -10,16 +10,21 @@
         <div class="info">
           <div class="nickname">
             <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '70px' : '140px' }">
-              <span class="ellipsis" v-html="item.alias || item.wechatName" style="max-width:90px;display:block;float:left"></span>
+              <span class="ellipsis" v-html="item.alias || item.wechatName || '未命名'" style="max-width:90px;display:block;float:left"></span>
               <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
               <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
             </div>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
+            <span v-if="item.chatType == 0" class="tag system">官方</span>
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
-          <!-- 需要根据消息类型，处理显示的内容 -->
-          <div class="msg ellipsis">
+          <!-- 需要根据消息类型，处理显示的内容 v-show="curChat.chatId === item.chatId || !getDraft(item.chatId)" -->
+          <div class="msg ellipsis" v-if="curChat.chatId !== item.chatId && getDraft(item.chatId)">
+            <span style="color:red">[草稿] </span>
+            <span v-text="getDraft(item.chatId)"></span>
+          </div>
+          <div class="msg ellipsis" v-else>
             <span v-show="item.lastMsg.unread" v-html="handleAt(item.lastMsg)"></span>
             <span v-html="item.lastMsg.defaultContent"></span>
           </div>
@@ -32,7 +37,7 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import * as types from '@/store/actionType'
 
 export default {
@@ -41,7 +46,8 @@ export default {
     return {
       curChat: { chatId: null },
       chats: [],
-      spinning: true
+      spinning: true,
+      draft: ''
     }
   },
   props: {
@@ -90,6 +96,9 @@ export default {
         if (n === o) return
         // console.log('chatList $route ==>', n)
         // 切换账号或者刷新后进入，会话的默认选中状态
+        // this.draft = this.getDraftByChatId(this.curChat.chatId) || ''
+        // console.log(this.curChat.chatId, this.getDraftByChatId(this.curChat.chatId), this.$store.getters.getDraftByChatId(this.curChat.chatId))
+        // this.draft = ''
         const { contactId } = n.params
         if (contactId === '0') {
           this.curChat = { chatId: null }
@@ -130,6 +139,7 @@ export default {
   },
   methods: {
     ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST, types.UPDATE_CHAT_TOP_STATUS]),
+    ...mapGetters(['getDraftByChatId']),
     handleItem(val, canJump = false) {
       console.log('click chat', val)
       const { chatId } = val
@@ -186,6 +196,9 @@ export default {
       } else {
         return ''
       }
+    },
+    getDraft(chatId) {
+      return this.$store.getters.getDraftByChatId(chatId)
     }
   }
 }
@@ -249,6 +262,10 @@ export default {
           border-radius: 2px;
           font-size: 12px;
           margin-left: 8px;
+          &.system {
+            width: 24px;
+            background: none;
+          }
         }
       }
       .time {

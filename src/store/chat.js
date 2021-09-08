@@ -8,7 +8,8 @@ import orderBy from 'lodash/orderBy'
 export default {
   state: {
     chatListHash: {}, //会话列表hash，chatId全局唯一
-    chatList: {}
+    chatList: {},
+    draft: {}
   },
   mutations: {
     // 根究探鲸id获取会话列表
@@ -43,6 +44,12 @@ export default {
         return i.wechatId === chatInfo.chatList[0].wechatId
       })
       state.chatList[tjId].splice(index, 1, ...chatInfo.chatList)
+    },
+    setDraft(state, data) {
+      state.draft[data.chatId] = data.draft
+    },
+    clearDraft(state, data) {
+      state.draft[data.chatId] = ''
     }
   },
   actions: {},
@@ -81,6 +88,11 @@ export default {
           Vue.set(state.chatList, `${tjId}`, [])
           return state.chatList[tjId]
         }
+      }
+    },
+    getDraftByChatId: state => {
+      return chatId => {
+        return state.draft[chatId] || ''
       }
     }
   }

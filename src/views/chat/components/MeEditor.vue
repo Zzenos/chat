@@ -14,14 +14,47 @@
             @visibleChange="hideEmojiSelect"
           >
             <div slot="content" class="emoji-content">
-              <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
-                <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
-                  <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
-                </div>
-                <div slot="customPaging">
-                  <span class="carousel-circle"></span>
-                </div>
-              </a-carousel>
+              <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" tab-position="bottom">
+                <a-tab-pane key="sys">
+                  <span slot="tab">
+                    <img src="@/assets/chat_icon_emoticon.png" alt="" />
+                  </span>
+                  <div style="height:346px; overflow:hidden;">
+                    <a-carousel ref="emojiCarousel" :afterChange="changeEnd">
+                      <div v-for="(item, index) in emojiPageList" :key="index" class="emoji-page">
+                        <span class="emoji-item" v-for="(e, i) in item" :key="i" @click="insertEmoji(e.content)">{{ e.content }}</span>
+                      </div>
+                      <div slot="customPaging">
+                        <span class="carousel-circle"></span>
+                      </div>
+                    </a-carousel>
+                  </div>
+                </a-tab-pane>
+                <a-tab-pane key="heart">
+                  <span slot="tab">
+                    <img src="@/assets/chat_emotion_collection.png" alt="" />
+                  </span>
+                  <div class="heart-wrap" style="height:346px;overflow-y:auto;">
+                    <div class="heart-item">
+                      <div class="upload-emo" @click="uploadEmotion">
+                        <upload
+                          :showType="'emotion'"
+                          :sendType="'emotion'"
+                          :accept="['png', 'jpg', 'jpeg']"
+                          :maxSize="20 * 1024 * 1024"
+                          :getOssTokenApi="uploadFile.getOssTokenApi"
+                          :notifyCheckApi="uploadFile.notifyOssCheck"
+                          @uploaded="uploaded"
+                        >
+                        </upload>
+                      </div>
+                    </div>
+                    <div class="heart-item" v-for="(item, index) in heartList" :key="index">
+                      <img :src="item" alt="" @click="sendHeartEmoji(item)" />
+                    </div>
+                  </div>
+                </a-tab-pane>
+              </a-tabs>
             </div>
             <img src="@/assets/chat_icon_emoticon.png" alt="" />
           </a-popover>
@@ -50,8 +83,9 @@
           >
           </upload>
         </li>
-        <li v-if="!lost && showRecordClick" class="chat-record" @click="showRecord($event)">
-          <img src="@/assets/chat_icon_record.png" alt="" />
+        <li v-if="!lost && showRecordClick" class="chat-record">
+          <img src="@/assets/chat_icon_collection.png" class="collection" alt="" @click="showRecordModal('1')" />
+          <img src="@/assets/chat_icon_record.png" alt="" @click="showRecordModal('0')" />
         </li>
         <!-- 客户流失显示 -->
         <li v-if="lost">
@@ -60,7 +94,7 @@
         <li v-if="lost">
           <img src="@/assets/chat_icon_image_lost.png" alt="" />
         </li>
-        <li v-if="lost && showRecordClick" class="chat-record" @click="showRecord">
+        <li v-if="lost && showRecordClick" class="chat-record" @click="showRecordModal('0')">
           <img src="@/assets/chat_icon_record.png" alt="" />
         </li>
       </ul>
@@ -96,14 +130,14 @@
       <div class="note">群成员</div>
       <div class="at-item" v-for="item in filterAtList" :key="item.wechatId" @click="choose(item)">
         <a-avatar shape="square" :size="28" :src="item.wechatAvatar" />
-        <span class="name"> {{ item.wechatName }} </span>
+        <span class="name ellipsis"> {{ item.wechatName }} </span>
       </div>
     </div>
   </div>
 </template>
 <script>
 import deepClone from 'lodash/cloneDeep'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import * as types from '@/store/actionType'
 import Upload from '@/views/chat/components/Upload.vue'
 import filesLibrary from '@/apis/library'
@@ -116,10 +150,6 @@ export default {
   name: 'MeEditor',
   props: {
     sendToBottom: {
-      type: Function,
-      default: () => {}
-    },
-    showRecordModal: {
       type: Function,
       default: () => {}
     },
@@ -172,7 +202,9 @@ export default {
       filterAtList: [],
       atContactSerialNos: [],
       inputFlag: true,
-      arr: []
+      arr: [],
+      heartList: [],
+      activeKey: 'sys'
     }
   },
   directives: {
@@ -188,6 +220,7 @@ export default {
   },
   methods: {
     ...mapActions([types.SEND_MSG]),
+    ...mapMutations(['setDraft', 'clearDraft']),
     inputEvent() {
       // console.log('send', e)
     },
@@ -205,7 +238,7 @@ export default {
         let curText = ''
         let curTextList = []
         let imgList = []
-        console.log(allnodes)
+        // console.log(allnodes)
         for (let i = 0; i < allnodes.length; i++) {
           if (allnodes[i].nodeName === 'IMG') {
             // 当前节点为图片节点
@@ -229,8 +262,7 @@ export default {
             curTextList.push(curText)
           }
         }
-        console.log(curTextList, imgList)
-        // console.log(this.editorText, 'enter-down')
+        // console.log(curTextList, imgList)
         this.sendTextMsg(curTextList)
         this.sendImgMsg(imgList)
         this.sendToBottom()
@@ -240,27 +272,11 @@ export default {
         this.replyContent = ''
         this.$refs.messagInput.innerHTML = ''
         this.closeReply()
+        this.clearDraft({ chatId: this.$route.query.chatId })
       }
     },
-    // clear() {
-    //   this.draft_text = this.editorText
-    //   this.editorText=''
-    // },
-    //1.先获取当前区域内容存起来 2.清空区域  3.给当前区域赋值草稿内容或者空
-    // let item = findTalk(index_name)
-    // item.draft_text = this.editorText
-    // this.editorText = findTalk(index_name).draft_text || ''
-    // getDraftText(index_name) {
-    //   console.log(index_name)
-    //   this.editorText = ''
-    // }
-    changePlaceholder() {
-      this.placeholder = '客户已流失，消息无法送达，无法编辑内容'
-      this.readonly = true
-      this.lost = true
-    },
-    changePlaceholderS() {
-      this.placeholder = '客户已删除，消息无法送达，无法编辑内容'
+    changePlaceholder(type) {
+      this.placeholder = type == 1 ? '客户已流失，消息无法送达，无法编辑内容' : '客户已删除，消息无法送达，无法编辑内容'
       this.readonly = true
       this.lost = true
     },
@@ -269,19 +285,8 @@ export default {
       this.readonly = false
       this.lost = false
     },
-    netLost() {
-      // this.placeholder = '当前网络不可用'
-      // this.readonly = true
-      // console.log('当前网络不可用')
-    },
-    netReconnect() {
-      // this.placeholder = '输入内容，shift+enter换行，enter发送'
-      // this.readonly = false
-      // console.log('当前网络链接成功')
-    },
-    showRecord(e) {
-      console.log('showRecordModal', e)
-      this.showRecordModal()
+    showRecordModal(type) {
+      this.$emit('showRecordModal', type)
     },
     uploaded(e, type) {
       console.log(e, type)
@@ -308,6 +313,14 @@ export default {
         sendData.url = e.OssInfo.host + '/' + e.OssInfo.key
         sendData.coverUrl = e.OssInfo.host + '/' + e.OssInfo.key + '?x-oss-process=video/snapshot,t_1000,f_jpg,w_0,h_0'
       }
+      if (type == 'emotion') {
+        let url = e.OssInfo.host + '/' + e.OssInfo.key
+        this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: url }, ack => {
+          console.log(ack, 'upload_emoticon')
+          this.getEmoction()
+        })
+        return
+      }
       console.log(sendData, 'sendData')
       this[types.SEND_MSG](sendData)
     },
@@ -317,6 +330,8 @@ export default {
         const value = deepClone(this.$refs.messagInput.innerText)
         this.value = value
         this.editorText = this.value
+        // console.log(this.editorText, '----', this.$route.query.chatId)
+        this.setDraft({ chatId: this.$route.query.chatId, draft: this.editorText })
         this.filterAtList = this.atList
         if (this.atShow) {
           this.filterAtList = this.value && this.value.split('@').pop() ? this.atList.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.value.split('@').pop()) > -1) : this.atList
@@ -507,15 +522,13 @@ export default {
           }
           msg.grpContent = content
           this.arr.forEach(val => {
-            //content.indexOf(val) == 0  content.length == content.indexOf(val) + val.length
+            // @在开头 content.indexOf(val) == 0  @在末尾 content.length == content.indexOf(val) + val.length
             if (content.indexOf(val) == 0) msg.atLocation = 0
             content = content.replace(val, '')
           })
           msg.content = content
         }
         msg.msgType = 'text'
-        // console.log(msg.grpContent, msg.content, msg.atContactSerialNos)
-        console.log(msg)
         this[types.SEND_MSG](msg)
       }
     },
@@ -540,8 +553,58 @@ export default {
         filesLibrary.getImgUrl({ base64_image: imgList[i] }).then(res => {
           if (res.code == 200) {
             msg.url = res.data.url
-            console.log(msg, 'ImgMsg')
             this[types.SEND_MSG](msg)
+          }
+        })
+      }
+    },
+    addRecallMsg(v) {
+      this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML + v
+      this.focus()
+    },
+    focus() {
+      this.$refs.messagInput.focus()
+      this.rangeOfInputBox = new Range()
+      this.rangeOfInputBox.selectNodeContents(this.$refs.messagInput)
+      this.rangeOfInputBox.collapse(false)
+      this.changeText()
+      const selection = getSelection()
+      selection.removeAllRanges()
+      selection.addRange(this.rangeOfInputBox)
+    },
+    sendHeartEmoji(item) {
+      this.emojiVisible = false
+      this.activeKey = 'sys'
+      let { contactId, tjId } = this.$route.params
+      let { wechatName, wechatAvatar } = this.userInfo.info
+      let sendData = {
+        chatId: contactId,
+        chatType: this.$route.query.chatType,
+        fromId: tjId,
+        toId: tjId == contactId.split('&')[0] ? contactId.split('&')[1] : contactId.split('&')[0],
+        sender: {
+          wechatName: wechatName,
+          wechatAvatar: wechatAvatar
+        },
+        notResend: true
+      }
+      sendData.msgType = 'image'
+      sendData.url = item
+      this[types.SEND_MSG](sendData)
+    },
+    getEmoction() {
+      this.$socket.emit('download_emoticon', { token: this.$store.state.token }, ack => {
+        this.heartList = ack.data
+      })
+    },
+    uploadEmotion() {
+      this.emojiVisible = false
+    },
+    collectEmotion(e) {
+      if (!this.heartList.includes(e.url)) {
+        this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: e.url }, ack => {
+          if (ack) {
+            this.getEmoction()
           }
         })
       }
@@ -565,17 +628,16 @@ export default {
         this.replyShow = false
         this.atShow = false
         this.$nextTick(() => {
-          this.$refs.messagInput.innerHTML = ''
+          this.$refs.messagInput.innerHTML = this.$store.getters.getDraftByChatId(this.$route.query.chatId)
+          this.focus()
         })
+        this.activeKey = 'sys'
+        this.getEmoction()
       }
     },
     value: {
       immediate: true,
       handler(n) {
-        // let container = document.createElement('div')
-        // container.innerHTML = n
-        // this.editorText = container.innerText
-        // container = null
         this.editorText = n
       }
     },
@@ -614,8 +676,10 @@ export default {
         line-height: 52px;
         cursor: pointer;
         &.chat-record {
-          // align-items: flex-end;
           margin-left: auto;
+          .collection {
+            margin-right: 20px;
+          }
         }
       }
     }
@@ -709,7 +773,6 @@ export default {
       }
       .close-reply {
         width: 14px;
-        // height: 14px;
         margin-left: 8px;
         line-height: 1;
         border-radius: 50%;
@@ -760,34 +823,6 @@ export default {
       .name {
         margin-left: 12px;
         max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .member-department {
-        color: #ff8000;
-        font-size: 12px;
-        line-height: 18px;
-        font-weight: 400;
-        margin-left: 8px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        max-width: 45px;
-        line-height: 36px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .member-wechat {
-        color: #0ead63;
-        font-size: 12px;
-        margin-left: 8px;
-        line-height: 18px;
-        margin-top: 9px;
-        font-weight: 400;
-        font-family: PingFangSC-Regular, PingFang SC;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
       &:hover {
         background: #f0f1f2;
@@ -849,11 +884,28 @@ export default {
 }
 .emoji-page {
   padding-bottom: 10px;
-}
-.emoji-content {
-  width: 360px;
   height: 340px;
   overflow: hidden;
+}
+.emoji-content {
+  width: 368px;
+  height: 405px;
+  overflow: hidden;
+  /deep/ .ant-tabs-nav.ant-tabs-nav-animated {
+    margin-top: 5px;
+  }
+  /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab {
+    border: none;
+    margin-right: 26px !important;
+    .anticon {
+      margin-right: 0px;
+    }
+  }
+  /deep/ .ant-tabs .ant-tabs-card-bar.ant-tabs-bottom-bar .ant-tabs-tab-active {
+    padding-top: 0px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
 }
 .carousel-circle {
   display: inline-block;
@@ -880,6 +932,32 @@ export default {
   cursor: pointer;
   &:hover {
     background-color: #efefef;
+  }
+}
+.heart-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: 346px;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .heart-item {
+    display: flex;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    margin-right: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    &:nth-child(5n) {
+      margin-right: 0px;
+    }
+    .upload-emo {
+      align-self: center;
+    }
   }
 }
 </style>

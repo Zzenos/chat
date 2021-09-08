@@ -164,7 +164,7 @@ class ZSocket {
       msg.evtName,
       {
         requestId: msg.requestId,
-        data: msg.data
+        data: msg.data.flat(Infinity)
       },
       ack => {
         const str = msg.data.map(j => JSON.stringify(j))

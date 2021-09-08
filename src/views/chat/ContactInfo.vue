@@ -64,7 +64,7 @@
       <div class="group">
         <a-avatar shape="square" :size="112" icon="user" :src="allInfo.wechatAvatar" />
         <div class="nameNum">
-          <div class="name">{{ allInfo.wechatName }}</div>
+          <div class="name">{{ allInfo.wechatName || '未命名' }}</div>
           <div class="num">
             <span>成员</span>
             <span style="color:rgba(0, 0, 0, 0.85)"> {{ memberCount }}</span>
@@ -79,9 +79,6 @@
     </div>
   </div>
   <no-data v-else />
-  <!-- <div class="default" v-else>
-    <img class="none" src="https://zm-bizchat.oss-cn-beijing.aliyuncs.com/bizchat-chat/images/icon_nodata.png" alt="" />
-  </div> -->
 </template>
 
 <script>
