@@ -39,5 +39,5 @@ deploy-job:
   stage: deploy
   script:
     - whoami
-    - rm -rf /home/bizchat_fe/release/bizchat_saas/chat
+    - sudo rm -rf /home/bizchat_fe/release/bizchat_saas/chat
     - sudo scp -r ./chat/* /home/bizchat_fe/release/bizchat_saas/chat
