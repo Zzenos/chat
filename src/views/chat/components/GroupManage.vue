@@ -49,8 +49,8 @@
             <span> {{ item.groupName }} </span>
             <span>（{{ item.memberCount }}）</span>
           </div>
-          <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">内部</span>
-          <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">外部</span>
+          <span v-if="item.lost == '1'" class="tag">内部</span>
+          <span v-if="item.lost == '3'" class="tag">外部</span>
         </div>
       </div>
     </div>
@@ -71,6 +71,7 @@ export default {
       searchData: {
         name: ''
       },
+      // 右侧搜索条件
       rightSearchData: {
         name: ''
       },
@@ -79,8 +80,6 @@ export default {
       allCheckOptions: [],
       // 勾选列表数据加载loading
       listLoading: false,
-      // 搜索防抖定时器
-      timer: null,
       checkedList: [],
       rightFilter: item => item
     }
@@ -92,28 +91,18 @@ export default {
       handler: function(n) {
         if (!n) return
         this.$socket.emit('unconcern_group_list', { tjId: this.tjId, isOwner: +n }, ack => {
-          console.log(ack)
-          this.checkedList = ack.data
+          this.checkedList = ack.data || []
           this.allCheckOptions = this.checkedList
         })
-        this.checkedList = []
-        this.allCheckOptions = this.checkedList
       }
     }
   },
   methods: {
     onSearch() {
-      // console.log(this.searchData.name, 'this.searchData.name')
       this.allCheckOptions = this.searchData.name ? this.checkedList.filter(ele => ele.groupName && ele.groupName.indexOf(this.searchData.name) > -1) : this.checkedList
     },
     changeRightFilter() {
-      // if (this.rightSearchData.name) {
-      //   return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
-      // } else {
-      //   return list
-      // }
       this.rightFilter = list => list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
-      // return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
     },
     closeModal() {
       this.$emit('update:visible', false)

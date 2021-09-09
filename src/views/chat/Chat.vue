@@ -29,7 +29,7 @@
         <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
           <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
         </span>
-        <!-- <div>由企业微信用户创建的外部群 ｜ 群主：次倩澜</div> -->
+        <div style="color:rgba(0,0,0,0.45);margin-top:4px;">由企业微信用户创建的外部群 ｜ 群主：{{ groupData.ownerName }}</div>
       </div>
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
