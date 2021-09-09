@@ -37,7 +37,7 @@
     </div>
     <div slot="rightTop">
       <div class="select-search">
-        <a-input-search v-model="rightSearchData.name" placeholder="请输入名称" allowClear style="width: 200px" @change="rightFilter" />
+        <a-input-search v-model="rightSearchData.name" placeholder="请输入名称" allowClear style="width: 200px" @change="changeRightFilter" />
       </div>
     </div>
     <div class="checked-item" slot="checkItem" slot-scope="{ item }">
@@ -58,7 +58,6 @@
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
 import SelectModal from '@/components/common/SelectModal.vue'
 
 export default {
@@ -82,7 +81,8 @@ export default {
       listLoading: false,
       // 搜索防抖定时器
       timer: null,
-      checkedList: []
+      checkedList: [],
+      rightFilter: item => item
     }
   },
   computed: {},
@@ -106,13 +106,14 @@ export default {
       // console.log(this.searchData.name, 'this.searchData.name')
       this.allCheckOptions = this.searchData.name ? this.checkedList.filter(ele => ele.groupName && ele.groupName.indexOf(this.searchData.name) > -1) : this.checkedList
     },
-    rightFilter(list) {
+    changeRightFilter() {
       // if (this.rightSearchData.name) {
       //   return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
       // } else {
       //   return list
       // }
-      return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
+      this.rightFilter = list => list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
+      // return list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
     },
     closeModal() {
       this.$emit('update:visible', false)
