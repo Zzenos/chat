@@ -1,0 +1,43 @@
+stages: # 分段
+  - install
+  # - eslint
+  - build
+  - deploy
+
+cache:
+  # untracked: true
+  # key: "$CI_COMMIT_REF_NAME"
+  paths:
+    - node_modules/
+    - chat/
+
+install-job:
+  tags:
+    - develop
+  stage: install
+  script:
+    - echo '安装依赖阶段....'
+    - npm install
+
+# eslint-job:
+#   tags:
+#     - develop
+#   stage: eslint
+#   script:
+#     - npm run eslint
+
+build-job:
+  tags:
+    - develop
+  stage: build
+  script:
+    - npm run build:test
+
+deploy-job:
+  tags:
+    - develop
+  stage: deploy
+  script:
+    - whoami
+    - sudo rm -rf /home/bizchat_fe/release/bizchat_saas/chat
+    - sudo rsync -r ./chat/* /home/bizchat_fe/release/bizchat_saas/chat
