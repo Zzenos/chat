@@ -40,4 +40,4 @@ deploy-job:
   script:
     - whoami
     - sudo rm -rf /home/bizchat_fe/release/bizchat_saas/chat
-    - sudo scp -r ./chat/* /home/bizchat_fe/release/bizchat_saas/chat
+    - sudo rsync -r ./chat/* /home/bizchat_fe/release/bizchat_saas/chat
