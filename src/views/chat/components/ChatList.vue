@@ -14,8 +14,8 @@
               <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
               <span v-if="item.chatType === 2">
                 <span class="count">（{{ item.memberCount }}）</span>
-                <span class="tag out">外部</span>
-                <!-- <span class="tag system">内部</span> -->
+                <!-- <span class="tag out">外部</span> -->
+                <span class="tag inner">内部</span>
               </span>
             </div>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
@@ -275,16 +275,22 @@ export default {
           text-align: center;
           border-radius: 2px;
           font-size: 12px;
-          margin-left: 8px;
           &.system {
             width: 30px;
             background: #e1eaff;
             color: #1d61ef;
+            margin-left: 8px;
           }
           &.out {
             width: 30px;
             background: #daf2e8;
             color: #0ea860;
+            margin-left: 0px;
+          }
+          &.inner {
+            width: 30px;
+            background: #e1eaff;
+            color: #1d61ef;
             margin-left: 0px;
           }
         }

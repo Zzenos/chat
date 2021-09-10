@@ -41,17 +41,18 @@
       </div>
     </div>
     <div class="checked-item" slot="checkItem" slot-scope="{ item }">
-      <!-- <svg-icon v-if="item.chatType === 2" class-name="avatar" icon-class="icon_groupchat"></svg-icon> -->
-      <img class="avatar" :src="item.groupAvatar" alt="" />
+      <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
+      <!-- <img class="avatar" :src="item.groupAvatar" alt="" /> -->
       <div class="info">
         <div class="nickname">
           <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '150px' : '200px' }">
             <span> {{ item.groupName }} </span>
             <span>（{{ item.memberCount }}）</span>
           </div>
-          <span v-if="item.lost == '1'" class="tag">内部</span>
-          <span v-if="item.lost == '3'" class="tag">外部</span>
+          <span class="tag">内部</span>
+          <span class="tag out">外部</span>
         </div>
+        <div class="owner">账号信息: {{ item.ownerName }}</div>
       </div>
     </div>
   </select-modal>
@@ -91,7 +92,50 @@ export default {
       handler: function(n) {
         if (!n) return
         this.$socket.emit('unconcern_group_list', { tjId: this.tjId, isOwner: +n }, ack => {
-          this.checkedList = ack.data || []
+          this.checkedList =
+            ack.data.length != 0
+              ? ack.data
+              : [
+                  {
+                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
+                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f73', // 群编号
+                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
+                    groupName: '群名称aaaHunter Aguilar,邱叶时,松妍岚', //群名称
+                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f733', //群主id
+                    ownerName: '群主111', //群主名称
+                    createTime: '', //创群时间
+                    inContact: false, //是否保存在通讯录
+                    isOpen: false, //是否关注群
+                    chatType: 2,
+                    memberCount: 7
+                  },
+                  {
+                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
+                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f74', // 群编号
+                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
+                    groupName: '群名称bbb', //群名称
+                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f744', //群主id
+                    ownerName: '群主222', //群主名称
+                    createTime: '', //创群时间
+                    inContact: false, //是否保存在通讯录
+                    isOpen: false, //是否关注群
+                    chatType: 2,
+                    memberCount: 7
+                  },
+                  {
+                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
+                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', // 群编号
+                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
+                    groupName: '群名称ccc', //群名称
+                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f755', //群主id
+                    ownerName: '群主333', //群主名称
+                    createTime: '', //创群时间
+                    inContact: false, //是否保存在通讯录
+                    isOpen: false, //是否关注群
+                    chatType: 2,
+                    memberCount: 7
+                  }
+                ]
           this.allCheckOptions = this.checkedList
         })
       }
@@ -125,5 +169,36 @@ export default {
     padding-bottom: 10px;
   }
   @include checkedItem();
+}
+.select-group_modal .checked-item {
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    height: 40px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    .nickname {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 22px;
+      .tag {
+        width: 30px;
+      }
+      .out {
+        color: #0ea860;
+        background: #daf2e8;
+      }
+    }
+    .owner {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+      line-height: 18px;
+    }
+  }
 }
 </style>

@@ -32,7 +32,7 @@
                 </div>
                 <span>（{{ item.memberCount }}）</span>
                 <span class="out common">外部</span>
-                <!-- <span class="inner common">内部</span> -->
+                <span class="inner common">内部</span>
               </div>
             </div>
           </RecycleScroller>
@@ -200,7 +200,6 @@ export default {
     },
     showGroupManage() {
       this.groupManageVisible = true
-      console.log(this.tjId)
     },
     concernGroup() {
       this.groupManageVisible = false
@@ -296,6 +295,8 @@ export default {
         border-radius: 2px;
         font-size: 11px;
         line-height: 16px;
+        text-align: center;
+        padding-top: 1px;
         &.out {
           background: #daf2e8;
           color: #0ea860;
