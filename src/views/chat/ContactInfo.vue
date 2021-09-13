@@ -66,8 +66,8 @@
         <div class="nameNum">
           <div class="name">
             <span>{{ allInfo.wechatName || '未命名' }}</span>
-            <span class="out common">外部</span>
-            <span class="inner common">内部</span>
+            <span class="out common" v-if="allInfo.isInner === 0">外部</span>
+            <span class="inner common" v-if="allInfo.isInner === 1">内部</span>
           </div>
           <div class="num">
             <span>成员</span>

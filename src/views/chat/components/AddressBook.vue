@@ -31,8 +31,8 @@
                   <span v-html="item.wechatName || '未命名'"></span>
                 </div>
                 <span>（{{ item.memberCount }}）</span>
-                <span class="out common">外部</span>
-                <span class="inner common">内部</span>
+                <span class="out common" v-if="item.isInner === 0">外部</span>
+                <span class="inner common" v-if="item.isInner === 1">内部</span>
               </div>
             </div>
           </RecycleScroller>

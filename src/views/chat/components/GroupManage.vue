@@ -41,16 +41,15 @@
       </div>
     </div>
     <div class="checked-item" slot="checkItem" slot-scope="{ item }">
-      <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-      <!-- <img class="avatar" :src="item.groupAvatar" alt="" /> -->
+      <img class="avatar" :src="item.groupAvatar" alt="" />
       <div class="info">
         <div class="nickname">
           <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '150px' : '200px' }">
-            <span> {{ item.groupName }} </span>
+            <span> {{ item.groupName || '未命名' }} </span>
             <span>（{{ item.memberCount }}）</span>
           </div>
-          <span class="tag">内部</span>
-          <span class="tag out">外部</span>
+          <span class="tag" v-if="item.isInner === 1">内部</span>
+          <span class="tag out" v-if="item.isInner === 0">外部</span>
         </div>
         <div class="owner">账号信息: {{ item.ownerName }}</div>
       </div>
@@ -92,50 +91,17 @@ export default {
       handler: function(n) {
         if (!n) return
         this.$socket.emit('unconcern_group_list', { tjId: this.tjId, isOwner: +n }, ack => {
-          this.checkedList =
-            ack.data.length != 0
-              ? ack.data
-              : [
-                  {
-                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
-                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f73', // 群编号
-                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
-                    groupName: '群名称aaaHunter Aguilar,邱叶时,松妍岚', //群名称
-                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f733', //群主id
-                    ownerName: '群主111', //群主名称
-                    createTime: '', //创群时间
-                    inContact: false, //是否保存在通讯录
-                    isOpen: false, //是否关注群
-                    chatType: 2,
-                    memberCount: 7
-                  },
-                  {
-                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
-                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f74', // 群编号
-                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
-                    groupName: '群名称bbb', //群名称
-                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f744', //群主id
-                    ownerName: '群主222', //群主名称
-                    createTime: '', //创群时间
-                    inContact: false, //是否保存在通讯录
-                    isOpen: false, //是否关注群
-                    chatType: 2,
-                    memberCount: 7
-                  },
-                  {
-                    tjId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', //探鲸id
-                    groupId: '8e0ed7da6f8c45fc882f4cbd0dc82f75', // 群编号
-                    groupAvatar: 'https://wework.qpic.cn/icZ6MpywvK07Q/0', // 头像默认
-                    groupName: '群名称ccc', //群名称
-                    ownerId: '8e0ed7da6f8c45fc882f4cbd0dc82f755', //群主id
-                    ownerName: '群主333', //群主名称
-                    createTime: '', //创群时间
-                    inContact: false, //是否保存在通讯录
-                    isOpen: false, //是否关注群
-                    chatType: 2,
-                    memberCount: 7
-                  }
-                ]
+          this.checkedList = ack.data || []
+          this.allCheckOptions = this.checkedList
+        })
+      }
+    },
+    tjId: {
+      immediate: true,
+      handler: function(n) {
+        if (!n) return
+        this.$socket.emit('unconcern_group_list', { tjId: n, isOwner: +this.curSource }, ack => {
+          this.checkedList = ack.data || []
           this.allCheckOptions = this.checkedList
         })
       }
@@ -150,6 +116,7 @@ export default {
     },
     closeModal() {
       this.$emit('update:visible', false)
+      this.curSource = '1'
     },
     confirmSelect(checkedList) {
       this.$emit('confirmSelect', checkedList)

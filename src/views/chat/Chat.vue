@@ -17,8 +17,8 @@
         <span v-if="chatType == 2" class="group ellipsis">
           {{ groupInfo.groupName }}
           <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
-          <span class="out common">外部</span>
-          <span class="inner common">内部</span>
+          <span class="out common" v-if="groupInfo.isInner === 0">外部</span>
+          <span class="inner common" v-if="groupInfo.isInner === 1">内部</span>
         </span>
         <!-- 成员名称 -->
         <span v-if="chatType == 3" class="member ellipsis">
@@ -29,7 +29,7 @@
         <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
           <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
         </span>
-        <div style="color:rgba(0,0,0,0.45);margin-top:4px;">由企业微信用户创建的外部群 ｜ 群主：{{ groupData.ownerName }}</div>
+        <div style="color:rgba(0,0,0,0.45);margin-top:4px;" v-if="groupInfo.isInner === 0">由企业微信用户创建的外部群 ｜ 群主：{{ groupData.ownerName }}</div>
       </div>
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
