@@ -710,6 +710,7 @@ export default {
       max-width: 100%;
       min-height: 21px;
       text-align: left;
+      font-size: 14px;
       padding: 0 24px;
       position: relative;
       word-break: break-word;
