@@ -37,7 +37,7 @@
             </div>
           </RecycleScroller>
           <div class="group-manage" @click="showGroupManage">群聊管理</div>
-          <group-manage :visible.sync="groupManageVisible" title="选择关注群聊" :tjId="tjId" @confirmSelect="concernGroup" />
+          <group-manage :visible.sync="groupManageVisible" title="选择关注群聊" ref="group" :tjId="tjId" @confirmSelect="concernGroup" />
           <no-data v-if="groupListAry.length === 0" />
         </a-tab-pane>
         <a-tab-pane key="member" tab="成员">
@@ -200,6 +200,7 @@ export default {
     },
     showGroupManage() {
       this.groupManageVisible = true
+      this.$refs.group.getGroupList()
     },
     concernGroup() {
       this.groupManageVisible = false

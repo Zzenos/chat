@@ -239,6 +239,13 @@ export default {
       this.checkedList = checkedList
       this.indeterminate = !!checkedList.length && checkedList.length < this.checkOptions.length
       this.checkAll = this.checkOptions.length ? checkedList.length === this.checkOptions.length : false
+    },
+    echodCheckedList: {
+      immediate: true,
+      handler: function(n) {
+        if (!n) return
+        this.echoSelect()
+      }
     }
   },
   beforeCreate() {
@@ -260,9 +267,32 @@ export default {
       // 回显勾选的数据
       this.checkedRightList = deepClone(this.echodCheckedList)
       this.checkedList = this.echodCheckedList.map(item => item[this.checkOptionKey])
-      // 处理全选勾选框
-      this.indeterminate = !!this.checkedList.length && this.checkedList.length < this.checkOptions.length
-      this.checkAll = this.checkOptions.length ? this.checkedList.length === this.checkOptions.length : false
+      // 处理全选勾选框 半选 ==> 回显勾选的数据 checkedList 中有一个存在于 可选列表checkOptions中
+      // this.indeterminate = !!this.checkedList.length && this.checkedList.length < this.checkOptions.length
+      if (this.checkedList.length > 0) {
+        this.indeterminate = false
+        this.checkedList.forEach(i => {
+          if (this.checkOptions.find(v => v[this.checkOptionKey] === i)) {
+            this.indeterminate = true
+          }
+        })
+      } else {
+        this.indeterminate = false
+      }
+      // 处理全选勾选框 全选 ==> 可选列表checkOptions中 有一个不存在于 回显勾选的数据 checkedList中
+      // this.checkAll = this.checkOptions.length ? this.checkedList.length === this.checkOptions.length : false
+      if (this.checkOptions.length > 0) {
+        this.checkAll = true
+        this.indeterminate = false
+        this.checkOptions.forEach(i => {
+          if (!this.checkedList.find(v => v === i[this.checkOptionKey])) {
+            this.checkAll = false
+            this.indeterminate = true
+          }
+        })
+      } else {
+        this.checkAll = false
+      }
     },
     /**
      * @author 王泽

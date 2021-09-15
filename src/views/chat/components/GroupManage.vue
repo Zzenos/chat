@@ -10,6 +10,7 @@
     :loading="listLoading"
     :allCheckOptions="allCheckOptions || checkOptions"
     checkOptionKey="groupId"
+    :echodCheckedList="defaultList"
     :rightFilter="rightFilter"
     @close="closeModal"
     @confirm="confirmSelect"
@@ -81,7 +82,9 @@ export default {
       // 勾选列表数据加载loading
       listLoading: false,
       checkedList: [],
-      rightFilter: item => item
+      defaultList: [],
+      rightFilter: list => list,
+      flag: true
     }
   },
   computed: {},
@@ -89,21 +92,16 @@ export default {
     curSource: {
       immediate: true,
       handler: function(n) {
+        console.log(n, 'curSource')
         if (!n) return
-        this.$socket.emit('unconcern_group_list', { tjId: this.tjId, isOwner: +n }, ack => {
-          this.checkedList = ack.data || []
-          this.allCheckOptions = this.checkedList
-        })
+        this.getGroupList()
       }
     },
     tjId: {
       immediate: true,
       handler: function(n) {
         if (!n) return
-        this.$socket.emit('unconcern_group_list', { tjId: n, isOwner: +this.curSource }, ack => {
-          this.checkedList = ack.data || []
-          this.allCheckOptions = this.checkedList
-        })
+        this.getGroupList()
       }
     }
   },
@@ -112,15 +110,28 @@ export default {
       this.allCheckOptions = this.searchData.name ? this.checkedList.filter(ele => ele.groupName && ele.groupName.indexOf(this.searchData.name) > -1) : this.checkedList
     },
     changeRightFilter() {
-      this.rightFilter = list => list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1)
+      this.rightFilter = this.rightSearchData.name ? list => list.filter(item => item.groupName && item.groupName.indexOf(this.rightSearchData.name) > -1) : list => list
+    },
+    getGroupList() {
+      this.$socket.emit('group_list', { tjId: this.tjId }, ack => {
+        let arr = ack.data.filter(item => item.isOwner == this.curSource)
+        this.checkedList = arr || []
+        this.allCheckOptions = this.checkedList
+        if (this.flag) this.defaultList = ack.data.filter(item => item.isOpen)
+        this.flag = false
+      })
     },
     closeModal() {
       this.$emit('update:visible', false)
       this.curSource = '1'
+      // this.getGroupList(1)
+      this.flag = true
     },
     confirmSelect(checkedList) {
       this.$emit('confirmSelect', checkedList)
-      this.$socket.emit('concern_group', { tjId: this.tjId, groupList: checkedList })
+      let ids = []
+      checkedList.forEach(v => ids.push(v.groupId))
+      this.$socket.emit('concern_group', { tjId: this.tjId, groupList: ids })
     }
   },
   mounted() {
