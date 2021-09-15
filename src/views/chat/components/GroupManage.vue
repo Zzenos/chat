@@ -25,7 +25,7 @@
       <div style="margin-bottom: 10px;">
         <a-radio-group v-model="curSource" button-style="solid">
           <a-radio-button value="1">
-            我创建的群(群主)
+            我创建的群
           </a-radio-button>
           <a-radio-button value="0">
             我加入的群
