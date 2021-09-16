@@ -30,13 +30,17 @@ export default {
       deep: true,
       handler: function(n) {
         if (!n) return
-        if (this.curAct) return
-        if (this.$route.params.tjId) {
+        if (this.curAct && n.some(i => i.info.tjId === this.curAct.info.tjId)) return
+        if (this.accounts.length === 0) {
+          this.$router.push({ path: `/chatframe` })
+          return
+        }
+        if (this.$route.params.tjId && n.some(i => i.info.tjId === this.$route.params.tjId)) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
-        } else if (!this.curAct && this.accounts.length > 0) {
+        } else {
           this.curAct = this.accounts[0]
           const { wechatId, wechatName } = this.curAct.info
-          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
+          this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
         }
         if (this.curAct) {
           const tjId = this.curAct.info.tjId
