@@ -30,7 +30,9 @@ export default {
       deep: true,
       handler: function(n) {
         if (!n) return
+        // curAct 当前选中账号 存在于账号列表中无需操作 若不存在说明离线
         if (this.curAct && n.some(i => i.info.tjId === this.curAct.info.tjId)) return
+        // 当前账号列表为空 返回初始页
         if (this.accounts.length === 0) {
           this.$router.push({ path: `/chatframe` })
           return
@@ -38,6 +40,7 @@ export default {
         if (this.$route.params.tjId && n.some(i => i.info.tjId === this.$route.params.tjId)) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
         } else {
+          // 未选中账号 或 当前选中账号离线 则切换为账号列表的第一个
           this.curAct = this.accounts[0]
           const { wechatId, wechatName } = this.curAct.info
           this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
