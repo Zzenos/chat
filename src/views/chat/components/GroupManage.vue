@@ -92,7 +92,6 @@ export default {
     curSource: {
       immediate: true,
       handler: function(n) {
-        console.log(n, 'curSource')
         if (!n) return
         this.getGroupList()
       }

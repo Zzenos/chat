@@ -26,13 +26,16 @@
           <RecycleScroller class="list-wraper group" :items="groupListAry" :emitUpdate="true" :item-size="64" key-field="wechatId" v-slot="{ item }">
             <div class="item" :class="{ active: curAddress.wechatId === item.wechatId }" @click="handleItem(item)">
               <svg-icon class-name="avatar" icon-class="icon_groupchat"></svg-icon>
-              <div class="nickname">
-                <div class="ellipsis" :style="{ 'max-width': '140px' }">
-                  <span v-html="item.wechatName || '未命名'"></span>
+              <div class="group-info">
+                <div class="nickname">
+                  <div class="ellipsis" :style="{ 'max-width': '140px' }">
+                    <span v-html="item.wechatName || '未命名'"></span>
+                  </div>
+                  <span>（{{ item.memberCount }}）</span>
+                  <span class="out common" v-if="item.isInner === 0">外部</span>
+                  <span class="inner common" v-if="item.isInner === 1">内部</span>
                 </div>
-                <span>（{{ item.memberCount }}）</span>
-                <span class="out common" v-if="item.isInner === 0">外部</span>
-                <span class="inner common" v-if="item.isInner === 1">内部</span>
+                <div class="owner">群主: {{ item.ownerName }}</div>
               </div>
             </div>
           </RecycleScroller>
@@ -272,7 +275,7 @@ export default {
     .nickname {
       display: flex;
       align-items: center;
-      width: 230px;
+      width: 220px;
       text-align: left;
       .label {
         color: #0ead63;
@@ -291,7 +294,7 @@ export default {
         margin-left: 8px;
       }
       .common {
-        width: 30px;
+        width: 28px;
         height: 18px;
         border-radius: 2px;
         font-size: 11px;
@@ -307,6 +310,18 @@ export default {
           color: #1d61ef;
         }
       }
+    }
+    .group-info {
+      display: flex;
+      flex-direction: column;
+      width: 220px;
+    }
+    .owner {
+      text-align: left;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 12px;
+      line-height: 18px;
+      margin-top: 4px;
     }
   }
 }
