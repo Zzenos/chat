@@ -1,13 +1,10 @@
 stages: # 分段
   - install
-  # - eslint
   - build
   - deploy
   - notify
 
 cache:
-  # untracked: true
-  # key: "$CI_COMMIT_REF_NAME"
   paths:
     - node_modules/
     - chat/
@@ -15,21 +12,20 @@ cache:
 install-job:
   tags:
     - develop
+  only: # 哪些分支触发
+    - develop
+    - release  
   stage: install
   script:
     - echo '安装依赖阶段....'
     - npm install
 
-# eslint-job:
-#   tags:
-#     - develop
-#   stage: eslint
-#   script:
-#     - npm run eslint
-
 build-job:
   tags:
     - develop
+  only: # 哪些分支触发
+    - develop
+    - release  
   stage: build
   script:
     - npm run build:test
@@ -37,6 +33,9 @@ build-job:
 deploy-job:
   tags:
     - develop
+  only: # 哪些分支触发
+    - develop
+    - release  
   stage: deploy
   script:
     - whoami
@@ -52,6 +51,9 @@ notifySuccessWeChat:
     - curl 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=6f60f324-9b72-4ad4-b2a9-359fe86812b3' -H 'Content-Type:application/json' -d "{\"msgtype\":\"markdown\",\"markdown\":{\"content\":\"微客_前端_聊天工具-部署结果：<font color=\\"info\\">成功</font>\n>请前往发布平台下载体验\n>本次构建由：$GITLAB_USER_NAME 触发\n>项目名称：$CI_PROJECT_NAME\n>提交号：$CI_COMMIT_SHA\n>提交日志：$CI_COMMIT_MESSAGE\n>构建分支：$CI_COMMIT_BRANCH\n>流水线地址：[$CI_PIPELINE_URL]($CI_PIPELINE_URL)\"}}"
   tags:
     - develop
+  only: # 哪些分支触发
+    - develop
+    - release  
   when: on_success    
 
 # 构建失败时的通知消息
@@ -62,5 +64,8 @@ notifyFailWeChat:
     - curl 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=6f60f324-9b72-4ad4-b2a9-359fe86812b3' -H 'Content-Type:application/json' -d "{\"msgtype\":\"markdown\",\"markdown\":{\"content\":\"微客_前端_聊天工具-部署结果：<font color=\\"warning\\">失败</font>\n>本次构建由：$GITLAB_USER_NAME 触发\n>项目名称：$CI_PROJECT_NAME\n>提交号：$CI_COMMIT_SHA\n>提交日志：$CI_COMMIT_MESSAGE\n>构建分支：$CI_COMMIT_BRANCH\n>流水线地址：[$CI_PIPELINE_URL]($CI_PIPELINE_URL)\"}}"
   tags:
     - develop
+  only: # 哪些分支触发
+    - develop
+    - release  
   when: on_failure  
 
