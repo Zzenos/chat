@@ -2,33 +2,35 @@
   <div class="chat-cotainer" v-if="chatId != 0">
     <div class="main-container">
       <div class="wrap-title">
-        <!-- 官方 -->
-        <span v-if="chatType == 0" class="friend ellipsis">
-          {{ wechatName }}
-          <span class="system common">官方</span>
-        </span>
-        <!-- 客户名称 -->
-        <span v-if="chatType == 1" class="friend ellipsis">
-          {{ wechatName }}
-          <span v-if="company" class="company common">{{ '@' + company }}</span>
-          <span v-else class="we-chat common"> @微信</span>
-        </span>
-        <!-- 群聊名称 -->
-        <span v-if="chatType == 2" class="group ellipsis">
-          {{ groupInfo.groupName }}
-          <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
-          <span class="out common" v-if="groupInfo.isInner === 0">外部</span>
-          <span class="inner common" v-if="groupInfo.isInner === 1">内部</span>
-        </span>
-        <!-- 成员名称 -->
-        <span v-if="chatType == 3" class="member ellipsis">
-          {{ wechatName }}
-          <span class="company common">{{ '@' + company }}</span>
-        </span>
-        <!-- 流失状态显示 -->
-        <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
-          <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
-        </span>
+        <div style="display:flex;align-items:center;">
+          <!-- 官方 -->
+          <span v-if="chatType == 0" class="friend ellipsis">
+            {{ wechatName }}
+            <span class="system common">官方</span>
+          </span>
+          <!-- 客户名称 -->
+          <span v-if="chatType == 1" class="friend ellipsis">
+            {{ wechatName }}
+            <span v-if="company" class="company common">{{ '@' + company }}</span>
+            <span v-else class="we-chat common"> @微信</span>
+          </span>
+          <!-- 群聊名称 -->
+          <span v-if="chatType == 2" class="group ellipsis">
+            {{ groupInfo.groupName }}
+            <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
+            <span class="out common" v-if="groupInfo.isInner === 0">外部</span>
+            <span class="inner common" v-if="groupInfo.isInner === 1">内部</span>
+          </span>
+          <!-- 成员名称 -->
+          <span v-if="chatType == 3" class="member ellipsis">
+            {{ wechatName }}
+            <span class="company common">{{ '@' + company }}</span>
+          </span>
+          <!-- 流失状态显示 -->
+          <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
+            <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
+          </span>
+        </div>
         <div style="color:rgba(0,0,0,0.45);margin-top:4px;" v-if="groupInfo.isInner === 0">由企业微信用户创建的外部群 ｜ 群主：{{ groupData.ownerName }}</div>
       </div>
       <div class="wrap-body">
@@ -894,12 +896,12 @@ export default {
         color: #1d61ef;
       }
       .lost-customer-title {
-        float: left;
-        margin: 25px 0px;
         width: 56px;
         height: 18px;
         background: #dcdee0;
+        margin-left: 8px;
         border-radius: 2px;
+        text-align: center;
         .text {
           color: rgba(0, 0, 0, 0.65);
           font-size: 11px;
@@ -1241,6 +1243,9 @@ export default {
     font-weight: 400;
   }
   .system {
+    width: 30px;
+    background: #e1eaff;
+    padding: 1px 2px;
     color: #1d61ef;
   }
   .company {
