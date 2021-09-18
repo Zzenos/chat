@@ -275,6 +275,7 @@ export default {
           text-align: center;
           border-radius: 2px;
           font-size: 12px;
+          margin-left: 8px;
           &.system {
             width: 30px;
             background: #e1eaff;
