@@ -5,7 +5,12 @@
         <a-badge :count="item.unreadCount" :overflow-count="99">
           <img :src="item.info.wechatAvatar" alt="" />
         </a-badge>
-        <div class="nickname ellipsis" v-html="item.info.wechatName"></div>
+        <a-tooltip placement="right">
+          <template slot="title">
+            {{ item.info.wechatName }}
+          </template>
+          <div class="nickname ellipsis" v-html="item.info.wechatName"></div>
+        </a-tooltip>
       </div>
     </div>
   </div>

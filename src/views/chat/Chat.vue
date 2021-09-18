@@ -31,7 +31,7 @@
             <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
           </span>
         </div>
-        <div style="color:rgba(0,0,0,0.45);margin-top:4px;" v-if="groupInfo.isInner === 0">由企业微信用户创建的外部群 ｜ 群主：{{ groupData.ownerName }}</div>
+        <div style="color:rgba(0,0,0,0.45);margin-top:4px;" v-if="chatType == 2">由企业微信用户创建的{{ groupInfo.isInner === 0 ? '外部' : '内部' }}群 ｜ 群主：{{ groupData.ownerName }}</div>
       </div>
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
@@ -225,6 +225,7 @@
             <span v-if="company" class="company common">{{ '@' + company }}</span>
             <span v-else class="we-chat common"> @微信</span>
           </div>
+          <div v-else style="font-size: 14px;color: rgba(0,0,0,0.85);line-height: 22px;text-align: left;">群主: {{ groupInfo.ownerName }}</div>
         </div>
       </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
