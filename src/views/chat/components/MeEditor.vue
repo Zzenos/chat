@@ -256,7 +256,7 @@ export default {
             // 当前节点为注释节点
           } else {
             //当前节点为文字节点  textContent  wholeText
-            curText = curText + allnodes[i].textContent
+            curText = curText + (allnodes[i].nodeName == '#text' ? allnodes[i].textContent : allnodes[i].nodeName == 'BR' ? '\n' : '')
           }
           if (i == allnodes.length - 1 && curText) {
             curTextList.push(curText)
