@@ -254,9 +254,18 @@ export default {
             }
           } else if (allnodes[i].nodeName === '#comment') {
             // 当前节点为注释节点
-          } else {
+          } else if (allnodes[i].nodeName === '#text') {
             //当前节点为文字节点  textContent  wholeText
-            curText = curText + (allnodes[i].nodeName == '#text' ? allnodes[i].textContent : allnodes[i].nodeName == 'BR' ? '\n' : '')
+            curText = curText + allnodes[i].textContent
+          } else if (allnodes[i].nodeName === 'BR') {
+            //当前节点为换行节点
+            curText = curText + '\n'
+          } else if (allnodes[i].nodeName === 'DIV') {
+            //当前节点  粘贴过来的格式 按div来 换行
+            curText = curText + allnodes[i].textContent + '\n'
+          } else {
+            //当前节点  预留直接粘贴过来为 span
+            curText = curText + allnodes[i].textContent
           }
           if (i == allnodes.length - 1 && curText) {
             curTextList.push(curText)
@@ -715,6 +724,9 @@ export default {
       position: relative;
       word-break: break-word;
       letter-spacing: 1px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(0, 0, 0, 0.85);
       /deep/ img {
         max-width: 200px;
         width: auto;
@@ -735,7 +747,7 @@ export default {
       }
       /deep/ span {
         font-family: PingFangSC-Regular, PingFang SC !important;
-        color: #2c3e50 !important;
+        color: rgba(0, 0, 0, 0.85) !important;
         font-size: 14px !important;
         line-height: 1.5 !important;
         background-color: transparent !important;
