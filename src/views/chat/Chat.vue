@@ -235,7 +235,7 @@
               <div class="title">群公告</div>
               <div class="content">
                 <div class="detail ellipsis">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
-                <div class="edit" @click="editNotice">></div>
+                <div class="edit" v-if="isManager()" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
                 <div class="write-notice">
@@ -251,7 +251,7 @@
               <img src="@/assets/icon_addmembers.png" alt="" />
               <span>添加成员</span>
             </div>
-            <div class="operate last" @click="changeMembers('del')">
+            <div class="operate last" v-if="isManager()" @click="changeMembers('del')">
               <img src="@/assets/icon_deletemembers.png" alt="" />
               <span>删除成员</span>
             </div>
@@ -726,6 +726,16 @@ export default {
         let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
       })
+    },
+    // 判断是否是群管理员
+    isManager() {
+      let flag = false
+      this.groupData.members.forEach(i => {
+        if (i.tjId === this.tjId) {
+          flag = i.type != 0
+        }
+      })
+      return flag
     }
   },
   watch: {
@@ -1224,6 +1234,7 @@ export default {
       .operate {
         height: 36px;
         margin-top: 20px;
+        margin-bottom: 10px;
         cursor: pointer;
         span {
           margin-left: 12px;
