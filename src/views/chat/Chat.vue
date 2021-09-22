@@ -597,7 +597,7 @@ export default {
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
         chatType == 2
-          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId || this.tjId } }
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: this.tjId } }
           : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,

@@ -280,19 +280,16 @@ export default {
             width: 30px;
             background: #e1eaff;
             color: #1d61ef;
-            margin-left: 8px;
           }
           &.out {
             width: 30px;
             background: #daf2e8;
             color: #0ea860;
-            margin-left: 0px;
           }
           &.inner {
             width: 30px;
             background: #e1eaff;
             color: #1d61ef;
-            margin-left: 0px;
           }
         }
       }
