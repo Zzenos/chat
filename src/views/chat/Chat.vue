@@ -642,11 +642,11 @@ export default {
     },
     operateMeb(list, type) {
       this.operateMebVisible = false
+      let ids = list.map(item => item.wechatId)
       if (type == 'add') {
-        let ids = list.map(item => item.wechatId)
         this.$socket.emit('inviter_join_group', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
       } else {
-        this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
+        this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
       }
     },
     // 确认编辑群名称

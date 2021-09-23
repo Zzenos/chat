@@ -10,7 +10,6 @@
     :loading="listLoading"
     :allCheckOptions="allCheckOptions || checkOptions"
     :showAllCheck="showAllCheck"
-    :isRadio="isRadio"
     checkOptionKey="wechatId"
     @close="closeModal"
     @confirm="confirmSelect"
@@ -99,7 +98,8 @@ export default {
       })
     },
     showAllCheck() {
-      return this.operateType == 'add' ? true : false
+      // return this.operateType == 'add' ? true : false
+      return true
     },
     isRadio() {
       return this.operateType !== 'add'
