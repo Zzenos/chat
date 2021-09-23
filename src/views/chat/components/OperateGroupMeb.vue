@@ -18,7 +18,7 @@
     <div slot="modalTop">
       <div style="margin-bottom: 10px;">
         <a-radio-group v-if="operateType == 'add'" v-model="curSource" button-style="solid">
-          <a-radio-button value="customer">
+          <a-radio-button value="customer" v-if="groupType === 0">
             我的客户
           </a-radio-button>
           <a-radio-button value="member">
@@ -60,7 +60,7 @@ export default {
   components: {
     SelectModal
   },
-  props: ['visible', 'title', 'groupList', 'operateType'],
+  props: ['visible', 'title', 'groupList', 'operateType', 'groupType'],
   data() {
     return {
       // 左侧搜索条件
@@ -128,7 +128,7 @@ export default {
     }
   },
   mounted() {
-    this.curSource = 'customer'
+    this.curSource = this.groupType === 0 ? 'customer' : 'member'
   }
 }
 </script>

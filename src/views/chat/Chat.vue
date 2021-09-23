@@ -255,7 +255,15 @@
               <img src="@/assets/icon_deletemembers.png" alt="" />
               <span>删除成员</span>
             </div>
-            <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
+            <operate-group-meb
+              v-if="operateMebVisible"
+              :title="operateTitle"
+              :visible.sync="operateMebVisible"
+              :operateType="operateType"
+              :groupList="groupInfo.members"
+              :groupType="groupInfo.isInner"
+              @confirmSelect="operateMeb"
+            />
             <div class="member-container">
               <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" :ownerId="groupInfo.ownerId" />
             </div>
