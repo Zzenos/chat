@@ -83,7 +83,7 @@ export default {
           background-image: url('../../../assets/chat_icon_collection.png');
         }
         &.close {
-          background-image: url('../../../assets/关闭 (1).png');
+          background-image: url('../../../assets/close.png');
           background-size: 20px 20px;
         }
       }

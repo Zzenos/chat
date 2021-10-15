@@ -2,31 +2,36 @@
   <div class="chat-cotainer" v-if="chatId != 0">
     <div class="main-container">
       <div class="wrap-title">
-        <!-- 官方 -->
-        <span v-if="chatType == 0" class="friend ellipsis">
-          {{ wechatName }}
-          <span class="system common">官方</span>
-        </span>
-        <!-- 客户名称 -->
-        <span v-if="chatType == 1" class="friend ellipsis">
-          {{ wechatName }}
-          <span v-if="company" class="company common">{{ '@' + company }}</span>
-          <span v-else class="we-chat common"> @微信</span>
-        </span>
-        <!-- 群聊名称 -->
-        <span v-if="chatType == 2" class="group ellipsis">
-          {{ groupInfo.groupName }}
-          <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
-        </span>
-        <!-- 成员名称 -->
-        <span v-if="chatType == 3" class="member ellipsis">
-          {{ wechatName }}
-          <span class="company common">{{ '@' + company }}</span>
-        </span>
-        <!-- 流失状态显示 -->
-        <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
-          <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
-        </span>
+        <div style="display:flex;align-items:center;">
+          <!-- 官方 -->
+          <span v-if="chatType == 0" class="friend ellipsis">
+            {{ wechatName }}
+            <span class="system common">官方</span>
+          </span>
+          <!-- 客户名称 -->
+          <span v-if="chatType == 1" class="friend ellipsis">
+            {{ wechatName }}
+            <span v-if="company" class="company common">{{ '@' + company }}</span>
+            <span v-else class="we-chat common"> @微信</span>
+          </span>
+          <!-- 群聊名称 -->
+          <span v-if="chatType == 2" class="group ellipsis">
+            {{ groupInfo.groupName }}
+            <span class="num" v-if="groupInfo.memberCount">{{ '(' + groupInfo.memberCount + ')' }}</span>
+            <span class="out common" v-if="groupInfo.isInner === 0">外部</span>
+            <span class="inner common" v-if="groupInfo.isInner === 1">内部</span>
+          </span>
+          <!-- 成员名称 -->
+          <span v-if="chatType == 3" class="member ellipsis">
+            {{ wechatName }}
+            <span class="company common">{{ '@' + company }}</span>
+          </span>
+          <!-- 流失状态显示 -->
+          <span class="lost-customer-title" v-if="[1, 3].includes(isLost)">
+            <span class="text" v-text="isLost == 1 ? '流失客户' : '删除客户'"></span>
+          </span>
+        </div>
+        <div style="color:rgba(0,0,0,0.45);margin-top:4px;" v-if="chatType == 2">由企业微信用户创建的{{ groupInfo.isInner === 0 ? '外部' : '内部' }}群 ｜ 群主：{{ groupData.ownerName }}</div>
       </div>
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
@@ -220,6 +225,7 @@
             <span v-if="company" class="company common">{{ '@' + company }}</span>
             <span v-else class="we-chat common"> @微信</span>
           </div>
+          <div v-else style="font-size: 14px;color: rgba(0,0,0,0.85);line-height: 22px;text-align: left;">群主: {{ groupInfo.ownerName }}</div>
         </div>
       </div>
       <a-tabs v-model="activeKey" :default-active-key="activeKey" :tabBarGutter="5" type="card" v-if="chatType == 2">
@@ -229,7 +235,7 @@
               <div class="title">群公告</div>
               <div class="content">
                 <div class="detail ellipsis">{{ groupInfo.groupNotice || '暂无群公告' }}</div>
-                <div class="edit" @click="editNotice">></div>
+                <div class="edit" v-if="isManager()" @click="editNotice">></div>
               </div>
               <a-modal v-model="editNoticeShow" wrapClassName="edit-notice-modal" title="群公告" centered @ok="completeEditNotice" @cancel="cancelEditNotice" ok-text="完成" cancel-text="取消">
                 <div class="write-notice">
@@ -245,13 +251,21 @@
               <img src="@/assets/icon_addmembers.png" alt="" />
               <span>添加成员</span>
             </div>
-            <div class="operate last" @click="changeMembers('del')">
+            <div class="operate last" v-if="isManager()" @click="changeMembers('del')">
               <img src="@/assets/icon_deletemembers.png" alt="" />
               <span>删除成员</span>
             </div>
-            <operate-group-meb v-if="operateMebVisible" :title="operateTitle" :visible.sync="operateMebVisible" :operateType="operateType" :groupList="groupInfo.members" @confirmSelect="operateMeb" />
+            <operate-group-meb
+              v-if="operateMebVisible"
+              :title="operateTitle"
+              :visible.sync="operateMebVisible"
+              :operateType="operateType"
+              :groupList="groupInfo.members"
+              :groupType="groupInfo.isInner"
+              @confirmSelect="operateMeb"
+            />
             <div class="member-container">
-              <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" />
+              <group-member :tjId="tjId" :members="groupInfo.members" :groupId="groupInfo.groupId" :ownerId="groupInfo.ownerId" />
             </div>
           </div>
         </a-tab-pane>
@@ -591,7 +605,7 @@ export default {
       const { wechatName, wechatAvatar, chatType, externalWechatId, accountId, accountName, chatId } = this.$route.query
       let info =
         chatType == 2
-          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: externalWechatId } }
+          ? { group: { name: wechatName, avatar: wechatAvatar, groupId: this.chatId.split('&')[1] } }
           : { customerInfo: { name: wechatName, avatar: wechatAvatar, customerId: chatType == 0 ? chatId.split('&')[1] : externalWechatId } }
       this.infoData = {
         ...info,
@@ -636,11 +650,11 @@ export default {
     },
     operateMeb(list, type) {
       this.operateMebVisible = false
+      let ids = list.map(item => item.wechatId)
       if (type == 'add') {
-        let ids = list.map(item => item.wechatId)
         this.$socket.emit('inviter_join_group', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
       } else {
-        this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberId: list[0].wechatId })
+        this.$socket.emit('remove_member', { tjId: this.tjId, groupId: this.groupInfo.groupId, memberIds: ids })
       }
     },
     // 确认编辑群名称
@@ -720,6 +734,16 @@ export default {
         let id = { msgId: item.msgId.split('&')[0] + item.msgId.split('&')[2] }
         api.collectChatRecord(id)
       })
+    },
+    // 判断是否是群管理员
+    isManager() {
+      let flag = false
+      this.groupData.members.forEach(i => {
+        if (i.tjId === this.tjId) {
+          flag = i.type != 0
+        }
+      })
+      return flag
     }
   },
   watch: {
@@ -751,7 +775,6 @@ export default {
         if (chatType == 2) {
           this.activeKey = 'groupInfo'
           this.userInfo.groupId = externalWechatId
-          console.log(this.userInfo, 'this.userInfo')
           if (!this.groupInfoI) {
             this.getGroupDetail()
           }
@@ -863,28 +886,43 @@ export default {
     display: flex;
     flex-direction: column;
     .wrap-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       height: 68px;
+      padding-left: 20px;
+      text-align: left;
       border-bottom: 1px solid #e4e5e7;
 
       .friend,
       .group,
       .member {
-        float: left;
-        margin: 22px 8px 22px 20px;
         font-size: 16px;
         color: rgba(0, 0, 0, 0.85);
         line-height: 24px;
         max-width: 450px;
       }
+      .out {
+        padding: 1px 4px;
+        margin-left: 4px;
+        background: #daf2e8;
+        color: #0ea860;
+      }
+      .inner {
+        padding: 1px 4px;
+        margin-left: 4px;
+        background: #e1eaff;
+        color: #1d61ef;
+      }
       .lost-customer-title {
-        float: left;
-        margin: 25px 0px;
         width: 56px;
         height: 18px;
-        background: #e1eaff;
+        background: #dcdee0;
+        margin-left: 8px;
         border-radius: 2px;
+        text-align: center;
         .text {
-          color: #1d61ef;
+          color: rgba(0, 0, 0, 0.65);
           font-size: 11px;
           line-height: 16px;
         }
@@ -1204,6 +1242,7 @@ export default {
       .operate {
         height: 36px;
         margin-top: 20px;
+        margin-bottom: 10px;
         cursor: pointer;
         span {
           margin-left: 12px;
@@ -1224,6 +1263,9 @@ export default {
     font-weight: 400;
   }
   .system {
+    width: 30px;
+    background: #e1eaff;
+    padding: 1px 2px;
     color: #1d61ef;
   }
   .company {

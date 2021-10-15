@@ -56,6 +56,12 @@ export default {
           this.spinning = false
         }
       })
+      // 更新探鲸账号列表
+      this.$socket.on('accounts', res => {
+        if (res.code === 200) {
+          this[types.ADD_ACCOUNT](res.data)
+        }
+      })
       // 历史消息
       this.$socket.on('msg_history', res => {
         if (res.code === 200) {

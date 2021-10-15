@@ -5,7 +5,12 @@
         <a-badge :count="item.unreadCount" :overflow-count="99">
           <img :src="item.info.wechatAvatar" alt="" />
         </a-badge>
-        <div class="nickname ellipsis" v-html="item.info.wechatName"></div>
+        <a-tooltip placement="right">
+          <template slot="title">
+            {{ item.info.wechatName }}
+          </template>
+          <div class="nickname ellipsis" v-html="item.info.wechatName"></div>
+        </a-tooltip>
       </div>
     </div>
   </div>
@@ -30,13 +35,20 @@ export default {
       deep: true,
       handler: function(n) {
         if (!n) return
-        if (this.curAct) return
-        if (this.$route.params.tjId) {
+        // curAct 当前选中账号 存在于账号列表中无需操作 若不存在说明离线
+        if (this.curAct && n.some(i => i.info.tjId === this.curAct.info.tjId)) return
+        // 当前账号列表为空 返回初始页
+        if (this.accounts.length === 0) {
+          this.$router.push({ path: `/chatframe` })
+          return
+        }
+        if (this.$route.params.tjId && n.some(i => i.info.tjId === this.$route.params.tjId)) {
           this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
-        } else if (!this.curAct && this.accounts.length > 0) {
+        } else {
+          // 未选中账号 或 当前选中账号离线 则切换为账号列表的第一个
           this.curAct = this.accounts[0]
           const { wechatId, wechatName } = this.curAct.info
-          if (this.$route.matched.length <= 1) this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
+          this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
         }
         if (this.curAct) {
           const tjId = this.curAct.info.tjId

@@ -59,6 +59,7 @@
           <span class="name ellipsis"> {{ item.wechatName }} </span>
           <span v-if="item.department" class="member-department ellipsis"> @{{ item.department }}</span>
           <span v-else class="member-wechat ellipsis" style="color: #0ead63; font-size: 12px; margin-left: 8px">@微信</span>
+          <span v-if="item.wechatId == ownerId" class="owner">群主</span>
         </div>
       </div>
     </a-popover>
@@ -91,6 +92,10 @@ export default {
       default: () => []
     },
     groupId: {
+      type: String,
+      default: ''
+    },
+    ownerId: {
       type: String,
       default: ''
     }
@@ -167,28 +172,39 @@ export default {
   margin-bottom: 20px;
   cursor: pointer;
   font-family: PingFangSC-Regular, PingFang SC;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
   .name {
+    align-self: center;
     font-size: 14px;
     margin-left: 12px;
     max-width: 110px;
-    line-height: 36px;
   }
   .member-department {
+    align-self: center;
     color: #ff8000;
-    font-size: 12px;
-    line-height: 18px;
-    font-weight: 400;
     margin-left: 8px;
     max-width: 95px;
-    line-height: 36px;
   }
   .member-wechat {
+    align-self: center;
     color: #0ead63;
-    font-size: 12px;
     margin-left: 8px;
-    line-height: 18px;
-    margin-top: 9px;
-    font-weight: 400;
+  }
+  .owner {
+    align-self: center;
+    width: 30px;
+    height: 18px;
+    padding-top: 1px;
+    background: #e1eaff;
+    border-radius: 2px;
+    font-size: 11px;
+    font-family: PingFangSC, PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: center;
+    color: #1d61ef;
+    line-height: 16px;
   }
 }
 /deep/ .add-friends-modal.ant-modal-mask {

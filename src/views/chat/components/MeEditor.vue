@@ -118,7 +118,7 @@
           <div class="meditor-reply-content">{{ replyName }}:{{ replyContent }}</div>
         </div>
         <div class="close-reply" @click="closeReply">
-          <img src="@/assets/关闭 (1).png" alt="" />
+          <img src="@/assets/close.png" alt="" />
         </div>
       </div>
     </div>
@@ -719,6 +719,7 @@ export default {
       max-width: 100%;
       min-height: 21px;
       text-align: left;
+      font-size: 14px;
       padding: 0 24px;
       position: relative;
       word-break: break-word;

@@ -64,7 +64,11 @@
       <div class="group">
         <a-avatar shape="square" :size="112" icon="user" :src="allInfo.wechatAvatar" />
         <div class="nameNum">
-          <div class="name">{{ allInfo.wechatName || '未命名' }}</div>
+          <div class="name">
+            <span>{{ allInfo.wechatName || '未命名' }}</span>
+            <span class="out common" v-if="allInfo.isInner === 0">外部</span>
+            <span class="inner common" v-if="allInfo.isInner === 1">内部</span>
+          </div>
           <div class="num">
             <span>成员</span>
             <span style="color:rgba(0, 0, 0, 0.85)"> {{ memberCount }}</span>
@@ -212,9 +216,9 @@ export default {
           width: 56px;
           height: 18px;
           display: inline-block;
-          background: #e1eaff;
           border-radius: 2px;
-          color: #1d61ef;
+          background: #dcdee0;
+          color: rgba(0, 0, 0, 0.65);
           font-size: 11px;
           line-height: 16px;
           font-weight: 400;
@@ -312,11 +316,31 @@ export default {
       .nameNum {
         margin-left: 40px;
         .name {
+          display: flex;
+          align-items: center;
           font-size: 28px;
           font-weight: 400;
           color: rgba(0, 0, 0, 0.85);
           line-height: 42px;
           text-align: left;
+        }
+        .common {
+          // width: 30px;
+          height: 18px;
+          border-radius: 2px;
+          font-size: 11px;
+          line-height: 16px;
+          margin-left: 4px;
+          &.out {
+            padding: 1px 4px;
+            background: #daf2e8;
+            color: #0ea860;
+          }
+          &.inner {
+            padding: 1px 4px;
+            background: #e1eaff;
+            color: #1d61ef;
+          }
         }
         .num,
         .owner {

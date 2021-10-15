@@ -10,9 +10,13 @@
         <div class="info">
           <div class="nickname">
             <div class="ellipsis" :style="{ 'max-width': [1, 3].includes(item.chatType) && item.lost ? '70px' : '140px' }">
-              <span class="ellipsis" v-html="item.alias || item.wechatName || '未命名'" style="max-width:90px;display:block;float:left"></span>
+              <span class="ellipsis nick" v-html="item.alias || item.wechatName || '未命名'"></span>
               <span v-if="[1, 3].includes(item.chatType)" :style="{ color: item.company ? '#FF8000' : '#0ead63' }" class="label">@{{ item.company || '微信' }}</span>
-              <span v-if="item.chatType === 2">（{{ item.memberCount }}）</span>
+              <span v-if="item.chatType === 2">
+                <span class="count">（{{ item.memberCount }}）</span>
+                <span class="tag out" v-if="item.isInner === 0">外部</span>
+                <span class="tag inner" v-if="item.isInner === 1">内部</span>
+              </span>
             </div>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '1'" class="tag">流失客户</span>
             <span v-if="[1, 3].includes(item.chatType) && item.lost == '3'" class="tag">删除客户</span>
@@ -247,14 +251,24 @@ export default {
         align-items: center;
         line-height: 22px;
         margin-bottom: 4px;
+        .nick {
+          max-width: 65px;
+          display: block;
+          float: left;
+        }
         .label {
           color: #0ead63;
           margin-left: 8px;
         }
+        .count {
+          max-width: 40px;
+          display: block;
+          float: left;
+        }
         .tag {
           display: inline-block;
-          background: #e1eaff;
-          color: #1d61ef;
+          background: #dcdee0;
+          color: rgba(0, 0, 0, 0.65);
           width: 56px;
           height: 18px;
           line-height: 18px;
@@ -263,8 +277,19 @@ export default {
           font-size: 12px;
           margin-left: 8px;
           &.system {
-            width: 24px;
-            background: none;
+            width: 30px;
+            background: #e1eaff;
+            color: #1d61ef;
+          }
+          &.out {
+            width: 30px;
+            background: #daf2e8;
+            color: #0ea860;
+          }
+          &.inner {
+            width: 30px;
+            background: #e1eaff;
+            color: #1d61ef;
           }
         }
       }
