@@ -17,6 +17,8 @@ if (process.env.VUE_APP_MODE === 'development') {
 const store = new vuex.Store({
   state: {
     token: '',
+    curTjId: '', // 当前选中的账号
+    curChatId: '', // 当前会话
     userInfo: {
       username: 'ZMENG'
     }
@@ -27,6 +29,12 @@ const store = new vuex.Store({
     },
     saveUserInfo(state, userInfo) {
       state.userInfo = JSON.parse(userInfo)
+    },
+    setCurTjId(state, tjId) {
+      state.curTjId = tjId
+    },
+    setCurChatId(state, chatId) {
+      state.curChatId = chatId
     }
   },
   modules: {

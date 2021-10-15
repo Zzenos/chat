@@ -34,19 +34,16 @@ export default {
   },
   getters: {
     getAccounts: (state, getters, rootState) => {
-      return () => {
-        return state.accounts.map(i => {
-          return {
-            info: i.info,
-            unreadCount: rootState.messages.chatInfo[i.info.tjId] ? rootState.messages.chatInfo[i.info.tjId].unreadCount : 0
-          }
-        })
-      }
+      return state.accounts.map(i => {
+        return {
+          info: i.info,
+          unreadCount: rootState.messages.chatInfo[i.info.tjId] ? rootState.messages.chatInfo[i.info.tjId].unreadCount : 0
+        }
+      })
     },
-    userDetailsById: state => {
-      return tjId => {
-        return state.accounts.find(item => item.info.tjId === tjId)
-      }
+    userDetailsById: (state, getters, rootState) => {
+      const tjId = rootState.curTjId
+      return state.accounts.find(item => item.info.tjId === tjId)
     }
   }
 }

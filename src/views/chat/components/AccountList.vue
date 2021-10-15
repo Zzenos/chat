@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   name: 'accountList',
   data() {
@@ -26,7 +28,7 @@ export default {
   },
   computed: {
     accounts() {
-      return this.$store.getters.getAccounts()
+      return this.$store.getters.getAccounts
     }
   },
   watch: {
@@ -43,11 +45,13 @@ export default {
           return
         }
         if (this.$route.params.tjId && n.some(i => i.info.tjId === this.$route.params.tjId)) {
-          this.curAct = this.$store.getters.userDetailsById(this.$route.params.tjId)
+          this.curAct = this.$store.getters.userDetailsById
         } else {
           // 未选中账号 或 当前选中账号离线 则切换为账号列表的第一个
           this.curAct = this.accounts[0]
           const { wechatId, wechatName } = this.curAct.info
+          this.setCurTjId(this.curAct.info.tjId)
+          this.setCurChatId(0)
           this.$router.replace({ path: `/chatframe/${this.curAct.info.tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
         }
         if (this.curAct) {
@@ -62,6 +66,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['setCurTjId', 'setCurChatId']),
     handleAct(account) {
       const { tjId, wechatId, wechatName, chatInitStatus = false } = account.info
       if (this.curAct.info.tjId === tjId) {
@@ -76,6 +81,8 @@ export default {
           }
         })
       }
+      this.setCurTjId(tjId)
+      this.setCurChatId(0)
       this.$router.push({ path: `/chatframe/${tjId}/recent/0?accountId=${wechatId}&accountName=${wechatName}` })
     }
   }

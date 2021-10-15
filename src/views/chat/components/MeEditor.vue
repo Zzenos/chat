@@ -215,7 +215,7 @@ export default {
   },
   computed: {
     userInfo() {
-      return this.$store.getters.userDetailsById(this.$route.params.tjId)
+      return this.$store.getters.userDetailsById
     }
   },
   methods: {

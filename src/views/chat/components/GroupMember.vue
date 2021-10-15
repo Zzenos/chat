@@ -112,7 +112,7 @@ export default {
   },
   computed: {},
   methods: {
-    ...mapMutations([types.ADD_CHAT_LIST]),
+    ...mapMutations([types.ADD_CHAT_LIST, 'setCurChatId']),
     isFriend(item) {
       this.$socket.emit('is_friend', { tjId: this.tjId, targetId: item.wechatId }, ack => {
         if (ack.code == 200) {
@@ -130,6 +130,7 @@ export default {
       if (this.btnMebText[item.wechatId] == '发送消息') {
         this.GroupMebVisible[item.wechatId] = false
         const chatId = this.tjId + '&' + item.wechatId
+        this.setCurChatId(chatId)
         this.$router.push({
           path: `/chatframe/${this.tjId}/recent/${chatId}`,
           query: { ...this.curMebInfo }

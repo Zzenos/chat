@@ -102,10 +102,10 @@ export default {
   },
   computed: {
     contactData() {
-      return this.$store.getters.contactByTjId(this.tjId)
+      return this.$store.getters.contactByTjId
     },
     accountData() {
-      return this.$store.getters.userDetailsById(this.tjId)
+      return this.$store.getters.userDetailsById
     }
   },
   watch: {

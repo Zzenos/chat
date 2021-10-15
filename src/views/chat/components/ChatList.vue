@@ -82,7 +82,7 @@ export default {
         if (n === o) return
         const {
           info: { chatInitStatus = false }
-        } = this.$store.getters.userDetailsById(this.tjId)
+        } = this.$store.getters.userDetailsById
         console.log(`tjId:${this.tjId}=>chatList`, n, chatInitStatus)
         if (n && n.length === 0) {
           this.spinning = !chatInitStatus
@@ -142,7 +142,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST, types.UPDATE_CHAT_TOP_STATUS]),
+    ...mapMutations([types.CLEAR_UNREAD_MSG, types.ADD_CHAT_LIST, types.UPDATE_CHAT_TOP_STATUS, 'setCurChatId']),
     ...mapGetters(['getDraftByChatId']),
     handleItem(val, canJump = false) {
       console.log('click chat', val)
@@ -157,6 +157,7 @@ export default {
         chatList: [{ ...this.curChat }]
       })
       this[types.CLEAR_UNREAD_MSG](this.curChat.chatId)
+      this.setCurChatId(chatId)
       this.$router.push({
         path: `/chatframe/${this.tjId}/recent/${chatId}`,
         query: { ...this.curChat, accountId, accountName }

@@ -291,16 +291,14 @@ export default {
     }
   },
   getters: {
-    getMsgsByChatId: state => {
-      return chatId => {
-        return state.chatMsgs[chatId] || []
-      }
+    getMsgsByChatId: (state, getters, rootState) => {
+      const chatId = rootState.curChatId
+      return state.chatMsgs[chatId] || []
     },
     // 获取未读消息数量
-    getMsgsUnread: state => {
-      return chatId => {
-        return state.chatMsgs[chatId] ? state.chatMsgs[chatId].filter(ele => ele.unread) : []
-      }
+    getMsgsUnread: (state, getters, rootState) => {
+      const chatId = rootState.curChatId
+      return state.chatMsgs[chatId] ? state.chatMsgs[chatId].filter(ele => ele.unread) : []
     },
     getRecallMsg: state => {
       return seq => {

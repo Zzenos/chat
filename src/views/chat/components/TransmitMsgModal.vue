@@ -86,10 +86,10 @@ export default {
       return this.chatsByTjId(this.$route.params.tjId)
     },
     customerList() {
-      return this.contactByTjId(this.$route.params.tjId).customerListAry
+      return this.contactByTjId.customerListAry
     },
     groupList() {
-      return this.contactByTjId(this.$route.params.tjId).groupListAry
+      return this.contactByTjId.groupListAry
     }
   },
   watch: {
@@ -133,7 +133,7 @@ export default {
         const { tjId } = this.$route.params
         const {
           info: { wechatName, wechatAvatar }
-        } = this.userDetailsById(tjId)
+        } = this.userDetailsById
         let msg = this.msg.map(i => {
           const { msgType, content, url, coverUrl, title, voiceTime, href, desc, id, msgSerialNo, base64Content } = i
           const msg = {

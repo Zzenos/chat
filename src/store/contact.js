@@ -19,10 +19,8 @@ export default {
   },
   actions: {},
   getters: {
-    contactByTjId: state => {
-      return tjId => {
-        return state[tjId]
-      }
+    contactByTjId: (state, getters, rootState) => {
+      return state[rootState.curTjId]
     },
     /**
      * 获取x通讯录下x账号信息

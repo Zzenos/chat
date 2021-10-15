@@ -80,10 +80,10 @@ export default {
   computed: {
     ...mapGetters(['contactByTjId']),
     customerList() {
-      return this.contactByTjId(this.$route.params.tjId).customerListAry
+      return this.contactByTjId.customerListAry
     },
     memberList() {
-      return this.contactByTjId(this.$route.params.tjId).memberListAry
+      return this.contactByTjId.memberListAry
     },
     // checkedList() {
     //   return this.operateType == 'add' ? (this.curSource == 'customer' ? this.customerList.filter(item => !this.groupListIds.includes(item.wechatId)) : this.memberList) : this.groupList

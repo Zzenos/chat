@@ -167,13 +167,15 @@ export default {
   },
   methods: {
     tochat() {
-      const chatId = `${this.$route.params.tjId + '&' + this.wechatId}`
+      const { tjId } = this.$route.params
+      const chatId = `${tjId + '&' + this.wechatId}`
+      this.setCurChatId(chatId)
       this.$router.push({
-        path: `/chatframe/${this.$route.params.tjId}/recent/${chatId}`,
+        path: `/chatframe/${tjId}/recent/${chatId}`,
         query: { ...this.$route.query }
       })
       this[types.ADD_CHAT_LIST]({
-        tjId: this.$route.params.tjId,
+        tjId,
         chatList: [
           {
             chatId,
@@ -188,7 +190,7 @@ export default {
         ]
       })
     },
-    ...mapMutations([types.ADD_CHAT_LIST])
+    ...mapMutations([types.ADD_CHAT_LIST, 'setCurChatId'])
   }
 }
 </script>
