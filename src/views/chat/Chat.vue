@@ -797,8 +797,11 @@ export default {
         }
       }
     },
-    records(n, o) {
-      console.log(n, o)
+    records(n) {
+      console.log(n)
+      if (this.records.length === 0) {
+        this.showLoadMoreBtn = false
+      }
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
