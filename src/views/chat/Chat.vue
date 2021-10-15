@@ -797,9 +797,9 @@ export default {
         }
       }
     },
-    records(n) {
-      console.log(n)
-      if (this.records.length === 0) {
+    records(n, o) {
+      console.log(n, o)
+      if (n.length - o.length < 20) {
         this.showLoadMoreBtn = false
       }
       if (this.loadRecord == 1) {
