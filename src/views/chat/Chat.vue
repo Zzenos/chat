@@ -36,10 +36,9 @@
       <div class="wrap-body">
         <div class="talk-container" id="chatScrollbar" ref="list">
           <!-- 数据加载状态栏 -->
-          <div class="loading-toolbar">
+          <div class="loading-toolbar" v-show="showLoadMoreBtn">
             <span class="pointer color-blue pull-history" @click="loadChatRecords">查看更多消息... </span>
             <a-icon v-show="loadingHistory" type="sync" :spin="true" />
-            <!-- <span v-else> 没有更多消息了... </span> -->
           </div>
           <!-- 网络中断 -->
           <div class="net-lost" v-if="!onLine">
@@ -414,7 +413,8 @@ export default {
       operateType: 'add',
       editGroupNameVisible: {},
       editableGroupName: false,
-      loadingHistory: false,
+      loadingHistory: false, // 加载loading
+      showLoadMoreBtn: true, // 加载更多消息按钮的状态
       groupData: '', // 群信息的原始数据
       multiSelect: {
         isOpen: false,
@@ -461,13 +461,14 @@ export default {
       if (this.loadRecord == 2) return
       this.loadingHistory = true
       this.loadRecord = 2
-      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(() => {
-        this.changeloadRocrd()
+      this[types.PULL_HISTORY_MSG](this.chatId, this.chatType).then(res => {
+        // 返回条数小于20，隐藏加载更多消息按钮
+        if (res && res.length < 20) {
+          this.showLoadMoreBtn = false
+        }
+        this.loadRecord = 1
         this.loadingHistory = false
       })
-    },
-    changeloadRocrd() {
-      this.loadRecord = 1
     },
     toResendMsg() {
       this.modal2Visible = false
@@ -750,10 +751,11 @@ export default {
     $route: {
       immediate: true,
       handler(newVal, oldVal) {
-        if (newVal === oldVal) return
         const { wechatId, wechatName, chatType, lost, externalWechatId, alias, company } = newVal.query
         const { tjId, contactId } = newVal.params
-        const accountInfo = this.userDetailsById(tjId)
+        if (newVal === oldVal) return
+        // 会话切换后，初始化状态
+        this.showLoadMoreBtn = true
         this.tjId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
@@ -761,11 +763,14 @@ export default {
         this.chatType = chatType
         this.company = company
         this.isLost = lost
+        if (this.chatId == 0) return
         this.sendToBottom()
         this.closeMultiSelect()
         console.log(this.records, 'chat-records')
         this.defaultList = [newVal.query]
         this.onLine = navigator.onLine
+
+        const accountInfo = this.userDetailsById
         this.userInfo = {
           corpId: this.$store.state.userInfo.corpId || 'wwfc3ae560ee1592d8',
           userId: accountInfo.info.wechatId,
@@ -793,7 +798,7 @@ export default {
       }
     },
     records(n, o) {
-      if (n.length === o.length) return
+      console.log(n, o)
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
@@ -827,7 +832,7 @@ export default {
   },
   computed: {
     records() {
-      return this.$store.getters.getMsgsByChatId(this.chatId).map(item => {
+      return this.$store.getters.getMsgsByChatId.map(item => {
         item.float = item.fromId == this.tjId ? 'right' : 'left'
         if (
           item.msgType == 'system' &&
