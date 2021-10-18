@@ -414,7 +414,7 @@ export default {
       editGroupNameVisible: {},
       editableGroupName: false,
       loadingHistory: false, // 加载loading
-      showLoadMoreBtn: true, // 加载更多消息按钮的状态
+      showLoadMoreBtn: false, // 加载更多消息按钮的状态
       groupData: '', // 群信息的原始数据
       multiSelect: {
         isOpen: false,
@@ -465,6 +465,8 @@ export default {
         // 返回条数小于20，隐藏加载更多消息按钮
         if (res && res.length < 20) {
           this.showLoadMoreBtn = false
+        } else {
+          this.showLoadMoreBtn = true
         }
         this.loadRecord = 1
         this.loadingHistory = false
@@ -755,7 +757,6 @@ export default {
         const { tjId, contactId } = newVal.params
         if (newVal === oldVal) return
         // 会话切换后，初始化状态
-        this.showLoadMoreBtn = true
         this.tjId = tjId
         this.chatId = contactId //获取传来的参数
         this.wechatId = wechatId
@@ -763,7 +764,9 @@ export default {
         this.chatType = chatType
         this.company = company
         this.isLost = lost
+        this.records = []
         if (this.chatId == 0) return
+        this.loadChatRecords()
         this.sendToBottom()
         this.closeMultiSelect()
         console.log(this.records, 'chat-records')
@@ -797,11 +800,7 @@ export default {
         }
       }
     },
-    records(n, o) {
-      console.log(n, o)
-      if (n.length - o.length < 20) {
-        this.showLoadMoreBtn = false
-      }
+    records() {
       if (this.loadRecord == 1) {
         this.sendToBottom()
       }
@@ -834,22 +833,28 @@ export default {
     }
   },
   computed: {
-    records() {
-      return this.$store.getters.getMsgsByChatId.map(item => {
-        item.float = item.fromId == this.tjId ? 'right' : 'left'
-        if (
-          item.msgType == 'system' &&
-          item.content.indexOf('撤回了一条消息') > -1 &&
-          new Date().getTime() / 1000 - item.time / 1000 < 300 &&
-          item.fromId == this.tjId &&
-          item.content.indexOf('重新编辑') == -1 &&
-          this.$store.getters.getRecallMsg(item.seq) &&
-          this.$store.getters.getRecallMsg(item.seq).msgType == 'text'
-        ) {
-          item.content = item.content + '<span style="color:#1d61ef;cursor:pointer;">重新编辑</span>'
-        }
-        return item
-      })
+    records: {
+      get: function() {
+        const msgList = this.$store.getters.getMsgsByChatId.map(item => {
+          item.float = item.fromId == this.tjId ? 'right' : 'left'
+          if (
+            item.msgType == 'system' &&
+            item.content.indexOf('撤回了一条消息') > -1 &&
+            new Date().getTime() / 1000 - item.time / 1000 < 300 &&
+            item.fromId == this.tjId &&
+            item.content.indexOf('重新编辑') == -1 &&
+            this.$store.getters.getRecallMsg(item.seq) &&
+            this.$store.getters.getRecallMsg(item.seq).msgType == 'text'
+          ) {
+            item.content = item.content + '<span style="color:#1d61ef;cursor:pointer;">重新编辑</span>'
+          }
+          return item
+        })
+        return msgList
+      },
+      set: function(val) {
+        return val
+      }
     },
     ...mapGetters(['contactInfoByWechatId', 'userDetailsById', 'groupDetailsById']),
     isLostRequest() {
