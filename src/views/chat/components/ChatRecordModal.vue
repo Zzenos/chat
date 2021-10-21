@@ -161,6 +161,7 @@ export default {
      */
     handleCancel() {
       this.$emit('update:visible', false)
+      this.$emit('close')
     },
     /**
      * @author 王泽

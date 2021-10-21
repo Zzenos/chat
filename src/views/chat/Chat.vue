@@ -202,6 +202,7 @@
         :chatType="chatType"
         :isForwardMsg="isForwardMsg"
         :forwardMsgList="forwardMsgList"
+        @close="resetForwardMsg"
       ></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
@@ -361,7 +362,7 @@ import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
 import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
 import ForwardMessage from '@/views/chat/components/ForwardMessage'
-import { getSendMsg } from '@/class/Msg'
+// import { getSendMsg } from '@/class/Msg'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -766,14 +767,17 @@ export default {
       //   { msgtype: 'image', fileUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1430093156275326976.gif', sender: {} }
       // ]
       console.log(list)
-      let a = list.map(i => {
-        i.msgtype = i.msgType
-        return getSendMsg(i)
-      })
-      console.log(a)
+      // let a = list.map(i => {
+      //   i.msgtype = i.msgType
+      //   return getSendMsg(i)
+      // })
+      // console.log(a)
       this.forwardMsgList = list
       this.chatRcordTitle = '聊天记录'
       this.chatRecordVisible = true
+    },
+    resetForwardMsg() {
+      this.isForwardMsg = false
     }
   },
   watch: {
