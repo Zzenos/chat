@@ -1,11 +1,11 @@
 <template>
   <div class="forward-message">
     <div class="title ellipsis">
-      {{ item.chatType == 2 ? '群聊' : `${item.sender.wechatName} 和 ${item.to.wechatName}` }}
-      的聊天记录
+      <!-- {{ list.chatType == 2 ? '群聊的' : `${list.sender.wechatName} 和 ${list.to.wechatName}` }} -->
+      聊天记录
     </div>
     <div class="content">
-      <div class="item ellipsis" v-for="item in item.content" :key="item.msgId">{{ item.name }} : {{ item.content }}</div>
+      <div class="item ellipsis" v-for="(item, index) in msgList" :key="index">{{ item.content || item.defaultContent }}</div>
     </div>
     <div class="bottom">
       聊天记录
@@ -14,50 +14,28 @@
 </template>
 
 <script>
+import { getSendMsg } from '@/class/Msg'
 export default {
   name: 'ForwardMessage',
   props: {
-    item: {
+    list: {
       type: Object,
       default: () => {}
     }
   },
   components: {},
   data() {
-    return {
-      list: [
-        {
-          name: '欧阳超慧',
-          msgId: '111',
-          content: '钉钉宣布用户数突破5亿，包括企业学校在内的各类组织数超过1900万'
-        },
-        {
-          name: '冷咏卿',
-          msgId: '222',
-          content: '网易文创发布全新品牌slogan“有光”'
-        },
-        {
-          name: '焦山琳111',
-          msgId: '333',
-          content: '适老版App不得再设有广告插件包括企业学校在内的各类组织数超过1900万'
-        },
-        {
-          name: '焦山琳222',
-          msgId: '444',
-          content: '适老版App不得再设有广告插件包括企业学校在内的各类组织数超过1900万'
-        },
-        {
-          name: '焦山琳333',
-          msgId: '555',
-          content: '适老版App不得再设有广告插件包括企业学校在内的各类组织数超过1900万'
-        }
-      ]
+    return {}
+  },
+  methods: {},
+  computed: {
+    msgList() {
+      return this.list.chatRecord.map(i => {
+        i.msgtype = i.msgType
+        return getSendMsg(i)
+      })
     }
-  },
-  methods: {
-    download() {}
-  },
-  created() {}
+  }
 }
 </script>
 <style lang="scss" scoped>

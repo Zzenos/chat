@@ -230,8 +230,9 @@ export class locationMsg extends Msg {
 export class chatRecordMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
-    let { content } = options
+    let { content, chatRecord } = options
     this.content = JSON.parse(content)
+    this.chatRecord = chatRecord
     this.defaultContent = `[聊天记录]`
   }
 }

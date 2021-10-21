@@ -166,7 +166,7 @@
                     />
 
                     <!-- 转发会话记录消息 -->
-                    <forward-message v-else-if="item.msgType == 'chatRecord'" :item="item" @click.native="catChatRecordMsg(item.content)" />
+                    <forward-message v-else-if="item.msgType == 'chatRecord'" :list="item" @click.native="catChatRecordMsg(item.chatRecord)" />
 
                     <!-- 消息发送状态 -->
                     <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
@@ -361,6 +361,7 @@ import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
 import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
 import ForwardMessage from '@/views/chat/components/ForwardMessage'
+import { getSendMsg } from '@/class/Msg'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -755,16 +756,22 @@ export default {
       })
       return flag
     },
+    // 查看聚合消息
     catChatRecordMsg(list) {
       this.isForwardMsg = true
-      this.forwardMsgList = [
-        { msgtype: 'text', content: 'text-msg12', sender: {} },
-        { msgtype: 'text', content: 'text-msg2', sender: {} },
-        { msgtype: 'link', content: 'https://www.baidu.com/', sender: {} },
-        { msgtype: 'image', fileUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1430093156275326976.gif', sender: {} }
-      ]
+      // this.forwardMsgList = [
+      //   { msgtype: 'text', content: 'text-msg12', sender: {} },
+      //   { msgtype: 'text', content: 'text-msg2', sender: {} },
+      //   { msgtype: 'link', content: 'https://www.baidu.com/', sender: {} },
+      //   { msgtype: 'image', fileUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1430093156275326976.gif', sender: {} }
+      // ]
       console.log(list)
-      // this.forwardMsgList = []
+      let a = list.map(i => {
+        i.msgtype = i.msgType
+        return getSendMsg(i)
+      })
+      console.log(a)
+      this.forwardMsgList = list
       this.chatRcordTitle = '聊天记录'
       this.chatRecordVisible = true
     }
