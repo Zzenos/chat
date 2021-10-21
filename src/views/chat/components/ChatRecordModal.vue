@@ -1,6 +1,6 @@
 <template>
   <a-modal :title="title" width="960px" :visible="visible" :footer="null" @cancel="handleCancel" class="chat-record_modal" :bodyStyle="{ padding: '20px 0px' }" :maskClosable="false">
-    <div class="record-modal_top" v-if="infoData && recordType == 0">
+    <div class="record-modal_top" v-if="infoData && recordType == 0 && !isForwardMsg">
       <template v-if="type">
         <!-- <svg-icon icon-class="icon-group" class="info-avatar" /> -->
         <img :src="infoData.group && infoData.group.avatar" class="info-avatar" />
@@ -14,7 +14,7 @@
         <span class="infoData-object">对话员工：{{ infoData.wechatAccount.wechatName }}</span>
       </template>
     </div>
-    <div class="record-modal_searchbar">
+    <div class="record-modal_searchbar" v-if="!isForwardMsg">
       <a-range-picker class="m-t-10" v-model="searchData.date" :placeholder="['开始日期', '结束日期']" :disabledDate="disabledDate" @calendarChange="hanleCalendarChange" @openChange="initStartTime">
         <a-icon slot="suffixIcon" type="calendar" />
       </a-range-picker>
@@ -49,7 +49,7 @@ import { exportFile } from '@/util/util'
 import ChatRecordItem from './ChatRecordItem.vue'
 
 export default {
-  props: ['visible', 'type', 'infoData', 'title', 'recordType', 'chatType'],
+  props: ['visible', 'type', 'infoData', 'title', 'recordType', 'chatType', 'isForwardMsg', 'forwardMsgList'],
   mixins: [disabledDateRangeMixin],
   components: {
     ChatRecordItem
@@ -117,7 +117,17 @@ export default {
     infoData() {
       console.log(this.infoData)
       this.initData()
+      if (this.isForwardMsg) return
       this.getChatList()
+    },
+    isForwardMsg: {
+      immediate: true,
+      handler(n) {
+        if (n) {
+          this.chatList = this.forwardMsgList
+          this.busy = false
+        }
+      }
     }
   },
   methods: {
@@ -257,6 +267,7 @@ export default {
      * @description 搜索列表滚动底部加载
      */
     handleSearchScroll() {
+      if (this.isForwardMsg) return
       this.searchData.pageNum++
       this.searchChatRecord()
     },
@@ -356,6 +367,7 @@ export default {
      */
     handleScrollLoad() {
       console.log('bottom')
+      if (this.isForwardMsg) return
       if (this.bottomDisabled) return
       this.chatRecordParams.direction = 0
       const len = this.chatList.length
@@ -373,6 +385,7 @@ export default {
      */
     topLoad(back) {
       console.log('top')
+      if (this.isForwardMsg) return
       if (this.topDisabled) return
       this.chatRecordParams.direction = 1
       const len = this.chatList.length

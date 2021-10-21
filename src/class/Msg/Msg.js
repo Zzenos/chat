@@ -223,3 +223,15 @@ export class locationMsg extends Msg {
     this.defaultContent = `[位置] ${JSON.parse(content).title}`
   }
 }
+/**
+ * 聚合消息
+ */
+
+export class chatRecordMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content } = options
+    this.content = JSON.parse(content)
+    this.defaultContent = `[聊天记录]`
+  }
+}
