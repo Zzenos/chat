@@ -4,12 +4,11 @@
       <!-- {{ list.chatType == 2 ? '群聊的' : `${list.sender.wechatName} 和 ${list.to.wechatName}` }} -->
       聊天记录
     </div>
-    <div class="content">
-      <!-- item.content ? JSON.parse(item.content)[0].msg :  -->
-      <div class="item ellipsis" v-for="(item, index) in msgList" :key="index">{{ item.defaultContent }}</div>
-    </div>
+    <!-- <div class="content">
+      <div class="item ellipsis" v-for="(item, index) in msgList" :key="index">{{ item.content ? JSON.parse(item.content)[0].msg : item.defaultContent }}</div>
+    </div> -->
     <div class="bottom">
-      该消息类型暂不支持点击，请手机端查看
+      聚合消息类型暂不支持点击，请手机端查看
     </div>
   </div>
 </template>
@@ -32,23 +31,21 @@ export default {
   computed: {
     msgList() {
       return this.list.chatRecord.map(i => {
-        // i.msgtype = i.msgType
-        // return getSendMsg(i)
-        if (i.msgType === 'text') {
-          i.defaultContent = '文本'
-        } else if (i.msgType === 'image') {
-          i.defaultContent = '[图片]'
-        } else if (i.msgType === 'file') {
-          i.defaultContent = `[文件]${i.title}`
-        } else if (i.msgType === 'video') {
-          i.defaultContent = '[视频]'
-        } else if (i.msgType === 'link') {
-          i.defaultContent = `[链接]${i.title}`
-        } else if (i.msgType === 'weapp') {
-          i.defaultContent = `[小程序]`
-        } else {
-          i.defaultContent = '[该消息类型暂不能展示]'
-        }
+        // if (i.msgType === 'text') {
+        //   i.defaultContent = '文本'
+        // } else if (i.msgType === 'image') {
+        //   i.defaultContent = '[图片]'
+        // } else if (i.msgType === 'file') {
+        //   i.defaultContent = `[文件]${i.title}`
+        // } else if (i.msgType === 'video') {
+        //   i.defaultContent = '[视频]'
+        // } else if (i.msgType === 'link') {
+        //   i.defaultContent = `[链接]${i.title}`
+        // } else if (i.msgType === 'weapp') {
+        //   i.defaultContent = `[小程序]`
+        // } else {
+        //   i.defaultContent = '[该消息类型暂不能展示]'
+        // }
         return i
       })
     }
@@ -58,7 +55,7 @@ export default {
 <style lang="scss" scoped>
 .forward-message {
   width: 280px;
-  height: 156px;
+  height: 66px;
   background: #f0f1f2;
   border-radius: 8px;
   padding: 12px 12px 0 12px;
