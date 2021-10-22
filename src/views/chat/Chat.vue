@@ -760,18 +760,7 @@ export default {
     // 查看聚合消息
     catChatRecordMsg(list) {
       this.isForwardMsg = true
-      // this.forwardMsgList = [
-      //   { msgtype: 'text', content: 'text-msg12', sender: {} },
-      //   { msgtype: 'text', content: 'text-msg2', sender: {} },
-      //   { msgtype: 'link', content: 'https://www.baidu.com/', sender: {} },
-      //   { msgtype: 'image', fileUrl: 'http://zm-weike.oss-cn-beijing.aliyuncs.com/app/1430093156275326976.gif', sender: {} }
-      // ]
-      console.log(list)
-      // let a = list.map(i => {
-      //   i.msgtype = i.msgType
-      //   return getSendMsg(i)
-      // })
-      // console.log(a)
+      console.log(list, 'list')
       this.forwardMsgList = list
       this.chatRcordTitle = '聊天记录'
       this.chatRecordVisible = true
