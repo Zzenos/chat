@@ -5,16 +5,17 @@
       聊天记录
     </div>
     <div class="content">
-      <div class="item ellipsis" v-for="(item, index) in msgList" :key="index">{{ item.content || item.defaultContent }}</div>
+      <!-- item.content ? JSON.parse(item.content)[0].msg :  -->
+      <div class="item ellipsis" v-for="(item, index) in msgList" :key="index">{{ item.defaultContent }}</div>
     </div>
     <div class="bottom">
-      聊天记录
+      该消息类型暂不支持点击，请手机端查看
     </div>
   </div>
 </template>
 
 <script>
-import { getSendMsg } from '@/class/Msg'
+// import { getSendMsg } from '@/class/Msg'
 export default {
   name: 'ForwardMessage',
   props: {
@@ -31,8 +32,24 @@ export default {
   computed: {
     msgList() {
       return this.list.chatRecord.map(i => {
-        i.msgtype = i.msgType
-        return getSendMsg(i)
+        // i.msgtype = i.msgType
+        // return getSendMsg(i)
+        if (i.msgType === 'text') {
+          i.defaultContent = '文本'
+        } else if (i.msgType === 'image') {
+          i.defaultContent = '[图片]'
+        } else if (i.msgType === 'file') {
+          i.defaultContent = `[文件]${i.title}`
+        } else if (i.msgType === 'video') {
+          i.defaultContent = '[视频]'
+        } else if (i.msgType === 'link') {
+          i.defaultContent = `[链接]${i.title}`
+        } else if (i.msgType === 'weapp') {
+          i.defaultContent = `[小程序]`
+        } else {
+          i.defaultContent = '[该消息类型暂不能展示]'
+        }
+        return i
       })
     }
   }

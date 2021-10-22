@@ -165,8 +165,8 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
-                    <!-- 转发会话记录消息 -->
-                    <forward-message v-else-if="item.msgType == 'chatRecord'" :list="item" @click.native="catChatRecordMsg(item.chatRecord)" />
+                    <!-- 转发会话记录消息 @click.native="catChatRecordMsg(item.chatRecord)" -->
+                    <forward-message v-else-if="item.msgType == 'chatRecord'" :list="item" />
 
                     <!-- 消息发送状态 -->
                     <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
