@@ -164,6 +164,9 @@
                       @contextmenu.native="onCopy(index, item, $event)"
                     />
 
+                    <!-- 转发会话记录消息 @click.native="catChatRecordMsg(item.chatRecord)" -->
+                    <forward-message v-else-if="item.msgType == 'chatRecord'" :list="item" />
+
                     <!-- 消息发送状态 -->
                     <div class="status" v-if="item.status == 2" @click="clickStatus(index)">
                       <div class="center-fail">
@@ -196,6 +199,9 @@
         :title="chatRcordTitle"
         :recordType="recordType"
         :chatType="chatType"
+        :isForwardMsg="isForwardMsg"
+        :forwardMsgList="forwardMsgList"
+        @close="resetForwardMsg"
       ></chat-record-modal>
       <!-- 选择群聊窗口 -->
       <transmit-msg-modal v-if="transmitMsgVisible" title="转发消息" :defaultList="defaultList" :msg="msgInfo" :visible.sync="transmitMsgVisible" @confirmSelect="transmitMsg"></transmit-msg-modal>
@@ -354,6 +360,8 @@ import TransmitMsgModal from '@/views/chat/components/TransmitMsgModal'
 import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
 import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
+import ForwardMessage from '@/views/chat/components/ForwardMessage'
+// import { getSendMsg } from '@/class/Msg'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -376,7 +384,8 @@ export default {
     VideoNumMessage,
     OperateGroupMeb,
     GroupMember,
-    MultiSelectModal
+    MultiSelectModal,
+    ForwardMessage
   },
   data() {
     return {
@@ -420,8 +429,10 @@ export default {
         isOpen: false,
         items: []
       },
-      chatRcordTitle: '',
-      recordType: 0 // 0 聊天记录 1 收藏记录
+      chatRcordTitle: '聊天记录',
+      recordType: 0, // 0 聊天记录 1 收藏记录
+      isForwardMsg: false,
+      forwardMsgList: []
     }
   },
   mounted() {
@@ -616,6 +627,7 @@ export default {
       }
       this.chatRcordTitle = type == 0 ? '聊天记录' : '我的收藏'
       this.recordType = type
+      this.isForwardMsg = false
       this.chatRecordVisible = true
     },
     // 语音转文字
@@ -747,6 +759,17 @@ export default {
         }
       })
       return flag
+    },
+    // 查看聚合消息
+    catChatRecordMsg(list) {
+      this.isForwardMsg = true
+      console.log(list, 'list')
+      this.forwardMsgList = list
+      this.chatRcordTitle = '聊天记录'
+      this.chatRecordVisible = true
+    },
+    resetForwardMsg() {
+      this.isForwardMsg = false
     }
   },
   watch: {
