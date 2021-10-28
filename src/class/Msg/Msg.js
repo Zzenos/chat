@@ -183,7 +183,7 @@ export class mpMsg extends Msg {
   constructor(options, isSendMsg) {
     super(options, isSendMsg)
     let { content, coverUrl, title, id } = options
-    this.content = JSON.parse(content) // 解码后为小程序的配置json,需要parse一次
+    this.content = content ? JSON.parse(content) : content // 解码后为小程序的配置json,需要parse一次
     this.coverUrl = coverUrl
     this.title = title
     this.defaultContent = `[小程序]`
@@ -221,5 +221,18 @@ export class locationMsg extends Msg {
     let { content } = options
     this.content = JSON.parse(content)
     this.defaultContent = `[位置] ${JSON.parse(content).title}`
+  }
+}
+/**
+ * 聚合消息
+ */
+
+export class chatRecordMsg extends Msg {
+  constructor(options, isSendMsg) {
+    super(options, isSendMsg)
+    let { content, chatRecord } = options
+    this.content = JSON.parse(content)
+    this.chatRecord = chatRecord
+    this.defaultContent = `[聊天记录]`
   }
 }

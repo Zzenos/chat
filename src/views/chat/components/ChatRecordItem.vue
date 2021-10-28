@@ -64,6 +64,8 @@
               </div>
             </div>
           </div>
+          <!-- 聊天记录 -->
+          <chat-record-messge v-else-if="item.msgtype === 'chatRecord'" :list="item.recordList"></chat-record-messge>
           <!-- 地图位置 -->
           <div v-else-if="item.msgtype === 'location'" class="map-location">
             <div class="map-icon">
@@ -94,11 +96,13 @@
 <script>
 import moment from 'moment'
 import ChatVoice from './ChatVoice.vue'
+import ChatRecordMessge from './ChatRecordMessge.vue'
 
 export default {
   props: ['list', 'loading'],
   components: {
-    ChatVoice
+    ChatVoice,
+    ChatRecordMessge
   },
   filters: {
     // 格式化时间
