@@ -1,7 +1,6 @@
 <template>
   <div class="forward-message">
     <div class="title ellipsis">
-      <!-- {{ list.chatType == 2 ? '群聊的' : `${list.sender.wechatName} 和 ${list.to.wechatName}` }} -->
       聊天记录
     </div>
     <!-- <div class="content">
@@ -14,7 +13,6 @@
 </template>
 
 <script>
-// import { getSendMsg } from '@/class/Msg'
 export default {
   name: 'ForwardMessage',
   props: {

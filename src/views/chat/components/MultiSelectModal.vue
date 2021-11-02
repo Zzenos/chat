@@ -18,10 +18,6 @@
         <div class="icon collect" @click="$emit('event', 'collect')"></div>
         <div class="text">收藏</div>
       </div>
-      <!-- <div class="operate-btn">
-        <div class="icon close" @click="$emit('event', 'close')"></div>
-        <div class="text">关闭</div>
-      </div> -->
       <div class="close" @click="$emit('event', 'close')">
         &times;
       </div>

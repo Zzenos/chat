@@ -23,7 +23,7 @@
             <span v-if="item.chatType == 0" class="tag system">官方</span>
           </div>
           <div class="time">{{ item.lastMsg.time | timeFilter }}</div>
-          <!-- 需要根据消息类型，处理显示的内容 v-show="curChat.chatId === item.chatId || !getDraft(item.chatId)" -->
+          <!-- 需要根据消息类型，处理显示的内容 草稿 v-show="curChat.chatId === item.chatId || !getDraft(item.chatId)" -->
           <div class="msg ellipsis" v-if="curChat.chatId !== item.chatId && getDraft(item.chatId)">
             <span style="color:red">[草稿] </span>
             <span v-text="getDraft(item.chatId)"></span>
@@ -100,9 +100,6 @@ export default {
         if (n === o) return
         // console.log('chatList $route ==>', n)
         // 切换账号或者刷新后进入，会话的默认选中状态
-        // this.draft = this.getDraftByChatId(this.curChat.chatId) || ''
-        // console.log(this.curChat.chatId, this.getDraftByChatId(this.curChat.chatId), this.$store.getters.getDraftByChatId(this.curChat.chatId))
-        // this.draft = ''
         const { contactId } = n.params
         if (contactId === '0') {
           this.curChat = { chatId: null }

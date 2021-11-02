@@ -30,7 +30,6 @@
     <div slot="leftTop">
       <div class="left-search">
         <a-input-search v-model="searchData.name" placeholder="请输入名称" allowClear style="width: 100%" @change="onSearch" />
-        <!-- <a-alert style="margin-top:10px;" message="最多显示最近2000个聊天" type="info" show-icon /> -->
       </div>
     </div>
     <div slot="rightTop"></div>
@@ -98,7 +97,6 @@ export default {
       })
     },
     showAllCheck() {
-      // return this.operateType == 'add' ? true : false
       return true
     },
     isRadio() {
@@ -116,14 +114,12 @@ export default {
   },
   methods: {
     onSearch() {
-      // console.log(this.searchData.name, 'this.searchData.name', this.checkOptions)
       this.allCheckOptions = this.searchData.name ? this.checkOptions.filter(ele => ele.wechatName && ele.wechatName.indexOf(this.searchData.name) > -1) : this.checkOptions
     },
     closeModal() {
       this.$emit('update:visible', false)
     },
     confirmSelect(checkedList) {
-      // console.log(checkedList, 'operateMebList', this.operateType)
       this.$emit('confirmSelect', checkedList, this.operateType)
     }
   },

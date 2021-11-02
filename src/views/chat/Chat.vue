@@ -361,7 +361,6 @@ import OperateGroupMeb from '@/views/chat/components/OperateGroupMeb'
 import GroupMember from '@/views/chat/components/GroupMember'
 import MultiSelectModal from '@/views/chat/components/MultiSelectModal'
 import ForwardMessage from '@/views/chat/components/ForwardMessage'
-// import { getSendMsg } from '@/class/Msg'
 
 const { state: overState } = overTimeModal()
 export default {
@@ -432,7 +431,7 @@ export default {
       chatRcordTitle: '聊天记录',
       recordType: 0, // 0 聊天记录 1 收藏记录
       isForwardMsg: false,
-      forwardMsgList: []
+      forwardMsgList: [] // 转发消息列表
     }
   },
   mounted() {

@@ -22,9 +22,7 @@ export default {
     }
   },
   data() {
-    return {
-      html: ''
-    }
+    return {}
   },
   created() {}
 }

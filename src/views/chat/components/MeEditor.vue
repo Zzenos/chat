@@ -202,7 +202,7 @@ export default {
       filterAtList: [],
       atContactSerialNos: [],
       inputFlag: true,
-      arr: [],
+      arr: [], // @人员列表
       heartList: [],
       activeKey: 'sys'
     }
@@ -238,7 +238,6 @@ export default {
         let curText = ''
         let curTextList = []
         let imgList = []
-        // console.log(allnodes)
         for (let i = 0; i < allnodes.length; i++) {
           if (allnodes[i].nodeName === 'IMG') {
             // 当前节点为图片节点
@@ -297,6 +296,7 @@ export default {
     showRecordModal(type) {
       this.$emit('showRecordModal', type)
     },
+    // 上传文件、视频、表情包
     uploaded(e, type) {
       console.log(e, type)
       let { contactId, tjId } = this.$route.params
@@ -333,6 +333,7 @@ export default {
       console.log(sendData, 'sendData')
       this[types.SEND_MSG](sendData)
     },
+    // 输入文字 @ 、 草稿
     changeText() {
       setTimeout(() => {
         if (!this.inputFlag) return
@@ -435,6 +436,7 @@ export default {
       this.replyName = name
       this.replyContent = content
     },
+    // 群聊选择@人员
     choose(v) {
       this.atShow = false
       if (v == 'all') {
@@ -541,6 +543,7 @@ export default {
         this[types.SEND_MSG](msg)
       }
     },
+    // 发送图片
     sendImgMsg(imgList) {
       if (imgList.length == 0) return
       for (let i = 0; i < imgList.length; i++) {
@@ -567,10 +570,12 @@ export default {
         })
       }
     },
+    // 添加撤回消息
     addRecallMsg(v) {
       this.$refs.messagInput.innerHTML = this.$refs.messagInput.innerHTML + v
       this.focus()
     },
+    // 光标
     focus() {
       this.$refs.messagInput.focus()
       this.rangeOfInputBox = new Range()
@@ -581,6 +586,7 @@ export default {
       selection.removeAllRanges()
       selection.addRange(this.rangeOfInputBox)
     },
+    // 发送表情包
     sendHeartEmoji(item) {
       this.emojiVisible = false
       this.activeKey = 'sys'
@@ -601,6 +607,7 @@ export default {
       sendData.url = item
       this[types.SEND_MSG](sendData)
     },
+    // 获取表情包
     getEmoction() {
       this.$socket.emit('download_emoticon', { token: this.$store.state.token }, ack => {
         this.heartList = ack.data
@@ -609,6 +616,7 @@ export default {
     uploadEmotion() {
       this.emojiVisible = false
     },
+    // 添加表情
     collectEmotion(e) {
       if (!this.heartList.includes(e.url)) {
         this.$socket.emit('upload_emoticon', { token: this.$store.state.token, emoticonUrl: e.url }, ack => {
